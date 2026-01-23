@@ -34,10 +34,9 @@ document.querySelectorAll("[data-catalogue]").forEach((link) => {
   link.addEventListener("click", (e) => {
     e.preventDefault();
     const pdfPath = link.getAttribute("data-catalogue");
-    const catalogueName = link.querySelector("h3").textContent;
 
-    // Open PDF in modal
-    openPDFModal(pdfPath, catalogueName);
+    // Open PDF in new tab
+    window.open(pdfPath, "_blank");
 
     // Close mobile menu if open
     if (navMenu.classList.contains("active")) {
@@ -46,69 +45,6 @@ document.querySelectorAll("[data-catalogue]").forEach((link) => {
     }
   });
 });
-
-// Function to open PDF in modal viewer
-function openPDFModal(pdfPath, catalogueName) {
-  // Create modal if it doesn't exist
-  let pdfModal = document.getElementById("pdfModal");
-
-  if (!pdfModal) {
-    pdfModal = document.createElement("div");
-    pdfModal.id = "pdfModal";
-    pdfModal.className = "pdf-modal";
-    pdfModal.innerHTML = `
-      <div class="pdf-modal-content">
-        <div class="pdf-modal-header">
-          <h3 id="pdfModalTitle"></h3>
-          <button class="pdf-modal-close" id="pdfModalClose">&times;</button>
-        </div>
-        <div class="pdf-viewer-container">
-          <iframe id="pdfViewer" src="" allowfullscreen></iframe>
-        </div>
-      </div>
-    `;
-    document.body.appendChild(pdfModal);
-
-    // Close modal button
-    document
-      .getElementById("pdfModalClose")
-      .addEventListener("click", closePDFModal);
-
-    // Close modal when clicking outside
-    pdfModal.addEventListener("click", (e) => {
-      if (e.target === pdfModal) {
-        closePDFModal();
-      }
-    });
-
-    // Close modal with Escape key
-    document.addEventListener("keydown", (e) => {
-      if (e.key === "Escape" && pdfModal.classList.contains("active")) {
-        closePDFModal();
-      }
-    });
-  }
-
-  // Update modal content
-  document.getElementById("pdfModalTitle").textContent =
-    catalogueName + " Catalogue";
-  document.getElementById("pdfViewer").src = pdfPath;
-
-  // Show modal
-  pdfModal.classList.add("active");
-  document.body.style.overflow = "hidden";
-}
-
-// Function to close PDF modal
-function closePDFModal() {
-  const pdfModal = document.getElementById("pdfModal");
-  if (pdfModal) {
-    pdfModal.classList.remove("active");
-    document.body.style.overflow = "auto";
-    // Clear iframe src to stop loading
-    document.getElementById("pdfViewer").src = "";
-  }
-}
 
 // Close mobile menu when clicking on regular links
 document
