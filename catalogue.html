@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Our Catalogue - HANDPIKD</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-wrapper">
+                <div class="logo">
+                    <img src="images/logo.png" alt="HANDPIKD Logo">
+                </div>
+                <ul class="nav-menu">
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="index.html#about">About</a></li>
+                    <li><a href="index.html#services">Services</a></li>
+                    <li><a href="catalogue.html" class="active">Catalogue</a></li>
+                    <li><a href="index.html#portfolio">Portfolio</a></li>
+                    <li><a href="index.html#contact">Contact</a></li>
+                </ul>
+                <div class="hamburger">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Catalogue Hero Section -->
+    <section class="catalogue-hero">
+        <div class="hero-overlay"></div>
+        <div class="container">
+            <div class="catalogue-hero-content">
+                <h1>Our Catalogue Collection</h1>
+                <p>Explore our comprehensive range of premium corporate gifts</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Catalogue Section -->
+    <section class="catalogue-section">
+        <div class="container">
+            <div class="catalogue-grid">
+                <!-- Combo Box Category -->
+                <div class="catalogue-category">
+                    <div class="category-header">
+                        <div class="category-icon">📦</div>
+                        <div class="category-header-text">
+                            <h2>Combo Box</h2>
+                            <p>Complete gift sets with multiple items</p>
+                        </div>
+                    </div>
+                    <div class="catalogue-items">
+                        <a href="#" class="catalogue-card" data-catalogue="catalogues/2-in-1.pdf">
+                            <div class="catalogue-card-icon">📄</div>
+                            <h3>2 in 1</h3>
+                            <span class="view-pdf">View PDF</span>
+                        </a>
+                        <a href="#" class="catalogue-card" data-catalogue="catalogues/3-in-1.pdf">
+                            <div class="catalogue-card-icon">📄</div>
+                            <h3>3 in 1</h3>
+                            <span class="view-pdf">View PDF</span>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Trophies Category -->
+                <div class="catalogue-category">
+                    <div class="category-header">
+                        <div class="category-icon">🏆</div>
+                        <div class="category-header-text">
+                            <h2>Trophies</h2>
+                            <p>Recognition awards and trophies</p>
+                        </div>
+                    </div>
+                    <div class="catalogue-items">
+                        <a href="#" class="catalogue-card" data-catalogue="catalogues/glass-trophies.pdf">
+                            <div class="catalogue-card-icon">📄</div>
+                            <h3>Glass Trophies</h3>
+                            <span class="view-pdf">View PDF</span>
+                        </a>
+                        <a href="#" class="catalogue-card" data-catalogue="catalogues/wood-trophies.pdf">
+                            <div class="catalogue-card-icon">📄</div>
+                            <h3>Wood Trophies</h3>
+                            <span class="view-pdf">View PDF</span>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Individual Items -->
+                <div class="catalogue-category full-width">
+                    <div class="category-header">
+                        <div class="category-icon">🎁</div>
+                        <div class="category-header-text">
+                            <h2>Individual Items</h2>
+                            <p>Premium individual gift options</p>
+                        </div>
+                    </div>
+                    <div class="catalogue-items individual-items">
+                        <a href="#" class="catalogue-card" data-catalogue="catalogues/bottle.pdf">
+                            <div class="catalogue-card-icon">🍾</div>
+                            <h3>Bottle</h3>
+                            <span class="view-pdf">View PDF</span>
+                        </a>
+                        <a href="#" class="catalogue-card" data-catalogue="catalogues/diary.pdf">
+                            <div class="catalogue-card-icon">📔</div>
+                            <h3>Diary</h3>
+                            <span class="view-pdf">View PDF</span>
+                        </a>
+                        <a href="#" class="catalogue-card" data-catalogue="catalogues/keychain.pdf">
+                            <div class="catalogue-card-icon">🔑</div>
+                            <h3>Keychain</h3>
+                            <span class="view-pdf">View PDF</span>
+                        </a>
+                        <a href="#" class="catalogue-card" data-catalogue="catalogues/mug.pdf">
+                            <div class="catalogue-card-icon">☕</div>
+                            <h3>Mug</h3>
+                            <span class="view-pdf">View PDF</span>
+                        </a>
+                        <a href="#" class="catalogue-card" data-catalogue="catalogues/pen.pdf">
+                            <div class="catalogue-card-icon">🖊️</div>
+                            <h3>Pen</h3>
+                            <span class="view-pdf">View PDF</span>
+                        </a>
+                        <a href="#" class="catalogue-card" data-catalogue="catalogues/lamp.pdf">
+                            <div class="catalogue-card-icon">💡</div>
+                            <h3>Lamp</h3>
+                            <span class="view-pdf">View PDF</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CTA Section -->
+            <div class="catalogue-cta">
+                <h2>Need Help Choosing?</h2>
+                <p>Our team is here to help you find the perfect gifts for your needs</p>
+                <button class="btn btn-primary" id="getStartedBtn">Get in Touch</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-logo">
+                    <img src="images/logo.png" alt="HANDPIKD Logo">
+                    <p>Curating excellence in corporate gifting</p>
+                </div>
+                <div class="footer-links">
+                    <h4>Quick Links</h4>
+                    <ul>
+                        <li><a href="index.html#about">About Us</a></li>
+                        <li><a href="index.html#services">Services</a></li>
+                        <li><a href="index.html#portfolio">Portfolio</a></li>
+                        <li><a href="index.html#contact">Contact</a></li>
+                    </ul>
+                </div>
+                <div class="footer-social">
+                    <h4>Follow Us</h4>
+                    <div class="social-links">
+                        <a href="#">LinkedIn</a>
+                        <a href="#">Instagram</a>
+                        <a href="#">Facebook</a>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2026 HANDPIKD. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Get Started Modal -->
+    <div id="getStartedModal" class="modal">
+        <div class="modal-content">
+            <span class="modal-close">&times;</span>
+            <div class="modal-header">
+                <h2>Let's Start Your Gifting Journey</h2>
+                <p>Tell us about your requirements and we'll create the perfect gifting solution</p>
+            </div>
+            <form id="getStartedForm" class="modal-form">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Full Name *</label>
+                        <input type="text" name="name" placeholder="John Doe" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Company Name *</label>
+                        <input type="text" name="company" placeholder="Your Company" required>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Email Address *</label>
+                        <input type="email" name="email" placeholder="john@company.com" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Phone Number</label>
+                        <input type="tel" name="phone" placeholder="+1 (555) 123-4567">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Occasion/Event Type</label>
+                    <select name="occasion">
+                        <option value="">Select an occasion</option>
+                        <option value="corporate-event">Corporate Event</option>
+                        <option value="employee-recognition">Employee Recognition</option>
+                        <option value="client-gifting">Client Gifting</option>
+                        <option value="festive-season">Festive Season</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Approximate Quantity</label>
+                    <input type="number" name="quantity" placeholder="50" min="1">
+                </div>
+                <div class="form-group">
+                    <label>Budget Range (Optional)</label>
+                    <select name="budget">
+                        <option value="">Select budget range</option>
+                        <option value="under-25">Under $25 per gift</option>
+                        <option value="25-50">$25 - $50 per gift</option>
+                        <option value="50-100">$50 - $100 per gift</option>
+                        <option value="100-200">$100 - $200 per gift</option>
+                        <option value="200-plus">$200+ per gift</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Tell us about your requirements *</label>
+                    <textarea name="message" rows="4" placeholder="Please describe your gifting needs, preferences, timeline, or any specific requirements..." required></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary btn-submit">Submit Request</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
