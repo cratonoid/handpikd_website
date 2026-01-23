@@ -1069,7 +1069,7 @@ h2 {
 
 .catalogue-card {
     background: var(--bg-light);
-    border: 1px solid rgba(201, 169, 97, 0.15);
+    border: 2px solid rgba(201, 169, 97, 0.3);
     border-radius: 12px;
     padding: 1.3rem 1rem;
     text-align: center;
