@@ -1625,6 +1625,7 @@ h2 {
 
     .catalogue-card {
         padding: 1.1rem 0.7rem;
+        border: 2px solid rgba(201, 169, 97, 0.5);
     }
 
     .catalogue-card-icon {
@@ -1690,6 +1691,7 @@ h2 {
 
     .catalogue-card {
         padding: 0.9rem 0.5rem;
+        border: 2.5px solid rgba(201, 169, 97, 0.6);
     }
 
     .catalogue-card-icon {
