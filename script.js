@@ -46,6 +46,181 @@ document.querySelectorAll("[data-catalogue]").forEach((link) => {
   });
 });
 
+// Handle catalogue image gallery clicks
+document.querySelectorAll("[data-gallery]").forEach((link) => {
+  link.addEventListener("click", async (e) => {
+    e.preventDefault();
+    const galleryPath = link.getAttribute("data-gallery");
+    const galleryName = link.querySelector("h3").textContent;
+
+    // Create loading overlay
+    const loadingOverlay = document.createElement("div");
+    loadingOverlay.className = "gallery-loading";
+    loadingOverlay.innerHTML =
+      '<div class="loader"></div><p>Loading gallery...</p>';
+    document.body.appendChild(loadingOverlay);
+
+    try {
+      // Fetch directory listing to get all images
+      const images = await fetchGalleryImages(galleryPath);
+
+      if (images.length === 0) {
+        throw new Error("No images found in gallery");
+      }
+
+      // Remove loading overlay
+      document.body.removeChild(loadingOverlay);
+
+      // Create and show lightbox gallery
+      showLightboxGallery(images, galleryName);
+    } catch (error) {
+      console.error("Error loading gallery:", error);
+      document.body.removeChild(loadingOverlay);
+      alert("Unable to load gallery. Please try again.");
+    }
+
+    // Close mobile menu if open
+    if (navMenu.classList.contains("active")) {
+      navMenu.classList.remove("active");
+      hamburger.classList.remove("active");
+    }
+  });
+});
+
+// Function to fetch gallery images
+async function fetchGalleryImages(galleryPath) {
+  // Map of gallery paths to their actual file naming patterns
+  const galleryConfig = {
+    "images/catalogs/combo box/2 in 1": { pattern: "2 in 1", max: 41 },
+    "images/catalogs/combo box/3 in 1": { pattern: "3 in 1", max: 51 },
+    "images/catalogs/combo box/4 in 1": { pattern: "4 in 1", max: 49 },
+    "images/catalogs/combo box/5 in 1": { pattern: "5 in 1", max: 29 },
+    "images/catalogs/awards and trophies/amaze": {
+      pattern: "amaze trophies",
+      max: 72,
+    },
+    "images/catalogs/awards and trophies/awards tro": {
+      pattern: "AWARDS TRO",
+      max: 69,
+    },
+    "images/catalogs/awards and trophies/AZ series": {
+      pattern: "AZ SERIES",
+      max: 51,
+    },
+    "images/catalogs/awards and trophies/crystal": {
+      pattern: "crystal trophies",
+      max: 28,
+    },
+    "images/catalogs/awards and trophies/crystal tro": {
+      pattern: "CRYSTAL TROPHIES",
+      max: 71,
+    },
+    "images/catalogs/awards and trophies/H series 23-24": {
+      pattern: "H SERIES 23-24",
+      max: 69,
+    },
+    "images/catalogs/awards and trophies/H series 25-26": {
+      pattern: "H SERIES 25-26",
+      max: 85,
+    },
+    "images/catalogs/awards and trophies/N series": {
+      pattern: "N SERIES 25-26",
+      max: 126,
+    },
+    "images/catalogs/awards and trophies/sprts tro": {
+      pattern: "SPORTS TRO",
+      max: 27,
+    },
+    "images/catalogs/awards and trophies/wooden": {
+      pattern: "WOODEN MOMENTOS",
+      max: 14,
+    },
+    "images/catalogs/bottles/bottles": {
+      pattern: "Aquabot Bottle and Drinkware 2025",
+      max: 10,
+    },
+    "images/catalogs/diaries/diaries": { pattern: "diaries", max: 74 },
+    "images/catalogs/diaries/notebooks": { pattern: "sca notebooks", max: 48 },
+    "images/catalogs/keychains/keychains": { pattern: "keychains", max: 8 },
+    "images/catalogs/mugs/mugs": { pattern: "aquabot mugs", max: 10 },
+    "images/catalogs/pens/pens": { pattern: "metal pen shah", max: 38 },
+  };
+
+  const images = [];
+  const config = galleryConfig[galleryPath];
+
+  if (config) {
+    // Use the specific naming pattern for this gallery
+    for (let i = 1; i <= config.max; i++) {
+      const imgPath = `${galleryPath}/${config.pattern}-${i}.jpg`;
+      images.push(imgPath);
+    }
+  } else {
+    // Fallback for unknown paths
+    const baseName = galleryPath.split("/").pop();
+    for (let i = 1; i <= 100; i++) {
+      const imgPath = `${galleryPath}/${baseName}-${i}.jpg`;
+      images.push(imgPath);
+    }
+  }
+
+  return images;
+}
+
+// Function to show lightbox gallery
+function showLightboxGallery(images, title) {
+  // Create lightbox overlay
+  const lightbox = document.createElement("div");
+  lightbox.className = "lightbox-overlay";
+
+  // Generate all images in a scrollable container
+  const imagesHTML = images
+    .map(
+      (img, index) => `
+      <div class="lightbox-image-item">
+        <img src="${img}" alt="${title} - Image ${index + 1}" class="lightbox-scroll-image" loading="lazy" />
+        <div class="lightbox-image-number">${index + 1} / ${images.length}</div>
+      </div>
+    `,
+    )
+    .join("");
+
+  lightbox.innerHTML = `
+    <div class="lightbox-container">
+      <button class="lightbox-close">&times;</button>
+      <h2 class="lightbox-title">${title}</h2>
+      <div class="lightbox-scroll-content">
+        ${imagesHTML}
+      </div>
+    </div>
+  `;
+
+  document.body.appendChild(lightbox);
+  document.body.style.overflow = "hidden";
+
+  const closeBtn = lightbox.querySelector(".lightbox-close");
+
+  // Keyboard navigation
+  function handleKeyPress(e) {
+    if (e.key === "Escape") closeBtn.click();
+  }
+  document.addEventListener("keydown", handleKeyPress);
+
+  // Close lightbox
+  function closeLightbox() {
+    document.removeEventListener("keydown", handleKeyPress);
+    document.body.removeChild(lightbox);
+    document.body.style.overflow = "auto";
+  }
+
+  closeBtn.addEventListener("click", closeLightbox);
+  lightbox.addEventListener("click", (e) => {
+    if (e.target === lightbox) {
+      closeLightbox();
+    }
+  });
+}
+
 // Close mobile menu when clicking on regular links
 document
   .querySelectorAll(
