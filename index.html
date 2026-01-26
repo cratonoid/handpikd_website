@@ -190,8 +190,8 @@
                             <p>handpikdgifting@gmail.com</p>
                         </div>
                         <div class="contact-item">
-                            <h4>Phone</h4>
-                            <p>+91 7411690399</p>
+                            <h4>WhatsApp</h4>
+                            <p><a href="https://wa.me/917411690399" target="_blank" style="color: inherit;">+91 7411690399</a></p>
                         </div>
                         <div class="contact-item">
                             <h4>Address</h4>
@@ -200,18 +200,51 @@
                     </div>
                 </div>
                 <div class="contact-form">
-                    <form>
-                        <div class="form-group">
-                            <input type="text" placeholder="Your Name" required>
+                    <form class="modal-form">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>Full Name *</label>
+                                <input type="text" name="name" placeholder="Alex Johnson" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Email Address *</label>
+                                <input type="email" name="email" placeholder="john@company.com" required>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label>WhatsApp Number *</label>
+                                <input type="tel" name="phone" placeholder="+91 98765 43210" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Occasion/Event Type *</label>
+                                <select name="occasion" required>
+                                    <option value="">Select an occasion</option>
+                                    <option value="corporate-event">Corporate Event</option>
+                                    <option value="employee-recognition">Employee Recognition</option>
+                                    <option value="client-gifting">Client Gifting</option>
+                                    <option value="festive-season">Festive Season</option>
+                                    <option value="other">Other</option>
+                                </select>
+                            </div>
                         </div>
                         <div class="form-group">
-                            <input type="email" placeholder="Your Email" required>
+                            <label>Approximate Quantity *</label>
+                            <input type="number" name="quantity" placeholder="50" min="1" required>
                         </div>
                         <div class="form-group">
-                            <input type="text" placeholder="Company Name">
+                            <label>Budget Range *</label>
+                            <select name="budget" required>
+                                <option value="">Select budget range</option>
+                                <option value="500-1000">Under ₹1,000 per gift</option>
+                                <option value="1000-2500">₹1,000 - ₹2,500 per gift</option>
+                                <option value="2500-5000">₹2,500 - ₹5,000 per gift</option>
+                                <option value="5000-plus">₹5,000+ per gift</option>
+                            </select>
                         </div>
                         <div class="form-group">
-                            <textarea placeholder="Tell us about your gifting needs" rows="5" required></textarea>
+                            <label>Tell us about your requirements *</label>
+                            <textarea name="message" rows="4" placeholder="Please describe your gifting needs, preferences, timeline, or any specific requirements..." required></textarea>
                         </div>
                         <button type="submit" class="btn btn-primary">Send Message</button>
                     </form>
@@ -238,11 +271,10 @@
                     </ul>
                 </div>
                 <div class="footer-social">
-                    <h4>Follow Us</h4>
-                    <div class="social-links">
-                        <a href="#">LinkedIn</a>
+                    <h4>Reach Us</h4>
+                    <div class="social-links">                       
                         <a href="#">Instagram</a>
-                        <a href="#">Facebook</a>
+                        <a href="https://wa.me/917411690399" target="_blank" rel="noopener noreferrer">WhatsApp</a>
                     </div>
                 </div>
             </div>
@@ -264,47 +296,42 @@
                 <div class="form-row">
                     <div class="form-group">
                         <label>Full Name *</label>
-                        <input type="text" name="name" placeholder="John Doe" required>
+                        <input type="text" name="name" placeholder="Alex Johnson" required>
                     </div>
-                    <div class="form-group">
-                        <label>Company Name *</label>
-                        <input type="text" name="company" placeholder="Your Company" required>
-                    </div>
-                </div>
-                <div class="form-row">
                     <div class="form-group">
                         <label>Email Address *</label>
                         <input type="email" name="email" placeholder="john@company.com" required>
                     </div>
+                </div>
+                <div class="form-row">
                     <div class="form-group">
-                        <label>Phone Number</label>
-                        <input type="tel" name="phone" placeholder="+1 (555) 123-4567">
+                        <label>WhatsApp Number *</label>
+                        <input type="tel" name="phone" placeholder="+91 98765 43210" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Occasion/Event Type *</label>
+                        <select name="occasion" required>
+                            <option value="">Select an occasion</option>
+                            <option value="corporate-event">Corporate Event</option>
+                            <option value="employee-recognition">Employee Recognition</option>
+                            <option value="client-gifting">Client Gifting</option>
+                            <option value="festive-season">Festive Season</option>
+                            <option value="other">Other</option>
+                        </select>
                     </div>
                 </div>
                 <div class="form-group">
-                    <label>Occasion/Event Type</label>
-                    <select name="occasion">
-                        <option value="">Select an occasion</option>
-                        <option value="corporate-event">Corporate Event</option>
-                        <option value="employee-recognition">Employee Recognition</option>
-                        <option value="client-gifting">Client Gifting</option>
-                        <option value="festive-season">Festive Season</option>
-                        <option value="other">Other</option>
-                    </select>
+                    <label>Approximate Quantity *</label>
+                    <input type="number" name="quantity" placeholder="50" min="1" required>
                 </div>
                 <div class="form-group">
-                    <label>Approximate Quantity</label>
-                    <input type="number" name="quantity" placeholder="50" min="1">
-                </div>
-                <div class="form-group">
-                    <label>Budget Range (Optional)</label>
-                    <select name="budget">
+                    <label>Budget Range *</label>
+                    <select name="budget" required>
                         <option value="">Select budget range</option>
-                        <option value="under-25">Under $25 per gift</option>
-                        <option value="25-50">$25 - $50 per gift</option>
-                        <option value="50-100">$50 - $100 per gift</option>
-                        <option value="100-200">$100 - $200 per gift</option>
-                        <option value="200-plus">$200+ per gift</option>
+                        <option value="500-1000">Under ₹1,000 per gift</option>
+                        <option value="1000-2500">₹1,000 - ₹2,500 per gift</option>
+                        <option value="2500-5000">₹2,500 - ₹5,000 per gift</option>
+                        <option value="5000-plus">₹5,000+ per gift</option>
                     </select>
                 </div>
                 <div class="form-group">

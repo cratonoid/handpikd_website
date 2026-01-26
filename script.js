@@ -1,3 +1,44 @@
+// Configuration for Google Sheets
+const FORM_CONFIG = {
+  // Google Sheets Web App URL - handles both saving data AND sending email
+  googleSheetsUrl:
+    "https://script.google.com/macros/s/AKfycbzAtwSR9ecYYjL-gqPy0x0bpSw_Dy1Uoob44083l1HRBGL3Im52nPGuL6plEv8uJm07/exec",
+};
+
+// Function to send form data to Google Sheets (which also sends email)
+async function sendFormData(formData) {
+  const timestamp = new Date().toLocaleString("en-IN", {
+    timeZone: "Asia/Kolkata",
+  });
+
+  const submissionData = {
+    timestamp: timestamp,
+    name: formData.name || "",
+    email: formData.email || "",
+    phone: formData.phone || "",
+    occasion: formData.occasion || "",
+    quantity: formData.quantity || "",
+    budget: formData.budget || "",
+    message: formData.message || "",
+  };
+
+  // Send to Google Sheets (which also triggers email)
+  try {
+    await fetch(FORM_CONFIG.googleSheetsUrl, {
+      method: "POST",
+      mode: "no-cors",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(submissionData),
+    });
+    console.log("✅ Form submitted successfully - Data saved and email sent");
+  } catch (error) {
+    console.error("Submission error:", error);
+    throw new Error("Failed to submit form. Please try again.");
+  }
+}
+
 // Mobile Navigation Toggle
 const hamburger = document.querySelector(".hamburger");
 const navMenu = document.querySelector(".nav-menu");
@@ -291,16 +332,34 @@ document
 // Form submission handler
 const contactForm = document.querySelector(".contact-form form");
 if (contactForm) {
-  contactForm.addEventListener("submit", (e) => {
+  contactForm.addEventListener("submit", async (e) => {
     e.preventDefault();
 
     // Get form data
     const formData = new FormData(contactForm);
+    const data = Object.fromEntries(formData);
 
-    // Here you would typically send the data to a server
-    // For now, we'll just show an alert
-    alert("Thank you for your message! We will get back to you soon.");
-    contactForm.reset();
+    // Show loading state
+    const submitBtn = contactForm.querySelector("button[type='submit']");
+    const originalBtnText = submitBtn.textContent;
+    submitBtn.textContent = "Sending...";
+    submitBtn.disabled = true;
+
+    try {
+      // Send email via SMTP and save to Google Sheets
+      await sendFormData(data);
+
+      alert("Thank you for your message! We will get back to you soon.");
+      contactForm.reset();
+    } catch (error) {
+      console.error("Error submitting form:", error);
+      alert(
+        "There was an error submitting your form. Please try again or contact us directly via email.",
+      );
+    } finally {
+      submitBtn.textContent = originalBtnText;
+      submitBtn.disabled = false;
+    }
   });
 }
 
@@ -398,23 +457,40 @@ window.addEventListener("click", (e) => {
 });
 
 // Handle form submission
-getStartedForm?.addEventListener("submit", (e) => {
+getStartedForm?.addEventListener("submit", async (e) => {
   e.preventDefault();
 
   // Get form data
   const formData = new FormData(getStartedForm);
   const data = Object.fromEntries(formData);
 
-  // Show success message
-  const modalContent = document.querySelector(".modal-content");
-  modalContent.innerHTML = `
-    <div class="modal-success">
-      <div class="success-icon">✓</div>
-      <h2>Thank You!</h2>
-      <p>We've received your request and will get back to you within 24 hours.</p>
-      <button class="btn btn-primary" onclick="document.getElementById('getStartedModal').style.display='none'; document.body.style.overflow='auto'; location.reload();">Close</button>
-    </div>
-  `;
+  // Show loading in modal
+  const submitBtn = getStartedForm.querySelector("button[type='submit']");
+  submitBtn.textContent = "Submitting...";
+  submitBtn.disabled = true;
+
+  try {
+    // Send email via SMTP and save to Google Sheets
+    await sendFormData(data);
+
+    // Show success message
+    const modalContent = document.querySelector(".modal-content");
+    modalContent.innerHTML = `
+      <div class="modal-success">
+        <div class="success-icon">✓</div>
+        <h2>Thank You!</h2>
+        <p>We've received your request and will get back to you within 24 hours.</p>
+        <button class="btn btn-primary" onclick="document.getElementById('getStartedModal').style.display='none'; document.body.style.overflow='auto'; location.reload();">Close</button>
+      </div>
+    `;
+  } catch (error) {
+    console.error("Error submitting form:", error);
+    alert(
+      "There was an error submitting your form. Please try again or contact us directly via WhatsApp.",
+    );
+    submitBtn.textContent = "Submit Request";
+    submitBtn.disabled = false;
+  }
 
   // Reset overflow after 3 seconds if user doesn't close
   setTimeout(() => {
