@@ -246,26 +246,30 @@
                 <div class="form-row">
                     <div class="form-group">
                         <label>Full Name *</label>
-                        <input type="text" name="name" placeholder="John Doe" required>
+                        <input type="text" name="name" placeholder="John Lox" required maxlength="20" pattern="[A-Za-z ]+" data-validation="name">
+                        <span class="error-message" id="modal-name-error"></span>
                     </div>
                     <div class="form-group">
                         <label>Company Name *</label>
-                        <input type="text" name="company" placeholder="Your Company" required>
+                        <input type="text" name="company" placeholder="Your Company" required maxlength="20" data-validation="company">
+                        <span class="error-message" id="modal-company-error"></span>
                     </div>
                 </div>
                 <div class="form-row">
                     <div class="form-group">
                         <label>Email Address *</label>
-                        <input type="email" name="email" placeholder="john@company.com" required>
+                        <input type="email" name="email" placeholder="john@company.com" required data-validation="email">
+                        <span class="error-message" id="modal-email-error"></span>
                     </div>
                     <div class="form-group">
-                        <label>Phone Number</label>
-                        <input type="tel" name="phone" placeholder="+1 (555) 123-4567">
+                        <label>Phone Number *</label>
+                        <input type="tel" name="phone" placeholder="98765 43210" required pattern="[6-9][0-9]{9}" data-validation="phone">
+                        <span class="error-message" id="modal-phone-error"></span>
                     </div>
                 </div>
                 <div class="form-group">
-                    <label>Occasion/Event Type</label>
-                    <select name="occasion">
+                    <label>Occasion/Event Type *</label>
+                    <select name="occasion" required>
                         <option value="">Select an occasion</option>
                         <option value="corporate-event">Corporate Event</option>
                         <option value="employee-recognition">Employee Recognition</option>
@@ -275,23 +279,24 @@
                     </select>
                 </div>
                 <div class="form-group">
-                    <label>Approximate Quantity</label>
-                    <input type="number" name="quantity" placeholder="50" min="1">
+                    <label>Approximate Quantity *</label>
+                    <input type="number" name="quantity" placeholder="50" min="1" max="500000" required data-validation="quantity">
+                    <span class="error-message" id="modal-quantity-error"></span>
                 </div>
                 <div class="form-group">
-                    <label>Budget Range (Optional)</label>
-                    <select name="budget">
+                    <label>Budget Range *</label>
+                    <select name="budget" required>
                         <option value="">Select budget range</option>
-                        <option value="under-25">Under $25 per gift</option>
-                        <option value="25-50">$25 - $50 per gift</option>
-                        <option value="50-100">$50 - $100 per gift</option>
-                        <option value="100-200">$100 - $200 per gift</option>
-                        <option value="200-plus">$200+ per gift</option>
+                        <option value="500-1000">Under ₹1,000 per gift</option>
+                        <option value="1000-2500">₹1,000 - ₹2,500 per gift</option>
+                        <option value="2500-5000">₹2,500 - ₹5,000 per gift</option>
+                        <option value="5000-plus">₹5,000+ per gift</option>
                     </select>
                 </div>
                 <div class="form-group">
-                    <label>Tell us about your requirements *</label>
-                    <textarea name="message" rows="4" placeholder="Please describe your gifting needs, preferences, timeline, or any specific requirements..." required></textarea>
+                    <label>Tell us about your requirements * <span class="word-count" id="modal-message-count">0/100 words</span></label>
+                    <textarea name="message" rows="4" placeholder="Please describe your gifting needs, preferences, timeline, or any specific requirements..." required data-validation="message"></textarea>
+                    <span class="error-message" id="modal-message-error"></span>
                 </div>
                 <button type="submit" class="btn btn-primary btn-submit">Submit Request</button>
             </form>

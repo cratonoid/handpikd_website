@@ -5,6 +5,276 @@ const FORM_CONFIG = {
     "https://script.google.com/macros/s/AKfycbzAtwSR9ecYYjL-gqPy0x0bpSw_Dy1Uoob44083l1HRBGL3Im52nPGuL6plEv8uJm07/exec",
 };
 
+// Real-time Form Validation
+const ValidationRules = {
+  name: {
+    pattern: /^[A-Za-z ]+$/,
+    maxLength: 20,
+    messages: {
+      pattern: "Name should only contain letters and spaces",
+      maxLength: "Name should not exceed 20 characters",
+      required: "Name is required",
+    },
+  },
+  phone: {
+    pattern: /^[6-9][0-9]{9}$/,
+    messages: {
+      pattern:
+        "Please enter a valid Indian phone number (10 digits starting with 6-9)",
+      required: "Phone number is required",
+    },
+  },
+  quantity: {
+    min: 1,
+    max: 500000,
+    messages: {
+      max: "Quantity cannot exceed 500,000",
+      min: "Quantity must be at least 1",
+      required: "Quantity is required",
+    },
+  },
+  email: {
+    pattern: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+    messages: {
+      pattern: "Please enter a valid email address",
+      required: "Email is required",
+    },
+  },
+  company: {
+    maxLength: 20,
+    messages: {
+      maxLength: "Company name should not exceed 20 characters",
+      required: "Company name is required",
+    },
+  },
+  message: {
+    maxWords: 100,
+    messages: {
+      maxWords: "Requirements should not exceed 100 words",
+      required: "Please tell us about your requirements",
+    },
+  },
+};
+
+function countWords(text) {
+  const trimmed = text.trim();
+  if (!trimmed) return 0;
+  return trimmed.split(/\s+/).length;
+}
+
+function validateField(input, errorElementId) {
+  const value = input.value.trim();
+  const validationType = input.getAttribute("data-validation");
+  const errorElement = document.getElementById(errorElementId);
+
+  if (!errorElement) return true;
+
+  // Clear previous error
+  errorElement.textContent = "";
+  input.classList.remove("error");
+
+  // Check if field is required and empty
+  if (input.hasAttribute("required") && !value) {
+    const rule = ValidationRules[validationType];
+    if (rule && rule.messages.required) {
+      errorElement.textContent = rule.messages.required;
+      input.classList.add("error");
+      return false;
+    }
+  }
+
+  // If field is empty and not required, skip validation
+  if (!value && !input.hasAttribute("required")) {
+    return true;
+  }
+
+  // Validate based on type
+  if (validationType === "name") {
+    const rule = ValidationRules.name;
+
+    if (value.length > rule.maxLength) {
+      errorElement.textContent = rule.messages.maxLength;
+      input.classList.add("error");
+      return false;
+    }
+
+    if (!rule.pattern.test(value)) {
+      errorElement.textContent = rule.messages.pattern;
+      input.classList.add("error");
+      return false;
+    }
+  }
+
+  if (validationType === "phone") {
+    const rule = ValidationRules.phone;
+    // Remove any non-digit characters for validation
+    const cleanPhone = value.replace(/\D/g, "");
+
+    if (!rule.pattern.test(cleanPhone)) {
+      errorElement.textContent = rule.messages.pattern;
+      input.classList.add("error");
+      return false;
+    }
+  }
+
+  if (validationType === "quantity") {
+    const rule = ValidationRules.quantity;
+    const numValue = parseInt(value);
+
+    if (numValue < rule.min) {
+      errorElement.textContent = rule.messages.min;
+      input.classList.add("error");
+      return false;
+    }
+
+    if (numValue > rule.max) {
+      errorElement.textContent = rule.messages.max;
+      input.classList.add("error");
+      return false;
+    }
+  }
+
+  if (validationType === "email") {
+    const rule = ValidationRules.email;
+
+    if (!rule.pattern.test(value)) {
+      errorElement.textContent = rule.messages.pattern;
+      input.classList.add("error");
+      return false;
+    }
+  }
+
+  if (validationType === "company") {
+    const rule = ValidationRules.company;
+
+    if (value.length > rule.maxLength) {
+      errorElement.textContent = rule.messages.maxLength;
+      input.classList.add("error");
+      return false;
+    }
+  }
+
+  if (validationType === "message") {
+    const rule = ValidationRules.message;
+    const wordCount = countWords(value);
+
+    // Update word counter if it exists
+    const fieldName = input.name;
+    const formContext = input.closest("form");
+    let counterElementId;
+
+    if (formContext && formContext.id === "getStartedForm") {
+      counterElementId = `modal-${fieldName}-count`;
+    } else if (
+      formContext &&
+      (formContext.classList.contains("contact-form") ||
+        formContext.closest(".contact-form"))
+    ) {
+      counterElementId = `contact-${fieldName}-count`;
+    }
+
+    const counterElement = document.getElementById(counterElementId);
+    if (counterElement) {
+      counterElement.textContent = `${wordCount}/100 words`;
+      if (wordCount > rule.maxWords) {
+        counterElement.style.color = "#e74c3c";
+      } else {
+        counterElement.style.color = "#666";
+      }
+    }
+
+    if (wordCount > rule.maxWords) {
+      errorElement.textContent = rule.messages.maxWords;
+      input.classList.add("error");
+      return false;
+    }
+  }
+
+  return true;
+}
+
+function initializeFormValidation() {
+  // Get all forms
+  const forms = document.querySelectorAll("form");
+
+  forms.forEach((form) => {
+    const inputs = form.querySelectorAll(
+      "input[data-validation], textarea[data-validation]",
+    );
+
+    inputs.forEach((input) => {
+      // Determine the error element ID based on form context
+      let errorElementId;
+      const formId = form.id;
+      const fieldName = input.name;
+
+      if (formId === "getStartedForm") {
+        errorElementId = `modal-${fieldName}-error`;
+      } else if (
+        form.classList.contains("contact-form") ||
+        form.closest(".contact-form")
+      ) {
+        errorElementId = `contact-${fieldName}-error`;
+      } else {
+        errorElementId = `${fieldName}-error`;
+      }
+
+      // Real-time validation on input
+      input.addEventListener("input", () => {
+        validateField(input, errorElementId);
+      });
+
+      // Validation on blur
+      input.addEventListener("blur", () => {
+        validateField(input, errorElementId);
+      });
+    });
+
+    // Validate entire form on submit
+    form.addEventListener("submit", (e) => {
+      let isValid = true;
+
+      inputs.forEach((input) => {
+        let errorElementId;
+        const formId = form.id;
+        const fieldName = input.name;
+
+        if (formId === "getStartedForm") {
+          errorElementId = `modal-${fieldName}-error`;
+        } else if (
+          form.classList.contains("contact-form") ||
+          form.closest(".contact-form")
+        ) {
+          errorElementId = `contact-${fieldName}-error`;
+        } else {
+          errorElementId = `${fieldName}-error`;
+        }
+
+        if (!validateField(input, errorElementId)) {
+          isValid = false;
+        }
+      });
+
+      if (!isValid) {
+        e.preventDefault();
+        // Scroll to first error
+        const firstError = form.querySelector(".error");
+        if (firstError) {
+          firstError.scrollIntoView({ behavior: "smooth", block: "center" });
+          firstError.focus();
+        }
+      }
+    });
+  });
+}
+
+// Initialize validation when DOM is ready
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", initializeFormValidation);
+} else {
+  initializeFormValidation();
+}
+
 // Function to send form data to Google Sheets (which also sends email)
 async function sendFormData(formData) {
   const timestamp = new Date().toLocaleString("en-IN", {
@@ -440,6 +710,8 @@ const getStartedForm = document.getElementById("getStartedForm");
 getStartedBtn?.addEventListener("click", () => {
   getStartedModal.style.display = "flex";
   document.body.style.overflow = "hidden";
+  // Re-initialize validation for modal form when opened
+  setTimeout(() => initializeFormValidation(), 100);
 });
 
 // Close modal

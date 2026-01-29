@@ -100,42 +100,42 @@
             <div class="services-grid">
                 <div class="service-card">
                     <div class="service-icon">
-                        <img src="https://images.unsplash.com/photo-1549465220-1a8b9238cd48?w=400&q=80" alt="Custom corporate gift curation and personalized business gifts">
+                        <img src="images/4.jpg" alt="Custom corporate gift curation and personalized business gifts">
                     </div>
                     <h3>Custom Gift Curation</h3>
                     <p>Personalized corporate gift selections tailored to your brand identity and recipient preferences. Curated business gifts for clients, employees, and partners.</p>
                 </div>
                 <div class="service-card">
                     <div class="service-icon">
-                        <img src="https://images.unsplash.com/photo-1607083206869-4c7672e72a8a?w=400&q=80" alt="Luxury corporate gift hampers with premium products">
+                        <img src="images/1.jpg" alt="Luxury corporate gift hampers with premium products">
                     </div>
                     <h3>Luxury Corporate Hampers</h3>
                     <p>Exquisite gift hampers featuring premium products from renowned brands worldwide. Perfect for festive seasons, client appreciation, and corporate celebrations.</p>
                 </div>
                 <div class="service-card">
                     <div class="service-icon">
-                        <img src="https://images.unsplash.com/photo-1523294587484-bae6cc870010?w=400&q=80" alt="Custom branded corporate merchandise and business gifts">
+                        <img src="images/6.jpg" alt="Custom branded corporate merchandise and business gifts">
                     </div>
                     <h3>Branded Merchandise</h3>
                     <p>Custom-branded corporate gifts and promotional merchandise that showcase your company's unique identity. Personalized pens, mugs, bottles, and more.</p>
                 </div>
                 <div class="service-card">
                     <div class="service-icon">
-                        <img src="https://images.unsplash.com/photo-1464547323744-4edd0cd0c746?w=400&q=80" alt="Corporate event gifting solutions and conference gifts">
+                        <img src="images/5.jpg" alt="Corporate event gifting solutions and conference gifts">
                     </div>
                     <h3>Corporate Event Gifting</h3>
                     <p>Comprehensive gifting solutions for corporate events, conferences, seminars, and special business occasions. Bulk orders and customization available.</p>
                 </div>
                 <div class="service-card">
                     <div class="service-icon">
-                        <img src="https://images.unsplash.com/photo-1586244439413-bc2288941dda?w=400&q=80" alt="Employee recognition awards and appreciation gifts">
+                        <img src="images/3.jpg" alt="Employee recognition awards and appreciation gifts">
                     </div>
                     <h3>Employee Recognition Gifts</h3>
                     <p>Thoughtful corporate gifts to celebrate employee milestones, achievements, work anniversaries, and team appreciation. Boost employee morale with premium gifts.</p>
                 </div>
                 <div class="service-card">
                     <div class="service-icon">
-                        <img src="https://images.unsplash.com/photo-1513885535751-8b9238bd345a?w=400&q=80" alt="Guest felicitation gifts and VIP welcome presents">
+                        <img src="images/2.jpg" alt="Guest felicitation gifts and VIP welcome presents">
                     </div>
                     <h3>Guest Felicitation</h3>
                     <p>Elegant and thoughtful gifts to honor your distinguished guests, dignitaries, and VIPs. Premium welcome gifts for corporate guests and business partners.</p>
@@ -155,22 +155,22 @@
                 <div class="testimonial-card">
                     <p>"HANDPIKD transformed our corporate gifting strategy. Their attention to detail and understanding of our brand is exceptional."</p>
                     <div class="testimonial-author">
-                        <h4>Sarah Mitchell</h4>
-                        <span>CEO, Tech Innovations Inc.</span>
+                        <h4>Vishaka Reddy</h4>
+                        <span>CEO, Flox Tech.</span>
                     </div>
                 </div>
                 <div class="testimonial-card">
                     <p>"The quality and presentation of gifts from HANDPIKD consistently exceed our expectations. Our clients are always impressed."</p>
                     <div class="testimonial-author">
-                        <h4>David Chen</h4>
-                        <span>Director, Global Solutions Ltd.</span>
+                        <h4>Rachel Dias</h4>
+                        <span>Admin, Biz Consulting</span>
                     </div>
                 </div>
                 <div class="testimonial-card">
                     <p>"Professional, reliable, and creative. HANDPIKD has become our trusted partner for all corporate gifting needs."</p>
                     <div class="testimonial-author">
-                        <h4>Emma Thompson</h4>
-                        <span>HR Manager, Fortune Enterprises</span>
+                        <h4>Himanshi Rai</h4>
+                        <span>HR Manager, Marque Enterprises</span>
                     </div>
                 </div>
             </div>
@@ -204,17 +204,20 @@
                         <div class="form-row">
                             <div class="form-group">
                                 <label>Full Name *</label>
-                                <input type="text" name="name" placeholder="Alex Johnson" required>
+                                <input type="text" name="name" placeholder="Alex Johnson" required maxlength="20" pattern="[A-Za-z ]+" data-validation="name">
+                                <span class="error-message" id="contact-name-error"></span>
                             </div>
                             <div class="form-group">
                                 <label>Email Address *</label>
-                                <input type="email" name="email" placeholder="john@company.com" required>
+                                <input type="email" name="email" placeholder="john@company.com" required data-validation="email">
+                                <span class="error-message" id="contact-email-error"></span>
                             </div>
                         </div>
                         <div class="form-row">
                             <div class="form-group">
                                 <label>WhatsApp Number *</label>
-                                <input type="tel" name="phone" placeholder="+91 98765 43210" required>
+                                <input type="tel" name="phone" placeholder="98765 43210" required pattern="[6-9][0-9]{9}" data-validation="phone">
+                                <span class="error-message" id="contact-phone-error"></span>
                             </div>
                             <div class="form-group">
                                 <label>Occasion/Event Type *</label>
@@ -230,7 +233,8 @@
                         </div>
                         <div class="form-group">
                             <label>Approximate Quantity *</label>
-                            <input type="number" name="quantity" placeholder="50" min="1" required>
+                            <input type="number" name="quantity" placeholder="50" min="1" max="500000" required data-validation="quantity">
+                            <span class="error-message" id="contact-quantity-error"></span>
                         </div>
                         <div class="form-group">
                             <label>Budget Range *</label>
@@ -243,8 +247,9 @@
                             </select>
                         </div>
                         <div class="form-group">
-                            <label>Tell us about your requirements *</label>
-                            <textarea name="message" rows="4" placeholder="Please describe your gifting needs, preferences, timeline, or any specific requirements..." required></textarea>
+                            <label>Tell us about your requirements * <span class="word-count" id="contact-message-count">0/100 words</span></label>
+                            <textarea name="message" rows="4" placeholder="Please describe your gifting needs, preferences, timeline, or any specific requirements..." required data-validation="message"></textarea>
+                            <span class="error-message" id="contact-message-error"></span>
                         </div>
                         <button type="submit" class="btn btn-primary">Send Message</button>
                     </form>
@@ -296,17 +301,20 @@
                 <div class="form-row">
                     <div class="form-group">
                         <label>Full Name *</label>
-                        <input type="text" name="name" placeholder="Alex Johnson" required>
+                        <input type="text" name="name" placeholder="Alex Johnson" required maxlength="20" pattern="[A-Za-z ]+" data-validation="name">
+                        <span class="error-message" id="modal-name-error"></span>
                     </div>
                     <div class="form-group">
                         <label>Email Address *</label>
-                        <input type="email" name="email" placeholder="john@company.com" required>
+                        <input type="email" name="email" placeholder="john@company.com" required data-validation="email">
+                        <span class="error-message" id="modal-email-error"></span>
                     </div>
                 </div>
                 <div class="form-row">
                     <div class="form-group">
                         <label>WhatsApp Number *</label>
-                        <input type="tel" name="phone" placeholder="+91 98765 43210" required>
+                        <input type="tel" name="phone" placeholder="98765 43210" required pattern="[6-9][0-9]{9}" data-validation="phone">
+                        <span class="error-message" id="modal-phone-error"></span>
                     </div>
                     <div class="form-group">
                         <label>Occasion/Event Type *</label>
@@ -322,7 +330,8 @@
                 </div>
                 <div class="form-group">
                     <label>Approximate Quantity *</label>
-                    <input type="number" name="quantity" placeholder="50" min="1" required>
+                    <input type="number" name="quantity" placeholder="50" min="1" max="500000" required data-validation="quantity">
+                    <span class="error-message" id="modal-quantity-error"></span>
                 </div>
                 <div class="form-group">
                     <label>Budget Range *</label>
@@ -335,8 +344,9 @@
                     </select>
                 </div>
                 <div class="form-group">
-                    <label>Tell us about your requirements *</label>
-                    <textarea name="message" rows="4" placeholder="Please describe your gifting needs, preferences, timeline, or any specific requirements..." required></textarea>
+                    <label>Tell us about your requirements * <span class="word-count" id="modal-message-count">0/100 words</span></label>
+                    <textarea name="message" rows="4" placeholder="Please describe your gifting needs, preferences, timeline, or any specific requirements..." required data-validation="message"></textarea>
+                    <span class="error-message" id="modal-message-error"></span>
                 </div>
                 <button type="submit" class="btn btn-primary btn-submit">Submit Request</button>
             </form>
