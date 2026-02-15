@@ -452,18 +452,48 @@ async function fetchGalleryImages(galleryPath) {
     },
     "images/catalogs/diaries/diaries": { pattern: "diaries", max: 74 },
     "images/catalogs/diaries/notebooks": { pattern: "sca notebooks", max: 48 },
-    "images/catalogs/keychains/keychains": { pattern: "keychains", max: 8 },
+    "images/catalogs/id cards/id cards": {
+      pattern: null,
+      max: 49,
+      extension: "png",
+      start: 0,
+    },
+    "images/catalogs/keychains/keychains 1": {
+      pattern: "keychains",
+      max: 8,
+    },
+    "images/catalogs/keychains/keychains 2": {
+      pattern: "keychains",
+      max: 20,
+    },
     "images/catalogs/mugs/mugs": { pattern: "aquabot mugs", max: 10 },
-    "images/catalogs/pens/pens": { pattern: "metal pen shah", max: 38 },
+    "images/catalogs/pens/metal pens": { pattern: "metal pen", max: 15 },
+    "images/catalogs/pens/metal pens 2": {
+      pattern: "metal pen shah",
+      max: 38,
+    },
+    "images/catalogs/pens/plastic pen": {
+      pattern: "plastic  pen",
+      max: 22,
+    },
   };
 
   const images = [];
   const config = galleryConfig[galleryPath];
 
   if (config) {
+    const {
+      pattern,
+      max,
+      extension = "jpg",
+      start = 1,
+      separator = "-",
+    } = config;
+
     // Use the specific naming pattern for this gallery
-    for (let i = 1; i <= config.max; i++) {
-      const imgPath = `${galleryPath}/${config.pattern}-${i}.jpg`;
+    for (let i = start; i <= max; i++) {
+      const baseName = pattern ? `${pattern}${separator}${i}` : `${i}`;
+      const imgPath = `${galleryPath}/${baseName}.${extension}`;
       images.push(imgPath);
     }
   } else {
