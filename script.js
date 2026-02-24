@@ -539,6 +539,9 @@ function showLightboxGallery(images, title) {
   document.body.appendChild(lightbox);
   document.body.style.overflow = "hidden";
 
+  // Add history state for back button support
+  history.pushState({ galleryOpen: true }, "", window.location.href);
+
   const closeBtn = lightbox.querySelector(".lightbox-close");
 
   // Keyboard navigation
@@ -550,8 +553,15 @@ function showLightboxGallery(images, title) {
   // Close lightbox
   function closeLightbox() {
     document.removeEventListener("keydown", handleKeyPress);
-    document.body.removeChild(lightbox);
+    if (document.body.contains(lightbox)) {
+      document.body.removeChild(lightbox);
+    }
     document.body.style.overflow = "auto";
+    
+    // Remove history state if gallery was closed manually
+    if (window.history.state && window.history.state.galleryOpen) {
+      history.back();
+    }
   }
 
   closeBtn.addEventListener("click", closeLightbox);
@@ -560,6 +570,21 @@ function showLightboxGallery(images, title) {
       closeLightbox();
     }
   });
+
+  // Handle back button press
+  function handlePopState(e) {
+    if (!e.state || !e.state.galleryOpen) {
+      // Back button was pressed, close the gallery
+      document.removeEventListener("keydown", handleKeyPress);
+      if (document.body.contains(lightbox)) {
+        document.body.removeChild(lightbox);
+      }
+      document.body.style.overflow = "auto";
+      window.removeEventListener("popstate", handlePopState);
+    }
+  }
+
+  window.addEventListener("popstate", handlePopState);
 }
 
 // Close mobile menu when clicking on regular links
