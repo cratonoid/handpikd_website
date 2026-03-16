@@ -2184,7 +2184,7 @@ h2 {
 }
 
 .blog-article {
-    max-width: 800px;
+    /* max-width: 800px; */
     background: var(--white);
     padding: 60px;
     border-radius: 15px;
