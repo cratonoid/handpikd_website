@@ -383,11 +383,205 @@
         }
         .edu-cta-band a:hover { background: var(--gold-light); }
 
+        /* GIFT CATEGORIES GRID */
+        .gift-categories {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin: 20px 0;
+        }
+        
+        .gift-category-item {
+            padding: 16px;
+            background: var(--parchment);
+            border-radius: 4px;
+        }
+        
+        .gift-category-item strong {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--ink);
+        }
+        
+        .gift-category-item p {
+            font-size: 0.9rem;
+            margin: 0;
+            color: #666;
+            line-height: 1.5;
+        }
+        
+        /* TIMELINE GRID */
+        .timeline-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 16px;
+            margin: 20px 0;
+        }
+        
+        .timeline-item {
+            padding: 20px;
+            text-align: center;
+            background: var(--parchment);
+            border-radius: 4px;
+            border-left: 3px solid var(--gold);
+        }
+        
+        .timeline-item strong {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--ink);
+        }
+        
+        .timeline-item p {
+            font-size: 0.9rem;
+            margin: 0;
+            color: #666;
+        }
+        
         @media (max-width: 680px) {
             .stat-row { grid-template-columns: 1fr; }
             .chapter-header { flex-direction: column; gap: 6px; }
             .chapter-num { font-size: 2.2rem; }
             .edu-cta-band { padding: 36px 22px; }
+            
+            /* Mobile grid optimizations */
+            .occasions-grid {
+                grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+                gap: 12px;
+            }
+            
+            .occasion-card {
+                padding: 14px 12px;
+            }
+            
+            .occasion-card h4 {
+                font-size: 0.85rem;
+                margin-bottom: 6px;
+            }
+            
+            .occasion-card p {
+                font-size: 0.75rem;
+                line-height: 1.4;
+                margin-bottom: 5px;
+            }
+            
+            .occasion-icon {
+                font-size: 1.2rem;
+                margin-bottom: 6px;
+            }
+            
+            .gift-categories {
+                grid-template-columns: 1fr 1fr;
+                gap: 12px;
+            }
+            
+            .gift-category-item {
+                padding: 12px 10px;
+            }
+            
+            .gift-category-item strong {
+                font-size: 0.9rem;
+            }
+            
+            .gift-category-item p {
+                font-size: 0.8rem;
+            }
+            
+            .timeline-grid {
+                grid-template-columns: 1fr;
+                gap: 12px;
+            }
+            
+            .timeline-item {
+                padding: 14px 12px;
+                border-left-width: 2px;
+            }
+            
+            .hero-sub {
+                font-size: 0.95rem;
+            }
+            
+            .edu-intro-strip h2 {
+                font-size: clamp(1.3rem, 2.5vw, 1.8rem);
+            }
+            
+            .chapter-header h2 {
+                font-size: 1.3rem;
+            }
+            
+            .chapter-header p {
+                font-size: 0.85rem;
+            }
+            
+            .stat-num {
+                font-size: 1.8rem;
+            }
+            
+            .stat-label {
+                font-size: 0.75rem;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .occasions-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 10px;
+            }
+            
+            .occasion-card {
+                padding: 12px 10px;
+            }
+            
+            .occasion-card h4 {
+                font-size: 0.8rem;
+            }
+            
+            .occasion-card p {
+                font-size: 0.7rem;
+            }
+            
+            .gift-categories {
+                grid-template-columns: 1fr;
+                gap: 10px;
+            }
+            
+            .gift-category-item {
+                padding: 12px 10px;
+            }
+            
+            .gift-category-item strong {
+                font-size: 0.85rem;
+            }
+            
+            .gift-category-item p {
+                font-size: 0.75rem;
+            }
+            
+            .chapter-num {
+                font-size: 1.8rem;
+            }
+            
+            .blog-hero-content h1 {
+                font-size: clamp(1.3rem, 4vw, 1.8rem);
+            }
+            
+            .hero-sub {
+                font-size: 0.9rem;
+                margin: 8px auto 0;
+            }
+            
+            .edu-cta-band h2 {
+                font-size: clamp(1.3rem, 3vw, 1.6rem);
+            }
+            
+            .edu-cta-band p {
+                font-size: 0.85rem;
+            }
+            
+            .edu-cta-band a {
+                padding: 11px 28px;
+                font-size: 0.75rem;
+            }
         }
     </style>
 </head>
@@ -437,10 +631,6 @@
         <div class="container">
             <article class="blog-article">
 
-                <div class="blog-intro">
-                    <p>From <strong>orientation week</strong> to <strong>alumni reunions</strong>, the right branded utility gifts keep your institution top of mind — long after the moment has passed. This complete guide answers every question educational institutions have about corporate gifting: why to do it, when to do it, what to give, and how to make every rupee count.</p>
-                </div>
-
                 <!-- INTRO STRIP -->
                 <div class="edu-intro-strip">
                     <p class="edu-eyebrow">The complete guide</p>
@@ -479,181 +669,197 @@
                         </div>
                     </div>
 
-                    <div class="faq-item">
-                        <button class="faq-question" onclick="toggleFaq(this)">
-                            <span class="faq-question-text">Why <strong>Branded Gifts</strong>?</span>
-                            <span class="faq-icon">+</span>
-                        </button>
-                        <div class="faq-answer">
-                            <ul>
-                                <li><strong>Quality Signal:</strong> A well-crafted <span class="kw">branded gift</span> communicates the same standards your institution stands for — <span class="kw">quality</span>, <span class="kw">thoughtfulness</span>, and <span class="kw">attention to detail</span></li>
-                                <li><strong>Physical Touchpoints:</strong> Your <span class="kw">reputation</span> is built in classrooms and labs, but reinforced in every <span class="kw">physical touchpoint</span> — mugs, notebooks, bottles</li>
-                                <li><strong>Alumni Engagement:</strong> Institutions with strong <span class="kw">gifting programmes</span> consistently report higher <span class="kw">alumni engagement</span> and donations</li>
-                                <li><strong>Recruiter Relationships:</strong> Quality gifts strengthen <span class="kw">recruiter relationships</span> and keep your institution top of mind during placement season</li>
-                                <li><strong>Word-of-Mouth:</strong> Students and parents who receive thoughtful gifts become <span class="kw">organic brand ambassadors</span>, driving better <span class="kw">word-of-mouth</span></li>
-                            </ul>
-                            <div class="highlight-box">
-                                Your brand lives on every mug on a recruiter's desk, every notebook in a faculty member's bag, every water bottle in a student's hand. That's reach no ad campaign can replicate.
-                            </div>
+                    <div class="occasions-grid" style="margin-top: 40px;">
+                        <div class="occasion-card">
+                            <h4 style="margin-bottom: 8px;">Brand Visibility</h4>
+                            <p>Every branded gift is a reminder of who you are and what you stand for.</p>
                         </div>
-                    </div>
-
-                    <div class="faq-item">
-                        <button class="faq-question" onclick="toggleFaq(this)">
-                            <span class="faq-question-text"><strong>Business Outcomes</strong> of Gifting</span>
-                            <span class="faq-icon">+</span>
-                        </button>
-                        <div class="faq-answer">
-                            <p>When done with intention, gifting delivers <span class="kw">measurable outcomes</span> across multiple institutional goals:</p>
-                            <ul>
-                                <li><strong>Brand Visibility:</strong> <span class="kw">Utility gifts</span> are used daily in offices, homes, and campuses, making your <span class="kw">logo part of people's routines</span></li>
-                                <li><strong>Admission Conversions:</strong> <span class="kw">Welcome gifts</span> to prospective students at open days leave a <span class="kw">tangible impression</span> that digital collateral cannot</li>
-                                <li><strong>Alumni Giving:</strong> Institutions with consistent <span class="kw">alumni engagement programmes</span> raise significantly more in donations</li>
-                                <li><strong>Industry Partnerships:</strong> <span class="kw">Corporate recruiters</span> and partner companies that receive quality gifts are more likely to <span class="kw">renew and deepen</span> the relationship</li>
-                                <li><strong>Faculty Retention:</strong> Feeling genuinely <span class="kw">appreciated</span> improves morale and loyalty; a meaningful gift says what a pay revision cannot</li>
-                                <li><strong>Institutional Prestige:</strong> Arriving at a <span class="kw">conference or MoU signing</span> with a curated gift kit signals a different calibre of institution</li>
-                            </ul>
+                        <div class="occasion-card">
+                            <h4 style="margin-bottom: 8px;">Boosts Motivation</h4>
+                            <p>Recognized people are inspired people.</p>
                         </div>
-                    </div>
-
-                    <div class="faq-item">
-                        <button class="faq-question" onclick="toggleFaq(this)">
-                            <span class="faq-question-text">Gifting on a <strong>Budget</strong></span>
-                            <span class="faq-icon">+</span>
-                        </button>
-                        <div class="faq-answer">
-                            <ul>
-                                <li><strong>Hidden Cost of Cutting:</strong> When you <span class="kw">stop gifting</span>, the cost doesn't disappear — it shifts to <span class="kw">weaker alumni networks</span>, <span class="kw">harder-to-close recruiter partnerships</span>, and <span class="kw">lower student satisfaction scores</span></li>
-                                <li><strong>Strategic Approach:</strong> The smarter move during <span class="kw">budget constraints</span> is to <span class="kw">gift more strategically</span> — fewer, <span class="kw">higher-quality gifts</span> to your highest-value stakeholders</li>
-                                <li><strong>Quality Over Quantity:</strong> Instead of high-volume, low-value items for everyone, focus on <span class="kw">impactful gifts</span> for the people who matter most</li>
-                            </ul>
-                            <div class="highlight-box">
-                                Handpikd specialises in helping institutions do more with their budget. We'll find the highest-impact gifts at the right price points — not the most expensive options.
-                            </div>
+                        <div class="occasion-card">
+                            <h4 style="margin-bottom: 8px;">Builds a Positive Culture</h4>
+                            <p>Appreciation is the foundation of a thriving institution.</p>
                         </div>
-                    </div>
-
-                    <div class="faq-item">
-                        <button class="faq-question" onclick="toggleFaq(this)">
-                            <span class="faq-question-text">Why <strong>Utility Gifts</strong>?</span>
-                            <span class="faq-icon">+</span>
-                        </button>
-                        <div class="faq-answer">
-                            <ul>
-                                <li><strong>Daily Usage:</strong> <span class="kw">Decorative gifts</span> get shelved and <span class="kw">novelty gifts</span> get forgotten — <span class="kw">utility gifts</span> get <em>used</em>, and every use is a brand impression</li>
-                                <li><strong>Massive Reach:</strong> A student using a <span class="kw">branded laptop bag</span> daily for three years generates <span class="kw">thousands of brand impressions</span> — on campus, in cafes, and in offices</li>
-                                <li><strong>Longevity:</strong> Utility gifts <span class="kw">survive the annual desk cleanout</span> and stay in circulation for years</li>
-                                <li><strong>Mobility:</strong> They <span class="kw">travel</span> — bags, bottles, and notebooks move through cities, offices, and homes</li>
-                                <li><strong>Relevance:</strong> They signal that you <span class="kw">understand what the recipient actually needs</span></li>
-                                <li><strong>Shareability:</strong> They're <span class="kw">shared</span> — a great pen gets borrowed; a useful tote bag gets noticed</li>
-                            </ul>
+                        <div class="occasion-card">
+                            <h4 style="margin-bottom: 8px;">Improves Staff Retention</h4>
+                            <p>People stay where they feel valued.</p>
+                        </div>
+                        <div class="occasion-card">
+                            <h4 style="margin-bottom: 8px;">Strengthens Relationships</h4>
+                            <p>A thoughtful gift turns connections into lasting bonds.</p>
+                        </div>
+                        <div class="occasion-card">
+                            <h4 style="margin-bottom: 8px;">Celebrates Milestones</h4>
+                            <p>Every achievement deserves a moment to shine.</p>
+                        </div>
+                        <div class="occasion-card">
+                            <h4 style="margin-bottom: 8px;">Enhances Institutional Reputation</h4>
+                            <p>Institutions that appreciate, attract.</p>
+                        </div>
+                        <div class="occasion-card">
+                            <h4 style="margin-bottom: 8px;">Encourages Healthy Competition</h4>
+                            <p>Recognition inspires others to rise to the occasion.</p>
+                        </div>
+                        <div class="occasion-card">
+                            <h4 style="margin-bottom: 8px;">Industry Partnerships</h4>
+                            <p>Meaningful gifts open doors to stronger corporate relationships.</p>
+                        </div>
+                        <div class="occasion-card">
+                            <h4 style="margin-bottom: 8px;">Admission Conversions</h4>
+                            <p>A memorable welcome gift can turn a prospect into a confirmed admission.</p>
                         </div>
                     </div>
                 </div>
 
 
                 <!-- ══════════════════════════════
-                     CHAPTER 2 — OCCASIONS
+                     CHAPTER 2 — WHEN & WHAT TO GIVE
                 ═══════════════════════════════════ -->
                 <div class="faq-chapter">
                     <div class="chapter-header">
                         <div class="chapter-num">02</div>
                         <div class="chapter-title-group">
-                            <h2>When Should Your Institution Gift?</h2>
-                            <p>Occasions that call for meaningful, branded utility gifts</p>
+                            <h2>When to Gift & What to Give</h2>
+                            <p>Event-by-event quick reference guide</p>
                         </div>
                     </div>
 
-                    <div class="faq-item">
-                        <button class="faq-question" onclick="toggleFaq(this)">
-                            <span class="faq-question-text">Best Gifting <strong>Occasions</strong></span>
-                            <span class="faq-icon">+</span>
-                        </button>
-                        <div class="faq-answer">
-                            <p>Educational institutions have a <span class="kw">rich calendar of natural gifting moments</span>. The key is identifying which <span class="kw">touchpoints</span> matter most to your brand — and choosing gifts that recipients will actually use.</p>
-                            <div class="occasions-grid">
-                                <div class="occasion-card">
-                                    <span class="occasion-icon">🎓</span>
-                                    <h4>Orientation & Welcome Kits</h4>
-                                    <p>First impressions for new students set the tone for four years of loyalty.</p>
-                                </div>
-                                <div class="occasion-card">
-                                    <span class="occasion-icon">🏆</span>
-                                    <h4>Convocation & Graduation</h4>
-                                    <p>A keepsake gift at graduation becomes a lifelong brand ambassador in the alumni world.</p>
-                                </div>
-                                <div class="occasion-card">
-                                    <span class="occasion-icon">🤝</span>
-                                    <h4>Industry & Campus Placements</h4>
-                                    <p>Impress visiting recruiters and celebrate placed students with quality gifts that reflect your institution's stature.</p>
-                                </div>
-                                <div class="occasion-card">
-                                    <span class="occasion-icon">👩‍🏫</span>
-                                    <h4>Teacher's Day & Faculty Felicitation</h4>
-                                    <p>Recognise your faculty with gifts that communicate genuine appreciation.</p>
-                                </div>
-                                <div class="occasion-card">
-                                    <span class="occasion-icon">🌐</span>
-                                    <h4>MoU Signings & Tie-ups</h4>
-                                    <p>A thoughtful gift at an institutional partnership signing elevates the professional relationship.</p>
-                                </div>
-                                <div class="occasion-card">
-                                    <span class="occasion-icon">🎉</span>
-                                    <h4>Annual Day & Fests</h4>
-                                    <p>Branded gifts at cultural or technical fests double as marketing collateral reaching thousands.</p>
-                                </div>
-                                <div class="occasion-card">
-                                    <span class="occasion-icon">📚</span>
-                                    <h4>Seminars & Guest Lectures</h4>
-                                    <p>Send distinguished speakers home with a brand reminder that lasts.</p>
-                                </div>
-                                <div class="occasion-card">
-                                    <span class="occasion-icon">🏅</span>
-                                    <h4>Sports Meets & Inter-college Events</h4>
-                                    <p>Reward winners and participants with gifts they'll use every day.</p>
-                                </div>
-                                <div class="occasion-card">
-                                    <span class="occasion-icon">🎁</span>
-                                    <h4>Festive Gifting (Diwali, New Year)</h4>
-                                    <p>Seasonal gifts to students, faculty, and institutional partners strengthen relationships year-round.</p>
-                                </div>
+                    <div class="occasions-grid" style="margin-top: 40px;">
+                        <div class="occasion-card">
+                            <span class="occasion-icon">🎓</span>
+                            <h4>Orientation & Welcome</h4>
+                            <p><strong>Recipients:</strong> Incoming students</p>
+                            <p><strong>Best Gifts:</strong> Pens, notebooks, water bottles, keychains</p>
+                            <p><strong>Budget:</strong> ₹100–₹300</p>
+                        </div>
+                        <div class="occasion-card">
+                            <span class="occasion-icon">🏆</span>
+                            <h4>Convocation & Graduation</h4>
+                            <p><strong>Recipients:</strong> Graduating students</p>
+                            <p><strong>Best Gifts:</strong> Premium notebooks, tumblers, wireless chargers</p>
+                            <p><strong>Budget:</strong> ₹700–₹1,500</p>
+                        </div>
+                        <div class="occasion-card">
+                            <span class="occasion-icon">🤝</span>
+                            <h4>Placements & Recruiters</h4>
+                            <p><strong>Recipients:</strong> Recruiters, placed students</p>
+                            <p><strong>Best Gifts:</strong> Bottles, pen sets, desk accessories</p>
+                            <p><strong>Budget:</strong> ₹300–₹3,500</p>
+                        </div>
+                        <div class="occasion-card">
+                            <span class="occasion-icon">👩‍🏫</span>
+                            <h4>Teacher's Day & Faculty</h4>
+                            <p><strong>Recipients:</strong> Faculty and staff</p>
+                            <p><strong>Best Gifts:</strong> Leather items, copper bottles, wellness sets</p>
+                            <p><strong>Budget:</strong> ₹700–₹1,500</p>
+                        </div>
+                        <div class="occasion-card">
+                            <span class="occasion-icon">🌐</span>
+                            <h4>MoU Signings & Partnerships</h4>
+                            <p><strong>Recipients:</strong> Corporate partners, officials</p>
+                            <p><strong>Best Gifts:</strong> Luxury sets, leather goods, executive hampers</p>
+                            <p><strong>Budget:</strong> ₹1,500–₹5,000+</p>
+                        </div>
+                        <div class="occasion-card">
+                            <span class="occasion-icon">🎉</span>
+                            <h4>Fests & Events</h4>
+                            <p><strong>Recipients:</strong> Participants, volunteers, winners</p>
+                            <p><strong>Best Gifts:</strong> T-shirts, caps, bottles, tote bags</p>
+                            <p><strong>Budget:</strong> ₹100–₹400</p>
+                        </div>
+                        <div class="occasion-card">
+                            <span class="occasion-icon">📚</span>
+                            <h4>Guest Lectures & Seminars</h4>
+                            <p><strong>Recipients:</strong> Expert speakers, visiting faculty</p>
+                            <p><strong>Best Gifts:</strong> Premium notebooks, pen sets, portfolios</p>
+                            <p><strong>Budget:</strong> ₹1,000–₹2,000</p>
+                        </div>
+                        <div class="occasion-card">
+                            <span class="occasion-icon">🏅</span>
+                            <h4>Sports & Inter-college</h4>
+                            <p><strong>Recipients:</strong> Winners, participants, teams</p>
+                            <p><strong>Best Gifts:</strong> Water bottles, earphones, apparel</p>
+                            <p><strong>Budget:</strong> ₹200–₹1,500</p>
+                        </div>
+                        <div class="occasion-card">
+                            <span class="occasion-icon">🎁</span>
+                            <h4>Festive Gifting</h4>
+                            <p><strong>Recipients:</strong> Students, faculty, alumni, recruiters</p>
+                            <p><strong>Best Gifts:</strong> Hampers, wellness kits, eco sets</p>
+                            <p><strong>Budget:</strong> ₹300–₹1,500</p>
+                        </div>
+                        <div class="occasion-card">
+                            <span class="occasion-icon">💼</span>
+                            <h4>Chief Guests & VIPs</h4>
+                            <p><strong>Recipients:</strong> Dignitaries, officials, board members</p>
+                            <p><strong>Best Gifts:</strong> Curated luxury sets, bespoke items</p>
+                            <p><strong>Budget:</strong> ₹2,500–₹5,000+</p>
+                        </div>
+                        <div class="occasion-card">
+                            <span class="occasion-icon">🎓</span>
+                            <h4>Alumni & Homecoming</h4>
+                            <p><strong>Recipients:</strong> Alumni, donors, class reps</p>
+                            <p><strong>Best Gifts:</strong> Commemorative items, premium sets</p>
+                            <p><strong>Budget:</strong> ₹500–₹2,000</p>
+                        </div>
+                        <div class="occasion-card">
+                            <span class="occasion-icon">👨‍👩‍👧‍👦</span>
+                            <h4>Parent Events & Admissions</h4>
+                            <p><strong>Recipients:</strong> Parents, prospective families</p>
+                            <p><strong>Best Gifts:</strong> Notebooks, pens, branded totes</p>
+                            <p><strong>Budget:</strong> ₹250–₹600</p>
+                        </div>
+                    </div>
+
+                    <div style="margin-top: 60px; padding: 20px 0; border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule);">
+                        <h3 style="text-align: center; margin-bottom: 24px; font-size: 1.2rem;">Popular Gift Categories</h3>
+                        <div class="gift-categories">
+                            <div class="gift-category-item">
+                                <strong>Drinkware</strong>
+                                <p>Tumblers, copper bottles, thermal flasks</p>
+                            </div>
+                            <div class="gift-category-item">
+                                <strong>Stationery</strong>
+                                <p>Notebooks, pens, desk organisers</p>
+                            </div>
+                            <div class="gift-category-item">
+                                <strong>Bags & Totes</strong>
+                                <p>Laptop bags, backpacks, eco-totes</p>
+                            </div>
+                            <div class="gift-category-item">
+                                <strong>Tech Accessories</strong>
+                                <p>Earphones, chargers, USB hubs</p>
+                            </div>
+                            <div class="gift-category-item">
+                                <strong>Apparel</strong>
+                                <p>T-shirts, caps, hoodies</p>
+                            </div>
+                            <div class="gift-category-item">
+                                <strong>Wellness</strong>
+                                <p>Hampers, fitness kits, aromatherapy</p>
                             </div>
                         </div>
                     </div>
 
-                    <div class="faq-item">
-                        <button class="faq-question" onclick="toggleFaq(this)">
-                            <span class="faq-question-text">Beyond <strong>Students</strong></span>
-                            <span class="faq-icon">+</span>
-                        </button>
-                        <div class="faq-answer">
-                            <p>Some of the <span class="kw">highest-value gifting</span> happens outside the student body entirely:</p>
-                            <ul>
-                                <li><strong>Faculty & Staff:</strong> <span class="kw">Appreciation gifts</span> and <span class="kw">milestone recognition</span> for years of service and departmental achievements</li>
-                                <li><strong>Recruiters & Partners:</strong> <span class="kw">Relationship-building</span> at placement fairs, MoU signings, and advisory board meetings</li>
-                                <li><strong>Government & Dignitaries:</strong> <span class="kw">Protocol gifts</span> for inauguration events, inspection visits, or chief guest appearances</li>
-                                <li><strong>Alumni:</strong> <span class="kw">Homecoming gifts</span>, reunion kits, or donor appreciation sets that deepen long-term engagement</li>
-                                <li><strong>Parents:</strong> <span class="kw">Welcome kits</span> at admission counselling events that signal the professionalism of your institution</li>
-                            </ul>
-                            <div class="highlight-box">
-                                Each audience segment calls for a different gifting approach. Handpikd helps you map the right product to the right person.
+                    <div style="margin-top: 40px;">
+                        <h3 style="text-align: center; margin-bottom: 24px; font-size: 1.2rem;">Planning Timeline</h3>
+                        <div class="timeline-grid">
+                            <div class="timeline-item">
+                                <strong>Standard Orders</strong>
+                                <p style="font-size: 0.9rem; color: #666;">3–4 weeks</p>
+                                <p>Custom branding, logo printing</p>
                             </div>
-                        </div>
-                    </div>
-
-                    <div class="faq-item">
-                        <button class="faq-question" onclick="toggleFaq(this)">
-                            <span class="faq-question-text">Planning <strong>Timeline</strong></span>
-                            <span class="faq-icon">+</span>
-                        </button>
-                        <div class="faq-answer">
-                            <ul>
-                                <li><strong>Standard Orders (3–4 weeks):</strong> For <span class="kw">large-batch orders</span> with <span class="kw">custom branding</span> — logo printing, embroidery, engraving</li>
-                                <li><strong>Premium Orders (6–8 weeks):</strong> For <span class="kw">premium products</span>, <span class="kw">packaging customisation</span>, or very large quantities (500+)</li>
-                                <li><strong>Last-Minute:</strong> Possible for select products, but <span class="kw">early planning</span> gives better product options, packaging design, and <span class="kw">competitive pricing</span> without a rush surcharge</li>
-                            </ul>
-                            <div class="highlight-box">
-                                Share your academic calendar with us once, and we'll proactively remind you before each major occasion so you're never caught unprepared.
+                            <div class="timeline-item">
+                                <strong>Premium Orders</strong>
+                                <p style="font-size: 0.9rem; color: #666;">6–8 weeks</p>
+                                <p>Premium products, packaging</p>
+                            </div>
+                            <div class="timeline-item">
+                                <strong>Last-Minute</strong>
+                                <p style="font-size: 0.9rem; color: #666;">Available</p>
+                                <p>Select products, higher pricing</p>
                             </div>
                         </div>
                     </div>
@@ -661,229 +867,48 @@
 
 
                 <!-- ══════════════════════════════
-                     CHAPTER 3 — WHAT TO GIVE
+                     CHAPTER 3 — WHY HANDPIKD
                 ═══════════════════════════════════ -->
                 <div class="faq-chapter">
                     <div class="chapter-header">
                         <div class="chapter-num">03</div>
                         <div class="chapter-title-group">
-                            <h2>What Should You Actually Give?</h2>
-                            <p>Matching the right product to the right moment and budget</p>
-                        </div>
-                    </div>
-
-                    <div class="faq-item">
-                        <button class="faq-question" onclick="toggleFaq(this)">
-                            <span class="faq-question-text">Popular <strong>Gift Categories</strong></span>
-                            <span class="faq-icon">+</span>
-                        </button>
-                        <div class="faq-answer">
-                            <p>The most effective categories are those encountered in the <span class="kw">everyday routine</span>:</p>
-                            <ul>
-                                <li><strong>Drinkware:</strong> <span class="kw">Branded tumblers</span>, copper bottles, and thermal flasks — <span class="kw">used daily, high visibility</span></li>
-                                <li><strong>Stationery & Notebooks:</strong> <span class="kw">Premium notebooks</span>, pen sets, and desk organisers — perfect for <span class="kw">academic audiences</span></li>
-                                <li><strong>Bags & Totes:</strong> Laptop bags, backpacks, and eco-totes — <span class="kw">high perceived value</span>, massive daily reach</li>
-                                <li><strong>Tech Accessories:</strong> USB hubs, branded earphones, charging pads — <span class="kw">high desirability</span> among students</li>
-                                <li><strong>Desk & Workspace:</strong> Mouse pads, sticky note sets, cable organisers — great for <span class="kw">faculty and corporate recipients</span></li>
-                                <li><strong>Apparel:</strong> Branded T-shirts, caps, and hoodies for <span class="kw">fests, sports, and student groups</span></li>
-                                <li><strong>Wellness:</strong> Fitness bands, aromatherapy kits, and <span class="kw">wellness hampers</span> for senior faculty appreciation</li>
-                            </ul>
-                            <div class="highlight-box">
-                                The best category depends on your audience, budget, and the occasion. That's exactly what Handpikd figures out for you.
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="faq-item">
-                        <button class="faq-question" onclick="toggleFaq(this)">
-                            <span class="faq-question-text"><strong>Budget</strong> Guide</span>
-                            <span class="faq-icon">+</span>
-                        </button>
-                        <div class="faq-answer">
-                            <ul>
-                                <li><strong>₹100–₹300:</strong> Branded pens, pocket notebooks, keychains, lanyards, small tote bags — ideal for <span class="kw">mass student events</span>, fests, orientation packs</li>
-                                <li><strong>₹300–₹700:</strong> Stainless steel bottles, premium notebooks, compact desk accessories, T-shirts — <span class="kw">placement welcome kits</span>, annual day</li>
-                                <li><strong>₹700–₹1,500:</strong> Thermal tumblers, laptop sleeves, wireless chargers, gift hampers — <span class="kw">convocation, faculty appreciation</span></li>
-                                <li><strong>₹1,500–₹3,500:</strong> Premium leather accessories, copper bottles, high-end notebook + pen combos — <span class="kw">MoU signings, chief guests, senior faculty</span></li>
-                                <li><strong>₹3,500+:</strong> Curated luxury gift sets, quality backpacks, smartwatches, executive hampers — <span class="kw">dignitaries, board members, top recruiters</span></li>
-                            </ul>
-                            <p>These are starting points — Handpikd will refine recommendations based on your <span class="kw">exact requirements</span>.</p>
-                        </div>
-                    </div>
-
-                    <div class="faq-item">
-                        <button class="faq-question" onclick="toggleFaq(this)">
-                            <span class="faq-question-text">Recipient <strong>Segmentation</strong></span>
-                            <span class="faq-icon">+</span>
-                        </button>
-                        <div class="faq-answer">
-                            <p><span class="kw">Segmentation</span> almost always delivers better results than a <span class="kw">one-size-fits-all approach</span>:</p>
-                            <ul>
-                                <li><strong>Students (Mass):</strong> <span class="kw">Volume-efficient, high-utility products</span> with strong visual branding</li>
-                                <li><strong>Top Achievers:</strong> Slightly elevated gifts that signal <span class="kw">genuine recognition</span></li>
-                                <li><strong>Faculty & Staff:</strong> <span class="kw">Quality over quantity</span>; products that feel premium and personal</li>
-                                <li><strong>Corporate Partners:</strong> <span class="kw">Curated, professional</span> gifts, ideally packaged in branded gift boxes</li>
-                                <li><strong>Dignitaries & VIPs:</strong> <span class="kw">Bespoke, handcrafted</span>, or heritage-inspired gifts that reflect institutional pride</li>
-                            </ul>
-                            <div class="highlight-box">
-                                You don't need a large budget to segment well — you need a smart partner. Handpikd helps you build a tiered gifting strategy that works within your constraints.
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="faq-item">
-                        <button class="faq-question" onclick="toggleFaq(this)">
-                            <span class="faq-question-text"><strong>Brand</strong> Alignment</span>
-                            <span class="faq-icon">+</span>
-                        </button>
-                        <div class="faq-answer">
-                            <p>A mismatched gift can actually <span class="kw">harm your brand perception</span>. Getting it right involves:</p>
-                            <ul>
-                                <li><strong>Materials & Finishes:</strong> Choose <span class="kw">materials and finishes</span> that reflect your institution's quality standard</li>
-                                <li><strong>Logo Placement:</strong> <span class="kw">Tasteful, well-placed logo application</span> — not overpowering the product</li>
-                                <li><strong>Packaging:</strong> <span class="kw">Branded or premium packaging</span> that enhances the unboxing experience</li>
-                                <li><strong>Colour Palette:</strong> A <span class="kw">consistent colour palette</span> aligned to your institution's visual identity</li>
-                                <li><strong>Personalisation:</strong> Optional <span class="kw">personalisation</span> — recipient names, batch years — for high-value moments like convocation</li>
-                            </ul>
-                            <p>Handpikd's team works through all of these details with you before a single item goes to production.</p>
-                        </div>
-                    </div>
-
-                    <div class="faq-item">
-                        <button class="faq-question" onclick="toggleFaq(this)">
-                            <span class="faq-question-text"><strong>Eco-Friendly</strong> Options</span>
-                            <span class="faq-icon">+</span>
-                        </button>
-                        <div class="faq-answer">
-                            <p><span class="kw">Student audiences</span> respond very positively to <span class="kw">sustainability signals</span>, and <span class="kw">eco-conscious gifting</span> aligns with institutional <span class="kw">CSR commitments</span>:</p>
-                            <ul>
-                                <li><strong>Bamboo & Wheat-Straw:</strong> <span class="kw">Bamboo or wheat-straw</span> stationery and drinkware</li>
-                                <li><strong>Recycled Materials:</strong> <span class="kw">Recycled material</span> notebooks and bags</li>
-                                <li><strong>Seed Paper:</strong> <span class="kw">Seed paper products</span> that grow into plants</li>
-                                <li><strong>Organic Fabrics:</strong> Reusable tote bags from <span class="kw">organic cotton or jute</span></li>
-                                <li><strong>Plant Kits:</strong> <span class="kw">Plant kits</span> or grow-your-own sets</li>
-                                <li><strong>Sustainable Packaging:</strong> Digital gift cards paired with <span class="kw">sustainable physical packaging</span></li>
-                            </ul>
-                            <p>Handpikd has a curated range of <span class="kw">verified eco-friendly options</span> — every product we classify as sustainable has a clear <span class="kw">material and production story</span>.</p>
-                        </div>
-                    </div>
-                </div>
-
-
-                <!-- ══════════════════════════════
-                     CHAPTER 4 — WHY HANDPIKD
-                ═══════════════════════════════════ -->
-                <div class="faq-chapter">
-                    <div class="chapter-header">
-                        <div class="chapter-num">04</div>
-                        <div class="chapter-title-group">
                             <h2>Why Choose Handpikd?</h2>
-                            <p>What makes us the right partner for your institution's gifting needs</p>
+                            <p>What makes us the right partner for your institution</p>
                         </div>
                     </div>
 
-                    <div class="faq-item">
-                        <button class="faq-question" onclick="toggleFaq(this)">
-                            <span class="faq-question-text">Why <strong>Handpikd</strong>?</span>
-                            <span class="faq-icon">+</span>
-                        </button>
-                        <div class="faq-answer">
-                            <p>Ordering directly from a vendor often means <span class="kw">generic products</span> and <span class="kw">inconsistent quality</span>. Handpikd is a <span class="kw">gifting consultancy</span>:</p>
-                            <ul>
-                                <li><strong>Vetted Suppliers:</strong> A curated network of <span class="kw">vetted suppliers</span> so you don't have to vet anyone</li>
-                                <li><strong>Quality Control:</strong> We manage <span class="kw">quality control</span> — what arrives matches what you approved</li>
-                                <li><strong>Logistics:</strong> We handle <span class="kw">logistics and delivery timelines</span> so your event day is stress-free</li>
-                                <li><strong>Full Experience:</strong> We think about the <span class="kw">entire gifting experience</span> — product, packaging, delivery — not just the item</li>
-                            </ul>
-                            <div class="highlight-box">
-                                The difference between a gift that gets used for years and one that ends up in a drawer often comes down to one thing: curation. That's what Handpikd does.
-                            </div>
+                    <div class="occasions-grid" style="margin-top: 40px;">
+                        <div class="occasion-card">
+                            <h4>Vetted Suppliers</h4>
+                            <p>A curated network of vetted suppliers and quality partners — we vet so you don't have to.</p>
+                        </div>
+                        <div class="occasion-card">
+                            <h4>Quality Control</h4>
+                            <p>Every item is inspected. What arrives matches what you approved — guaranteed.</p>
+                        </div>
+                        <div class="occasion-card">
+                            <h4>End-to-End Logistics</h4>
+                            <p>We handle delivery, timelines, and campus coordination — your event day is stress-free.</p>
+                        </div>
+                        <div class="occasion-card">
+                            <h4>Simple Process</h4>
+                            <p>Brief → Curated options → Approval → Delivery. Most institutions complete it in under a week.</p>
+                        </div>
+                        <div class="occasion-card">
+                            <h4>Flexible MOQs</h4>
+                            <p>From 10 units for VIPs to 5,000+ for mass events — we adapt to your scale.</p>
+                        </div>
+                        <div class="occasion-card">
+                            <h4>Pan-India Coverage</h4>
+                            <p>We work across metros, tier-2, and tier-3 cities with local sourcing for speed and cost.</p>
                         </div>
                     </div>
 
-                    <div class="faq-item">
-                        <button class="faq-question" onclick="toggleFaq(this)">
-                            <span class="faq-question-text">Our <strong>Process</strong></span>
-                            <span class="faq-icon">+</span>
-                        </button>
-                        <div class="faq-answer">
-                            <p>Designed to be <span class="kw">simple for your team</span> — we do the heavy lifting:</p>
-                            <ul>
-                                <li><strong>Brief:</strong> You share the <span class="kw">occasion, recipient profile, quantity, and budget</span>. A quick 20-minute call or a short form does it.</li>
-                                <li><strong>Curation:</strong> We come back with <span class="kw">2–3 curated options</span> per requirement — not a catalogue of 200 things.</li>
-                                <li><strong>Approval:</strong> You pick, we send <span class="kw">samples</span> if needed, and finalise <span class="kw">branding and packaging</span>.</li>
-                                <li><strong>Production & Delivery:</strong> We manage the <span class="kw">entire supply chain</span>. You get updates. Gifts arrive on time.</li>
-                                <li><strong>Review:</strong> We follow up to understand what worked. <span class="kw">Every order makes the next one better.</span></li>
-                            </ul>
-                            <p>Most institutions complete Brief to Approval in <span class="kw">under a week</span> for standard orders.</p>
-                        </div>
-                    </div>
-
-                    <div class="faq-item">
-                        <button class="faq-question" onclick="toggleFaq(this)">
-                            <span class="faq-question-text"><strong>Minimum</strong> Orders</span>
-                            <span class="faq-icon">+</span>
-                        </button>
-                        <div class="faq-answer">
-                            <p>Our <span class="kw">MOQs</span> are designed to be accessible for institutions of all sizes:</p>
-                            <ul>
-                                <li><strong>Standard Products:</strong> <strong>25–50 units</strong> minimum</li>
-                                <li><strong>Printed Stationery:</strong> <strong>50 units</strong> minimum</li>
-                                <li><strong>Premium & Bespoke:</strong> As low as <strong>10 units</strong></li>
-                                <li><strong>Mass Events:</strong> No upper limit — we've handled orders of <span class="kw">5,000+ units</span></li>
-                            </ul>
-                            <p>For very small batches (e.g. 10 gifts for a <span class="kw">VIP panel</span>), we have options specifically suited for <span class="kw">low-MOQ, high-quality gifting</span>.</p>
-                        </div>
-                    </div>
-
-                    <div class="faq-item">
-                        <button class="faq-question" onclick="toggleFaq(this)">
-                            <span class="faq-question-text"><strong>Pan-India</strong> Delivery</span>
-                            <span class="faq-icon">+</span>
-                        </button>
-                        <div class="faq-answer">
-                            <ul>
-                                <li><strong>National Coverage:</strong> We work with institutions <span class="kw">across India</span> — metros, <span class="kw">tier-2 and tier-3 cities</span></li>
-                                <li><strong>End-to-End Logistics:</strong> <span class="kw">Delivery and logistics are managed end-to-end</span> by our team</li>
-                                <li><strong>Local Sourcing:</strong> Our national supplier network lets us <span class="kw">source locally</span> to reduce timelines and costs</li>
-                                <li><strong>Campus Delivery:</strong> For large-volume orders, we offer <span class="kw">direct warehouse-to-campus delivery</span></li>
-                            </ul>
-                        </div>
-                    </div>
-
-                    <div class="faq-item">
-                        <button class="faq-question" onclick="toggleFaq(this)">
-                            <span class="faq-question-text"><strong>Year-Round</strong> Programme</span>
-                            <span class="faq-icon">+</span>
-                        </button>
-                        <div class="faq-answer">
-                            <p>An <span class="kw">annual gifting calendar</span> planned at the start of the year gives you:</p>
-                            <ul>
-                                <li><strong>Better Pricing:</strong> <span class="kw">Better pricing</span> through consolidated ordering and advance planning</li>
-                                <li><strong>Brand Consistency:</strong> A <span class="kw">consistent brand narrative</span> across all gifting touchpoints</li>
-                                <li><strong>Zero Scrambling:</strong> <span class="kw">Zero last-minute scrambling</span> before major events</li>
-                                <li><strong>Personalisation:</strong> Time to build in <span class="kw">personalisation and customisation</span> that rushed orders can't accommodate</li>
-                            </ul>
-                            <p>We offer <span class="kw">institutional retainer partnerships</span> where we become your <span class="kw">year-round gifting partner</span>.</p>
-                            <div class="highlight-box">
-                                Share your academic calendar with us and we'll draft a gifting plan — at no charge, with no obligation to proceed.
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="faq-item">
-                        <button class="faq-question" onclick="toggleFaq(this)">
-                            <span class="faq-question-text"><strong>Quality</strong> Guarantee</span>
-                            <span class="faq-icon">+</span>
-                        </button>
-                        <div class="faq-answer">
-                            <ul>
-                                <li><strong>Sample Approval:</strong> Before large orders go to production, we send <span class="kw">samples for your approval</span></li>
-                                <li><strong>Mockups & Proofs:</strong> For branding, we share <span class="kw">digital mockups and physical proofs</span> where needed</li>
-                                <li><strong>Resolution:</strong> If anything doesn't match approved specifications, we make it right — <span class="kw">replacement or refund</span></li>
-                                <li><strong>Track Record:</strong> Our reputation is built on <span class="kw">repeat institutional clients</span> — that only happens when every order is right</li>
-                            </ul>
-                        </div>
+                    <div style="margin-top: 60px; padding: 40px 30px; background: var(--gold-pale); border-radius: 6px; border-left: 4px solid var(--gold); text-align: center;">
+                        <h3 style="margin-bottom: 16px; font-size: 1.1rem; color: var(--ink);">Year-Round Gifting Programme</h3>
+                        <p style="margin-bottom: 16px; color: #555;">Share your academic calendar once. We'll draft your annual gifting plan, remind you before each occasion, and deliver consistent brand experience across all touchpoints.</p>
+                        <p style="font-size: 0.9rem; font-style: italic; color: #666;">Better pricing • Brand consistency • Zero scrambling • Full personalisation</p>
                     </div>
                 </div>
 
