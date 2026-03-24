@@ -524,20 +524,21 @@
         
         @media (max-width: 480px) {
             .occasions-grid {
-                grid-template-columns: repeat(2, 1fr);
+                grid-template-columns: 1fr;
                 gap: 10px;
             }
             
             .occasion-card {
-                padding: 12px 10px;
+                padding: 14px 12px;
             }
             
             .occasion-card h4 {
-                font-size: 0.8rem;
+                font-size: 0.95rem;
             }
             
             .occasion-card p {
-                font-size: 0.7rem;
+                font-size: 0.85rem;
+                line-height: 1.5;
             }
             
             .gift-categories {
@@ -546,15 +547,32 @@
             }
             
             .gift-category-item {
-                padding: 12px 10px;
+                padding: 14px 12px;
             }
             
             .gift-category-item strong {
-                font-size: 0.85rem;
+                font-size: 0.95rem;
             }
             
             .gift-category-item p {
-                font-size: 0.75rem;
+                font-size: 0.85rem;
+            }
+            
+            .timeline-grid {
+                grid-template-columns: 1fr;
+                gap: 10px;
+            }
+            
+            .timeline-item {
+                padding: 16px 12px;
+            }
+            
+            .timeline-item strong {
+                font-size: 0.95rem;
+            }
+            
+            .timeline-item p {
+                font-size: 0.85rem;
             }
             
             .chapter-num {
@@ -562,25 +580,27 @@
             }
             
             .blog-hero-content h1 {
-                font-size: clamp(1.3rem, 4vw, 1.8rem);
+                font-size: clamp(1.4rem, 4vw, 1.8rem);
             }
             
             .hero-sub {
-                font-size: 0.9rem;
+                font-size: 0.95rem;
                 margin: 8px auto 0;
+                line-height: 1.6;
             }
             
             .edu-cta-band h2 {
-                font-size: clamp(1.3rem, 3vw, 1.6rem);
+                font-size: clamp(1.4rem, 3vw, 1.8rem);
             }
             
             .edu-cta-band p {
-                font-size: 0.85rem;
+                font-size: 0.9rem;
+                line-height: 1.6;
             }
             
             .edu-cta-band a {
-                padding: 11px 28px;
-                font-size: 0.75rem;
+                padding: 12px 28px;
+                font-size: 0.8rem;
             }
         }
     </style>
