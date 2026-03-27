@@ -292,7 +292,8 @@
         /* OCCASIONS GRID */
         .occasions-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(220px, 240px));
+            justify-content: center;
             gap: 14px;
             margin: 24px 0 14px;
         }
@@ -303,6 +304,8 @@
             border-radius: 4px;
             padding: 18px 16px;
             text-align: center;
+            max-width: 240px;
+            width: 100%;
         }
 
         .occasion-icon {
@@ -319,12 +322,31 @@
             margin-bottom: 5px;
         }
 
+        .occasion-card p,
+        .occasion-card ul,
+        .occasion-card ul li {
+            font-family: 'Poppins', sans-serif;
+            color: #666;
+        }
+
         .occasion-card p {
             font-size: 0.8rem;
-            color: #666;
             line-height: 1.5;
             margin: 0;
-            font-family: 'Poppins', sans-serif;
+        }
+
+        .occasion-card ul {
+            text-align: left;
+            margin: 6px auto 0;
+            padding-left: 18px;
+            list-style: disc;
+            max-width: 100%;
+        }
+
+        .occasion-card ul li {
+            font-size: 0.8rem;
+            line-height: 1.5;
+            margin-bottom: 5px;
         }
 
         /* CTA BAND */
@@ -382,6 +404,32 @@
             font-family: 'Poppins', sans-serif;
         }
         .edu-cta-band a:hover { background: var(--gold-light); }
+
+        .section-cta {
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .section-cta a {
+            display: inline-block;
+            background: var(--gold);
+            color: var(--ink);
+            text-decoration: none;
+            font-size: 0.82rem;
+            font-weight: 600;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            padding: 10px 22px;
+            border-radius: 2px;
+            transition: background .2s;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .section-cta a:hover { background: var(--gold-light); }
+
+        @media (max-width: 480px) {
+            .section-cta a { padding: 8px 18px; font-size: 0.8rem; }
+        }
 
         /* GIFT CATEGORIES GRID */
         .gift-categories {
@@ -446,12 +494,15 @@
             
             /* Mobile grid optimizations */
             .occasions-grid {
-                grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+                grid-template-columns: repeat(auto-fit, minmax(160px, 220px));
+                justify-content: center;
                 gap: 12px;
             }
             
             .occasion-card {
                 padding: 14px 12px;
+                max-width: 220px;
+                width: 100%;
             }
             
             .occasion-card h4 {
@@ -530,6 +581,8 @@
             
             .occasion-card {
                 padding: 14px 12px;
+                max-width: none;
+                width: 100%;
             }
             
             .occasion-card h4 {
@@ -635,9 +688,8 @@
         <div class="hero-overlay"></div>
         <div class="container">
             <div class="blog-hero-content">
-                <a href="blogs-list" class="back-link">← Back to Blogs</a>
-                <h1>Make Everyone Who Walks Through Your Doors Feel Recognised &amp; Valued.</h1>
-                <p class="hero-sub">Gifts that say "We're glad you're here" — without saying a word. Turn every occasion into a brand moment with gifts that make every guest, student, and faculty member feel truly valued.</p>
+                <h1>Why Educational Institutions Are Rethinking Corporate Gifting</h1>
+                <p class="hero-sub">Branded utility gifts turn every occasion into a lasting brand moment — for every guest, student, and faculty member who receives them.</p>
                 <div class="blog-meta">
                     <span class="blog-date">March 2026</span>
                     <span class="blog-category">Institutional Gifting</span>
@@ -650,31 +702,6 @@
     <section class="blog-content-section">
         <div class="container">
             <article class="blog-article">
-
-                <!-- INTRO STRIP -->
-                <div class="edu-intro-strip">
-                    <p class="edu-eyebrow">The complete guide</p>
-                    <h2>Why Educational Institutions Are Rethinking Corporate Gifting</h2>
-                    <p>Branded utility gifts turn every occasion into a <strong>lasting brand moment</strong> — for every guest, student, and faculty member who receives them.</p>
-                </div>
-
-                <div class="rule-divider"><span>At a glance</span></div>
-
-                <!-- STATS -->
-                <div class="stat-row">
-                    <div class="stat-cell">
-                        <div class="stat-num">79%</div>
-                        <div class="stat-label">recall the brand on a promo gift received</div>
-                    </div>
-                    <div class="stat-cell">
-                        <div class="stat-num">6×</div>
-                        <div class="stat-label">more impressions than digital ads</div>
-                    </div>
-                    <div class="stat-cell">
-                        <div class="stat-num">83%</div>
-                        <div class="stat-label">more likely to engage after a thoughtful gift</div>
-                    </div>
-                </div>
 
 
                 <!-- ══════════════════════════════
@@ -691,46 +718,60 @@
 
                     <div class="occasions-grid" style="margin-top: 40px;">
                         <div class="occasion-card">
+                            <span class="occasion-icon">🎯</span>
                             <h4 style="margin-bottom: 8px;">Brand Visibility</h4>
                             <p>Every branded gift is a reminder of who you are and what you stand for.</p>
                         </div>
                         <div class="occasion-card">
+                            <span class="occasion-icon">🚀</span>
                             <h4 style="margin-bottom: 8px;">Boosts Motivation</h4>
                             <p>Recognized people are inspired people.</p>
                         </div>
                         <div class="occasion-card">
+                            <span class="occasion-icon">🌱</span>
                             <h4 style="margin-bottom: 8px;">Builds a Positive Culture</h4>
                             <p>Appreciation is the foundation of a thriving institution.</p>
                         </div>
                         <div class="occasion-card">
+                            <span class="occasion-icon">🤝</span>
                             <h4 style="margin-bottom: 8px;">Improves Staff Retention</h4>
                             <p>People stay where they feel valued.</p>
                         </div>
                         <div class="occasion-card">
+                            <span class="occasion-icon">🔗</span>
                             <h4 style="margin-bottom: 8px;">Strengthens Relationships</h4>
                             <p>A thoughtful gift turns connections into lasting bonds.</p>
                         </div>
                         <div class="occasion-card">
+                            <span class="occasion-icon">🏅</span>
                             <h4 style="margin-bottom: 8px;">Celebrates Milestones</h4>
                             <p>Every achievement deserves a moment to shine.</p>
                         </div>
                         <div class="occasion-card">
+                            <span class="occasion-icon">🏛️</span>
                             <h4 style="margin-bottom: 8px;">Enhances Institutional Reputation</h4>
                             <p>Institutions that appreciate, attract.</p>
                         </div>
                         <div class="occasion-card">
+                            <span class="occasion-icon">🏆</span>
                             <h4 style="margin-bottom: 8px;">Encourages Healthy Competition</h4>
                             <p>Recognition inspires others to rise to the occasion.</p>
                         </div>
                         <div class="occasion-card">
+                            <span class="occasion-icon">🌐</span>
                             <h4 style="margin-bottom: 8px;">Industry Partnerships</h4>
                             <p>Meaningful gifts open doors to stronger corporate relationships.</p>
                         </div>
                         <div class="occasion-card">
+                            <span class="occasion-icon">🎓</span>
                             <h4 style="margin-bottom: 8px;">Admission Conversions</h4>
                             <p>A memorable welcome gift can turn a prospect into a confirmed admission.</p>
                         </div>
                     </div>
+                </div>
+
+                <div class="section-cta">
+                    <a href="/#contact">Get your plan →</a>
                 </div>
 
 
@@ -863,26 +904,10 @@
                         </div>
                     </div>
 
-                    <div style="margin-top: 40px;">
-                        <h3 style="text-align: center; margin-bottom: 24px; font-size: 1.2rem;">Planning Timeline</h3>
-                        <div class="timeline-grid">
-                            <div class="timeline-item">
-                                <strong>Standard Orders</strong>
-                                <p style="font-size: 0.9rem; color: #666;">3–4 weeks</p>
-                                <p>Custom branding, logo printing</p>
-                            </div>
-                            <div class="timeline-item">
-                                <strong>Premium Orders</strong>
-                                <p style="font-size: 0.9rem; color: #666;">6–8 weeks</p>
-                                <p>Premium products, packaging</p>
-                            </div>
-                            <div class="timeline-item">
-                                <strong>Last-Minute</strong>
-                                <p style="font-size: 0.9rem; color: #666;">Available</p>
-                                <p>Select products, higher pricing</p>
-                            </div>
-                        </div>
-                    </div>
+                </div>
+
+                <div class="section-cta">
+                    <a href="/#contact">Talk to an expert →</a>
                 </div>
 
 
@@ -900,28 +925,52 @@
 
                     <div class="occasions-grid" style="margin-top: 40px;">
                         <div class="occasion-card">
+                            <span class="occasion-icon">🛡️</span>
                             <h4>Vetted Suppliers</h4>
-                            <p>A curated network of vetted suppliers and quality partners — we vet so you don't have to.</p>
+                            <ul style="text-align:left; margin: 0 auto 8px; display:inline-block; padding-left: 18px;">
+                                <li>A curated network of vetted suppliers and quality partners</li>
+                                <li>We vet so you don't have to</li>
+                            </ul>
                         </div>
                         <div class="occasion-card">
+                            <span class="occasion-icon">✅</span>
                             <h4>Quality Control</h4>
-                            <p>Every item is inspected. What arrives matches what you approved — guaranteed.</p>
+                            <ul style="text-align:left; margin: 0 auto 8px; display:inline-block; padding-left: 18px;">
+                                <li>Every item is inspected</li>
+                                <li>What arrives matches what you approved — guaranteed</li>
+                            </ul>
                         </div>
                         <div class="occasion-card">
+                            <span class="occasion-icon">🚚</span>
                             <h4>End-to-End Logistics</h4>
-                            <p>We handle delivery, timelines, and campus coordination — your event day is stress-free.</p>
+                            <ul style="text-align:left; margin: 0 auto 8px; display:inline-block; padding-left: 18px;">
+                                <li>We handle delivery, timelines, and campus coordination</li>
+                                <li>Your event day is stress-free</li>
+                            </ul>
                         </div>
                         <div class="occasion-card">
+                            <span class="occasion-icon">⚙️</span>
                             <h4>Simple Process</h4>
-                            <p>Brief → Curated options → Approval → Delivery. Most institutions complete it in under a week.</p>
+                            <ul style="text-align:left; margin: 0 auto 8px; display:inline-block; padding-left: 18px;">
+                                <li>Brief → Curated options → Approval → Delivery</li>
+                                <li>Most institutions complete it in under a week</li>
+                            </ul>
                         </div>
                         <div class="occasion-card">
+                            <span class="occasion-icon">📦</span>
                             <h4>Flexible MOQs</h4>
-                            <p>From 10 units for VIPs to 5,000+ for mass events — we adapt to your scale.</p>
+                            <ul style="text-align:left; margin: 0 auto 8px; display:inline-block; padding-left: 18px;">
+                                <li>From 10 units for VIPs to 5,000+ for mass events</li>
+                                <li>We adapt to your scale</li>
+                            </ul>
                         </div>
                         <div class="occasion-card">
+                            <span class="occasion-icon">🇮🇳</span>
                             <h4>Pan-India Coverage</h4>
-                            <p>We work across metros, tier-2, and tier-3 cities with local sourcing for speed and cost.</p>
+                            <ul style="text-align:left; margin: 0 auto 8px; display:inline-block; padding-left: 18px;">
+                                <li>We work across metros, tier-2, and tier-3 cities</li>
+                                <li>Local sourcing for speed and cost</li>
+                            </ul>
                         </div>
                     </div>
 
@@ -932,13 +981,55 @@
                     </div>
                 </div>
 
+                <div class="section-cta">
+                    <a href="/#contact">Get estimate →</a>
+                </div>
+
+                <div style="margin-top: 40px;">
+                    <h3 style="text-align: center; margin-bottom: 24px; font-size: 1.2rem;">Planning Timeline</h3>
+                    <div class="timeline-grid">
+                        <div class="timeline-item">
+                            <strong>Standard Orders</strong>
+                            <p style="font-size: 0.9rem; color: #666;">3–4 weeks</p>
+                            <p>Custom branding, logo printing</p>
+                        </div>
+                        <div class="timeline-item">
+                            <strong>Premium Orders</strong>
+                            <p style="font-size: 0.9rem; color: #666;">6–8 weeks</p>
+                            <p>Premium products, packaging</p>
+                        </div>
+                        <div class="timeline-item">
+                            <strong>Last-Minute</strong>
+                            <p style="font-size: 0.9rem; color: #666;">Available</p>
+                            <p>Select products, higher pricing</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="rule-divider"><span>At a glance</span></div>
+
+                <!-- STATS -->
+                <div class="stat-row">
+                    <div class="stat-cell">
+                        <div class="stat-num">79%</div>
+                        <div class="stat-label">recall the brand on a promo gift received</div>
+                    </div>
+                    <div class="stat-cell">
+                        <div class="stat-num">6×</div>
+                        <div class="stat-label">more impressions than digital ads</div>
+                    </div>
+                    <div class="stat-cell">
+                        <div class="stat-num">83%</div>
+                        <div class="stat-label">more likely to engage after a thoughtful gift</div>
+                    </div>
+                </div>
+
                 <!-- CTA BAND -->
                 <div class="edu-cta-band">
                     <h2>Ready to Make Your Institution Unforgettable?</h2>
                     <p>Tell us about your next event or your annual gifting needs. We'll come back with curated ideas — no catalogue browsing required.</p>
                     <a href="/#contact">Get a Free Consultation →</a>
                 </div>
-
             </article>
 
             <aside class="related-articles">
