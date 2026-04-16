@@ -1,0 +1,778 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Price Calculator — HANDPIKD Admin</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --brand:   #1a1a2e;
+      --accent:  #e8b04b;
+      --accent2: #c49a3c;
+      --bg:      #f5f5f0;
+      --card:    #ffffff;
+      --border:  #e0ddd5;
+      --text:    #2c2c2c;
+      --muted:   #888;
+      --danger:  #d64545;
+      --radius:  10px;
+    }
+
+    body {
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    /* ────────────────────────────────────────
+       LOCK SCREEN
+    ──────────────────────────────────────── */
+    #lock-screen {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      background: var(--brand);
+    }
+
+    .lock-card {
+      background: #fff;
+      border-radius: 16px;
+      padding: 44px 40px 36px;
+      width: 100%;
+      max-width: 380px;
+      box-shadow: 0 20px 60px rgba(0,0,0,.35);
+      text-align: center;
+    }
+
+    .lock-logo {
+      font-size: 1.6rem;
+      font-weight: 800;
+      letter-spacing: 2px;
+      color: var(--brand);
+      margin-bottom: 4px;
+    }
+
+    .lock-sub {
+      font-size: .8rem;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 32px;
+    }
+
+    .lock-icon {
+      width: 54px;
+      height: 54px;
+      background: #f5f3ec;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 20px;
+    }
+
+    .lock-card h2 {
+      font-size: 1.1rem;
+      color: var(--brand);
+      margin-bottom: 6px;
+    }
+
+    .lock-card p {
+      font-size: .85rem;
+      color: var(--muted);
+      margin-bottom: 28px;
+    }
+
+    .pass-field {
+      position: relative;
+      margin-bottom: 18px;
+    }
+
+    .pass-field input {
+      width: 100%;
+      border: 2px solid var(--border);
+      border-radius: 8px;
+      padding: 13px 44px 13px 16px;
+      font-size: 1rem;
+      color: var(--text);
+      transition: border-color .2s, box-shadow .2s;
+      letter-spacing: .1em;
+    }
+
+    .pass-field input:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 4px rgba(232,176,75,.15);
+    }
+
+    .pass-field input.error {
+      border-color: var(--danger);
+      box-shadow: 0 0 0 4px rgba(214,69,69,.12);
+    }
+
+    .toggle-pass {
+      position: absolute;
+      right: 13px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: var(--muted);
+      padding: 4px;
+      line-height: 0;
+    }
+    .toggle-pass:hover { color: var(--brand); }
+
+    .error-msg {
+      color: var(--danger);
+      font-size: .82rem;
+      margin-bottom: 14px;
+      display: none;
+    }
+    .error-msg.visible { display: block; }
+
+    .unlock-btn {
+      width: 100%;
+      background: var(--brand);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 14px;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      letter-spacing: .5px;
+      transition: background .2s, transform .1s;
+    }
+    .unlock-btn:hover { background: #2a2a45; }
+    .unlock-btn:active { transform: scale(.98); }
+    .unlock-btn:disabled { opacity: .6; cursor: not-allowed; }
+
+    /* ────────────────────────────────────────
+       MAIN APP (hidden until unlocked)
+    ──────────────────────────────────────── */
+    #app { display: none; }
+
+    header {
+      background: var(--brand);
+      color: #fff;
+      padding: 18px 32px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      box-shadow: 0 2px 8px rgba(0,0,0,.25);
+    }
+    header h1 { font-size: 1.3rem; font-weight: 700; letter-spacing: 1px; }
+    header span { font-size: .85rem; color: var(--accent); font-weight: 500; margin-left: auto; }
+
+    .container { max-width: 960px; margin: 0 auto; padding: 28px 20px 60px; }
+
+    .page-title { font-size: 1.4rem; font-weight: 700; margin-bottom: 6px; color: var(--brand); }
+    .page-subtitle { color: var(--muted); font-size: .9rem; margin-bottom: 28px; }
+
+    #items-list { display: flex; flex-direction: column; gap: 20px; }
+
+    .item-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      box-shadow: 0 2px 6px rgba(0,0,0,.06);
+    }
+
+    .item-header {
+      background: var(--brand);
+      color: #fff;
+      padding: 12px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-weight: 600;
+      font-size: .95rem;
+    }
+    .item-header .item-num { color: var(--accent); margin-right: 8px; }
+
+    .remove-btn {
+      background: rgba(255,255,255,.12);
+      border: 1px solid rgba(255,255,255,.25);
+      color: #fff;
+      border-radius: 6px;
+      padding: 4px 12px;
+      cursor: pointer;
+      font-size: .8rem;
+      transition: background .2s;
+    }
+    .remove-btn:hover { background: var(--danger); border-color: var(--danger); }
+
+    .item-body { padding: 20px; }
+    .row { display: flex; flex-wrap: wrap; gap: 16px; margin-bottom: 16px; }
+    .row:last-child { margin-bottom: 0; }
+    .field { display: flex; flex-direction: column; gap: 6px; flex: 1 1 180px; }
+
+    label {
+      font-size: .8rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: .5px;
+      color: var(--muted);
+    }
+
+    input[type="number"], select {
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 9px 12px;
+      font-size: .95rem;
+      color: var(--text);
+      background: #fafaf8;
+      width: 100%;
+      transition: border-color .2s, box-shadow .2s;
+    }
+    input[type="number"]:focus, select:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(232,176,75,.15);
+    }
+
+    .multiselect-wrap {
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      background: #fafaf8;
+      padding: 9px 12px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 14px;
+    }
+    .multiselect-wrap label {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: .9rem;
+      font-weight: 500;
+      text-transform: none;
+      letter-spacing: 0;
+      color: var(--text);
+      cursor: pointer;
+    }
+    .multiselect-wrap input[type="checkbox"] {
+      width: 16px; height: 16px; accent-color: var(--accent); cursor: pointer;
+    }
+
+    .box-print-row { display: none; }
+    .box-print-row.visible { display: flex; }
+
+    .info-tag {
+      display: inline-block;
+      background: #fff8e7;
+      border: 1px solid #f0d080;
+      color: #7a5c00;
+      border-radius: 20px;
+      padding: 4px 12px;
+      font-size: .78rem;
+      font-weight: 600;
+    }
+
+    .item-result {
+      margin-top: 16px;
+      background: #f8f7f2;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 14px 16px;
+      font-size: .88rem;
+    }
+    .item-result table { width: 100%; border-collapse: collapse; }
+    .item-result td { padding: 3px 0; }
+    .item-result td:last-child { text-align: right; font-weight: 600; }
+    .item-result .total-row td {
+      border-top: 1px solid var(--border);
+      padding-top: 8px;
+      color: var(--brand);
+      font-weight: 700;
+      font-size: .95rem;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 11px 22px;
+      border-radius: 8px;
+      border: none;
+      font-size: .95rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background .2s, transform .1s;
+    }
+    .btn:active { transform: scale(.97); }
+    .btn-primary { background: var(--accent); color: #1a1a2e; }
+    .btn-primary:hover { background: var(--accent2); }
+    .btn-outline { background: transparent; border: 2px solid var(--brand); color: var(--brand); }
+    .btn-outline:hover { background: var(--brand); color: #fff; }
+
+    .actions { display: flex; gap: 14px; flex-wrap: wrap; margin-top: 24px; }
+
+    #summary {
+      margin-top: 36px;
+      background: var(--brand);
+      color: #fff;
+      border-radius: var(--radius);
+      padding: 28px 28px 24px;
+      box-shadow: 0 4px 16px rgba(0,0,0,.18);
+    }
+    #summary h2 {
+      font-size: 1.1rem;
+      margin-bottom: 18px;
+      color: var(--accent);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      border-bottom: 1px solid rgba(255,255,255,.12);
+      padding-bottom: 10px;
+    }
+    .summary-table { width: 100%; border-collapse: collapse; }
+    .summary-table td { padding: 7px 0; font-size: .95rem; }
+    .summary-table td:last-child { text-align: right; font-weight: 600; }
+    .summary-divider td { border-top: 1px solid rgba(255,255,255,.18); padding-top: 14px; }
+    .summary-total td { font-size: 1.2rem; font-weight: 800; color: var(--accent); padding-top: 10px; }
+    .muted-label { color: rgba(255,255,255,.6); font-size: .83rem; }
+
+    .empty-state { text-align: center; padding: 40px 20px; color: var(--muted); font-size: .95rem; }
+
+    @media (max-width: 600px) {
+      /* Lock screen */
+      #lock-screen { align-items: flex-start; padding-top: 40px; }
+      .lock-card { padding: 28px 20px 24px; margin: 16px; border-radius: 12px; }
+      .lock-logo { font-size: 1.3rem; }
+      .lock-sub { margin-bottom: 20px; }
+      .lock-icon { width: 44px; height: 44px; margin-bottom: 14px; }
+      .lock-card h2 { font-size: 1rem; }
+      .lock-card p { font-size: .82rem; margin-bottom: 18px; }
+
+      /* Header */
+      header { padding: 12px 14px; }
+      header h1 { font-size: 1.1rem; }
+      header span { font-size: .75rem; }
+
+      /* Container */
+      .container { padding: 14px 10px 40px; }
+      .page-title { font-size: 1.15rem; margin-bottom: 4px; }
+      .page-subtitle { font-size: .82rem; margin-bottom: 16px; }
+
+      /* Item list */
+      #items-list { gap: 12px; }
+      .item-body { padding: 12px; }
+      .row { gap: 10px; margin-bottom: 10px; flex-direction: column; }
+      .field { flex: 1 1 100%; }
+
+      /* Two-column grid for compact numeric fields */
+      .row.two-col { display: grid; grid-template-columns: 1fr 1fr; flex-direction: unset; }
+      .row.two-col .field { flex: unset; }
+
+      input[type="number"], select { padding: 8px 10px; font-size: .9rem; }
+      .multiselect-wrap { padding: 8px 10px; gap: 16px; }
+
+      /* Item result table */
+      .item-result { padding: 10px 12px; font-size: .82rem; margin-top: 10px; }
+      .item-result td { padding: 2px 0; }
+      .item-result td:first-child { padding-right: 8px; }
+
+      /* Actions */
+      .actions { margin-top: 14px; gap: 10px; }
+      .btn { padding: 10px 16px; font-size: .88rem; }
+
+      /* Summary */
+      #summary { margin-top: 20px; padding: 16px 14px 14px; border-radius: 8px; }
+      #summary h2 { font-size: .95rem; margin-bottom: 12px; padding-bottom: 8px; }
+      .summary-table td { padding: 5px 0; font-size: .88rem; }
+      .summary-total td { font-size: 1.05rem; }
+
+      /* Empty state */
+      .empty-state { padding: 24px 16px; font-size: .88rem; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ════════════════════════════════════════
+     LOCK SCREEN
+═════════════════════════════════════════ -->
+<div id="lock-screen">
+  <div class="lock-card">
+    <div class="lock-logo">HANDPIKD</div>
+    <div class="lock-sub">Admin Area</div>
+
+    <div class="lock-icon">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#1a1a2e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+        <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+      </svg>
+    </div>
+
+    <h2>Access Required</h2>
+    <p>Enter the admin passkey to continue.</p>
+
+    <div class="pass-field">
+      <input type="password" id="passkey-input" placeholder="Enter passkey"
+        autocomplete="current-password" onkeydown="if(event.key==='Enter')unlock()">
+      <button class="toggle-pass" type="button" onclick="togglePass()" aria-label="Show/hide passkey">
+        <svg id="eye-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+          <circle cx="12" cy="12" r="3"/>
+        </svg>
+      </button>
+    </div>
+
+    <div class="error-msg" id="error-msg">Incorrect passkey. Please try again.</div>
+
+    <button class="unlock-btn" id="unlock-btn" onclick="unlock()">Unlock</button>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════
+     MAIN APP
+═════════════════════════════════════════ -->
+<div id="app">
+  <header>
+    <h1>HANDPIKD</h1>
+    <span>Price Calculator &nbsp;·&nbsp; Admin Tool</span>
+  </header>
+
+  <div class="container">
+    <div class="page-title">Vendor Quotation Calculator</div>
+    <div class="page-subtitle">Calculate final client quotation price including printing, GST &amp; commission.</div>
+
+    <div id="items-list">
+      <div class="empty-state" id="empty-msg">No items added yet. Click "Add Item" to begin.</div>
+    </div>
+
+    <div class="actions">
+      <button class="btn btn-primary" onclick="addItem()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        Add Item
+      </button>
+      <button class="btn btn-outline" onclick="clearAll()">Clear All</button>
+    </div>
+
+    <div id="summary">
+      <h2>Quotation Summary</h2>
+      <div id="summary-body">
+        <div class="empty-state" style="color:rgba(255,255,255,.4);padding:20px 0">Add items above to see the summary.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function () {
+
+  /* ── Auth ──────────────────────────────────────────────────────────────
+     Only the SHA-256 digest is stored here. The plaintext passkey is
+     never present in this file.
+  ────────────────────────────────────────────────────────────────────── */
+  const DIGEST = '07d8d451934342771f4bde787c003730d7e0766986bb857b896189be13578446';
+  const SESSION_KEY = '_hpkd_auth';
+
+  async function sha256(str) {
+    const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
+    return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('');
+  }
+
+  function showApp() {
+    document.getElementById('lock-screen').style.display = 'none';
+    document.getElementById('app').style.display = 'block';
+  }
+
+  // Restore session without re-entering passkey
+  if (sessionStorage.getItem(SESSION_KEY) === DIGEST) {
+    showApp();
+  }
+
+  window.unlock = async function () {
+    const input = document.getElementById('passkey-input');
+    const btn   = document.getElementById('unlock-btn');
+    const err   = document.getElementById('error-msg');
+
+    btn.disabled = true;
+    btn.textContent = 'Checking…';
+    input.classList.remove('error');
+    err.classList.remove('visible');
+
+    const hash = await sha256(input.value);
+
+    if (hash === DIGEST) {
+      sessionStorage.setItem(SESSION_KEY, DIGEST);
+      showApp();
+    } else {
+      input.classList.add('error');
+      err.classList.add('visible');
+      input.value = '';
+      input.focus();
+      btn.disabled = false;
+      btn.textContent = 'Unlock';
+    }
+  };
+
+  window.togglePass = function () {
+    const inp  = document.getElementById('passkey-input');
+    const icon = document.getElementById('eye-icon');
+    const show = inp.type === 'password';
+    inp.type = show ? 'text' : 'password';
+    icon.innerHTML = show
+      ? '<line x1="1" y1="1" x2="23" y2="23"/><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/>'
+      : '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>';
+  };
+
+  /* ── Pricing config ────────────────────────────────────────────────── */
+  const RATES = {
+    standard: { uv: 30, laser: 10 },
+    combo2:   { uv: 30, laser: 10 },
+    combo3:   { uv: 30, laser: 20 },
+    combo4:   { uv: 50, laser: 40 },
+    combo5:   { uv: 70, laser: 60 }
+  };
+  const BOX_SURCHARGE = 25;
+
+  const ITEM_TYPES = [
+    { value: 'combo2', label: '2 in 1 Combo', isCombo: true  },
+    { value: 'combo3', label: '3 in 1 Combo', isCombo: true  },
+    { value: 'combo4', label: '4 in 1 Combo', isCombo: true  },
+    { value: 'combo5', label: '5 in 1 Combo', isCombo: true  },
+    { value: 'bottle', label: 'Bottle',        isCombo: false },
+    { value: 'bag',    label: 'Bag',           isCombo: false },
+    { value: 'diary',  label: 'Diary',         isCombo: false },
+    { value: 'pen',    label: 'Pen',           isCombo: false },
+    { value: 'others', label: 'Others',        isCombo: false }
+  ];
+
+  let counter = 0;
+  const items = {};
+
+  /* ── Helpers ── */
+  function fmt(n) {
+    return '₹' + Number(n.toFixed(2)).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  }
+  function isCombo(v)    { const t = ITEM_TYPES.find(x => x.value === v); return t ? t.isCombo : false; }
+  function rateKey(v)    { return ['combo2','combo3','combo4','combo5'].includes(v) ? v : 'standard'; }
+  function typeLabel(v)  { const t = ITEM_TYPES.find(x => x.value === v); return t ? t.label : v; }
+  function commRate(qty) { return qty > 500 ? 0.15 : qty > 200 ? 0.20 : 0.30; }
+
+  /* ── Calculation ── */
+  function calc(id) {
+    const d = items[id];
+    if (!d) return null;
+    const qty   = parseFloat(d.qty)  || 0;
+    const vp    = parseFloat(d.vp)   || 0;
+    const logos = parseFloat(d.logos)|| 0;
+
+    const base     = qty * vp;
+    const baseGST  = base * 0.18;
+    const r        = RATES[rateKey(d.type)];
+    const uvCost    = d.uv    ? r.uv    * qty * logos : 0;
+    const laserCost = d.laser ? r.laser * qty * logos : 0;
+    const printing  = uvCost + laserCost;
+    const boxCost  = (isCombo(d.type) && d.boxPrint === 'yes') ? BOX_SURCHARGE * qty : 0;
+    const sub      = base + baseGST + printing + boxCost;
+    const cr       = commRate(qty);
+    const comm     = sub * cr;
+    const total    = sub + comm;
+
+    return { base, baseGST, uvCost, laserCost, printing, boxCost, sub, cr, comm, total };
+  }
+
+  /* ── Render item result ── */
+  function renderItem(id) {
+    const el = document.getElementById('res-' + id);
+    if (!el) return;
+    const r = calc(id);
+    const d = items[id];
+
+    if (!r || !d.qty || !d.vp) { el.style.display = 'none'; renderSummary(); return; }
+
+    const hasLogos   = parseFloat(d.logos) > 0;
+    const printingOn = d.uv || d.laser;
+    const noLogosHint = printingOn && !hasLogos
+      ? `<tr><td colspan="2" style="color:#b45309;font-size:.82rem;padding-top:6px">&#9888; Enter "No. of Logos" to calculate printing cost</td></tr>`
+      : '';
+
+    el.style.display = '';
+    el.innerHTML = `<table>
+      <tr><td>Base cost (qty × vendor price)</td><td>${fmt(r.base)}</td></tr>
+      <tr><td>GST on base (18%)</td><td>${fmt(r.baseGST)}</td></tr>
+      ${d.uv    && hasLogos ? `<tr><td>UV printing (₹${RATES[rateKey(d.type)].uv} × ${d.qty} × ${d.logos})</td><td>${fmt(r.uvCost)}</td></tr>` : ''}
+      ${d.laser && hasLogos ? `<tr><td>Laser printing (₹${RATES[rateKey(d.type)].laser} × ${d.qty} × ${d.logos})</td><td>${fmt(r.laserCost)}</td></tr>` : ''}
+      ${noLogosHint}
+      ${r.boxCost > 0 ? `<tr><td>Print on box surcharge (₹25 × ${d.qty})</td><td>${fmt(r.boxCost)}</td></tr>` : ''}
+      <tr><td>Commission (${(r.cr*100).toFixed(0)}%)</td><td>${fmt(r.comm)}</td></tr>
+      <tr class="total-row"><td>Item Total</td><td>${fmt(r.total)}</td></tr>
+    </table>`;
+    renderSummary();
+  }
+
+  /* ── Summary ── */
+  function renderSummary() {
+    const ids    = Object.keys(items);
+    const calcs  = ids.map(id => ({ id, r: calc(id) })).filter(x => x.r);
+    const body   = document.getElementById('summary-body');
+
+    if (!calcs.length) {
+      body.innerHTML = '<div class="empty-state" style="color:rgba(255,255,255,.4);padding:20px 0">Add items above to see the summary.</div>';
+      return;
+    }
+
+    const sub   = calcs.reduce((s, x) => s + x.r.total, 0);
+    const gst   = sub * 0.18;
+    const grand = sub + gst;
+
+    const rows = calcs.map((x, i) =>
+      `<tr><td>Item ${i+1} — ${typeLabel(items[x.id].type)}</td><td>${fmt(x.r.total)}</td></tr>`
+    ).join('');
+
+    body.innerHTML = `<table class="summary-table">
+      ${rows}
+      <tr class="summary-divider"><td>Items Subtotal</td><td>${fmt(sub)}</td></tr>
+      <tr><td>GST (18%) <span class="muted-label">on subtotal</span></td><td>${fmt(gst)}</td></tr>
+      <tr class="summary-total"><td>Grand Total</td><td>${fmt(grand)}</td></tr>
+    </table>`;
+  }
+
+  /* ── Add Item ── */
+  window.addItem = function () {
+    counter++;
+    const id = 'i' + counter;
+    items[id] = { qty: '', vp: '', logos: '1', uv: false, laser: false, type: 'bottle', boxPrint: '' };
+
+    document.getElementById('empty-msg').style.display = 'none';
+
+    const opts = ITEM_TYPES.map(t =>
+      `<option value="${t.value}"${t.value==='bottle'?' selected':''}>${t.label}</option>`
+    ).join('');
+
+    const card = document.createElement('div');
+    card.className = 'item-card';
+    card.id = 'card-' + id;
+    card.innerHTML = `
+      <div class="item-header">
+        <span><span class="item-num">#${counter}</span> Item</span>
+        <button class="remove-btn" onclick="removeItem('${id}')">Remove</button>
+      </div>
+      <div class="item-body">
+        <div class="row">
+          <div class="field" style="flex:1 1 100%">
+            <label>Type</label>
+            <select id="type-${id}" onchange="onType('${id}')">
+              ${opts}
+            </select>
+          </div>
+        </div>
+        <div class="row two-col">
+          <div class="field">
+            <label>Vendor Price (₹)</label>
+            <input type="number" id="vp-${id}" min="0" step="0.01" placeholder="0.00"
+              oninput="onF('${id}','vp',this.value)">
+          </div>
+          <div class="field">
+            <label>Quantity (pcs)</label>
+            <input type="number" id="qty-${id}" min="1" step="1" placeholder="0"
+              oninput="onF('${id}','qty',this.value)">
+          </div>
+        </div>
+        <div class="row two-col">
+          <div class="field">
+            <label>Printing Type</label>
+            <div class="multiselect-wrap">
+              <label><input type="checkbox" id="uv-${id}" onchange="onPrint('${id}','uv',this.checked)"> UV</label>
+              <label><input type="checkbox" id="laser-${id}" onchange="onPrint('${id}','laser',this.checked)"> Laser</label>
+            </div>
+          </div>
+          <div class="field">
+            <label>No. of Logos</label>
+            <input type="number" id="logos-${id}" min="0" step="1" value="1"
+              oninput="onF('${id}','logos',this.value)">
+          </div>
+        </div>
+        <div class="row box-print-row" id="bprow-${id}">
+          <div class="field">
+            <label>Print on Box?</label>
+            <select id="bp-${id}" onchange="onBP('${id}',this.value)">
+              <option value="">-- Select --</option>
+              <option value="no">No</option>
+              <option value="yes">Yes  (+₹25/pc surcharge)</option>
+            </select>
+          </div>
+          <div class="field" style="justify-content:flex-end;padding-bottom:2px">
+            <span class="info-tag" id="rtag-${id}"></span>
+          </div>
+        </div>
+        <div class="item-result" id="res-${id}" style="display:none"></div>
+      </div>`;
+
+    document.getElementById('items-list').appendChild(card);
+    renderSummary();
+  };
+
+  window.removeItem = function (id) {
+    const c = document.getElementById('card-' + id);
+    if (c) c.remove();
+    delete items[id];
+    if (!Object.keys(items).length) document.getElementById('empty-msg').style.display = '';
+    renderSummary();
+  };
+
+  window.clearAll = function () {
+    if (!confirm('Clear all items?')) return;
+    Object.keys(items).forEach(id => delete items[id]);
+    document.getElementById('items-list').innerHTML =
+      '<div class="empty-state" id="empty-msg">No items added yet. Click "Add Item" to begin.</div>';
+    counter = 0;
+    renderSummary();
+  };
+
+  window.onF = function (id, key, val) {
+    if (!items[id]) return;
+    items[id][key] = val;
+    renderItem(id);
+  };
+
+  window.onPrint = function (id, type, checked) {
+    if (!items[id]) return;
+    items[id][type] = checked;
+    renderItem(id);
+  };
+
+  window.onType = function (id) {
+    if (!items[id]) return;
+    const val = document.getElementById('type-' + id).value;
+    items[id].type     = val;
+    items[id].boxPrint = '';
+    const row  = document.getElementById('bprow-' + id);
+    const rtag = document.getElementById('rtag-' + id);
+    const bpEl = document.getElementById('bp-' + id);
+    if (isCombo(val)) {
+      row.classList.add('visible');
+      bpEl.value = '';
+      rtag.textContent = '';
+    } else {
+      row.classList.remove('visible');
+      rtag.textContent = '';
+    }
+    renderItem(id);
+  };
+
+  window.onBP = function (id, val) {
+    if (!items[id]) return;
+    items[id].boxPrint = val;
+    const rtag = document.getElementById('rtag-' + id);
+    const r    = RATES[rateKey(items[id].type)];
+    rtag.textContent = val === 'yes'
+      ? '+₹25/pc on box'
+      : val === 'no' ? `UV ₹${r.uv}/logo · Laser ₹${r.laser}/logo` : '';
+    renderItem(id);
+  };
+
+})();
+</script>
+</body>
+</html>
