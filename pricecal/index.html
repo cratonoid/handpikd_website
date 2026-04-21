@@ -557,8 +557,6 @@
   function isCombo(v)    { const t = ITEM_TYPES.find(x => x.value === v); return t ? t.isCombo : false; }
   function rateKey(v)    { return ['combo2','combo3','combo4','combo5'].includes(v) ? v : 'standard'; }
   function typeLabel(v)  { const t = ITEM_TYPES.find(x => x.value === v); return t ? t.label : v; }
-  function commRate(qty) { return qty > 500 ? 0.15 : qty > 200 ? 0.20 : 0.30; }
-
   /* ── Calculation ── */
   function calc(id) {
     const d = items[id];
@@ -575,7 +573,7 @@
     const printing  = uvCost + laserCost;
     const boxCost  = (isCombo(d.type) && d.boxPrint === 'yes') ? BOX_SURCHARGE * qty : 0;
     const sub      = base + baseGST + printing + boxCost;
-    const cr       = commRate(qty);
+    const cr       = parseFloat(d.comm) || 0.30;
     const comm     = sub * cr;
     const total    = sub + comm;
 
@@ -642,7 +640,7 @@
   window.addItem = function () {
     counter++;
     const id = 'i' + counter;
-    items[id] = { qty: '', vp: '', logos: '1', uv: false, laser: false, type: 'bottle', boxPrint: '' };
+    items[id] = { qty: '', vp: '', logos: '1', uv: false, laser: false, type: 'bottle', boxPrint: '', comm: '0.30' };
 
     document.getElementById('empty-msg').style.display = 'none';
 
@@ -691,6 +689,17 @@
             <label>No. of Logos</label>
             <input type="number" id="logos-${id}" min="0" step="1" value="1"
               oninput="onF('${id}','logos',this.value)">
+          </div>
+        </div>
+        <div class="row two-col">
+          <div class="field">
+            <label>Commission</label>
+            <select id="comm-${id}" onchange="onComm('${id}',this.value)">
+              <option value="0.30">30%</option>
+              <option value="0.25">25%</option>
+              <option value="0.20">20%</option>
+              <option value="0.15">15%</option>
+            </select>
           </div>
         </div>
         <div class="row box-print-row" id="bprow-${id}">
@@ -758,6 +767,12 @@
       row.classList.remove('visible');
       rtag.textContent = '';
     }
+    renderItem(id);
+  };
+
+  window.onComm = function (id, val) {
+    if (!items[id]) return;
+    items[id].comm = val;
     renderItem(id);
   };
 
