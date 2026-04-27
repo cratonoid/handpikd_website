@@ -824,3 +824,35 @@ getStartedForm?.addEventListener("submit", async (e) => {
     document.body.style.overflow = "auto";
   }, 3000);
 });
+
+// GA4 conversion tracking
+document.addEventListener("DOMContentLoaded", function () {
+  if (typeof gtag === "undefined") return;
+
+  document.querySelectorAll(".modal-form").forEach((form) => {
+    form.addEventListener("submit", function () {
+      gtag("event", "generate_lead", {
+        event_category: "form",
+        event_label: "enquiry_form",
+      });
+    });
+  });
+
+  document.querySelectorAll('a[href*="wa.me"]').forEach((link) => {
+    link.addEventListener("click", function () {
+      gtag("event", "contact", {
+        event_category: "whatsapp",
+        event_label: "whatsapp_click",
+      });
+    });
+  });
+
+  document.querySelectorAll(".catalogue-card").forEach((card) => {
+    card.addEventListener("click", function () {
+      gtag("event", "view_item", {
+        event_category: "catalogue",
+        event_label: this.querySelector("h3")?.textContent,
+      });
+    });
+  });
+});
