@@ -411,6 +411,56 @@
     .quot-img-name { font-size: .82rem; color: var(--muted); flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .quot-img-rm { background: var(--danger); color: #fff; border: none; border-radius: 4px; padding: 4px 10px; font-size: .78rem; cursor: pointer; flex-shrink: 0; }
 
+    /* ── Toast ── */
+    #toast {
+      position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%);
+      background: #1a1a2e; color: #fff; border-radius: 8px;
+      padding: 11px 22px; font-size: .9rem; font-weight: 500;
+      box-shadow: 0 4px 20px rgba(0,0,0,.3); z-index: 3000;
+      opacity: 0; pointer-events: none; transition: opacity .25s;
+      white-space: nowrap;
+    }
+    #toast.show  { opacity: 1; }
+    #toast.t-ok  { border-left: 4px solid #4caf50; }
+    #toast.t-err { border-left: 4px solid var(--danger); }
+
+    /* ── Saved Quotations Modal ── */
+    #saved-modal {
+      display: none; position: fixed; inset: 0;
+      background: rgba(0,0,0,.65); z-index: 1000;
+      overflow-y: auto; padding: 24px 16px;
+    }
+    .saved-inner {
+      background: #fff; border-radius: 16px; max-width: 740px;
+      margin: 0 auto; overflow: hidden;
+      box-shadow: 0 24px 80px rgba(0,0,0,.45);
+    }
+    .saved-hdr {
+      background: var(--brand); color: #fff;
+      padding: 20px 28px; display: flex;
+      align-items: center; justify-content: space-between;
+    }
+    .saved-hdr .s-title { font-size: 1.1rem; font-weight: 700; }
+    .saved-hdr .s-sub   { font-size: .78rem; color: rgba(255,255,255,.5); margin-top: 2px; }
+    .saved-body { padding: 24px 28px; max-height: 70vh; overflow-y: auto; }
+    .saved-item {
+      border: 1px solid var(--border); border-radius: 8px;
+      padding: 14px 16px; margin-bottom: 10px;
+      display: flex; align-items: center; gap: 12px;
+      transition: border-color .2s;
+    }
+    .saved-item:hover { border-color: var(--accent); }
+    .saved-info { flex: 1; min-width: 0; }
+    .saved-info .s-client { font-weight: 700; font-size: .95rem; color: var(--brand); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .saved-info .s-meta   { font-size: .78rem; color: var(--muted); margin-top: 3px; }
+    .saved-btns { display: flex; gap: 8px; flex-shrink: 0; }
+    .saved-empty { text-align: center; padding: 40px 20px; color: var(--muted); font-size: .9rem; }
+    .btn-sm { padding: 6px 14px !important; font-size: .82rem !important; }
+    .btn-danger { background: var(--danger) !important; color: #fff !important; border-color: var(--danger) !important; }
+    .btn-danger:hover { background: #b33a3a !important; }
+    .btn-green { border-color: #4caf50 !important; color: #2e7d32 !important; }
+    .btn-green:hover { background: #4caf50 !important; color: #fff !important; }
+
     @media (max-width: 600px) {
       #quot-modal { padding: 12px 8px; }
       .quot-body { padding: 16px; }
@@ -515,6 +565,10 @@
   <header>
     <h1>HANDPIKD</h1>
     <span>Price Calculator &nbsp;·&nbsp; Admin Tool</span>
+    <button onclick="openSaved()" style="margin-left:16px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.25);color:#fff;border-radius:8px;padding:8px 16px;font-size:.83rem;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:6px;transition:background .2s;flex-shrink:0;" onmouseover="this.style.background='rgba(255,255,255,.18)'" onmouseout="this.style.background='rgba(255,255,255,.1)'">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+      Saved Quotations
+    </button>
   </header>
 
   <div class="container">
@@ -545,6 +599,27 @@
     </div>
   </div>
 </div>
+
+<!-- ════════════════════════════════════════
+     SAVED QUOTATIONS MODAL
+═════════════════════════════════════════ -->
+<div id="saved-modal">
+  <div class="saved-inner">
+    <div class="saved-hdr">
+      <div>
+        <div class="s-title">Saved Quotations</div>
+        <div class="s-sub">Load or manage your previous quotations</div>
+      </div>
+      <button class="close-quot" onclick="closeSaved()">&#10005; Close</button>
+    </div>
+    <div class="saved-body" id="saved-body">
+      <div class="saved-empty">Loading&hellip;</div>
+    </div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div id="toast"></div>
 
 <!-- ════════════════════════════════════════
      QUOTATION BUILDER MODAL
@@ -592,6 +667,10 @@
 
       <div class="quot-foot">
         <button class="btn btn-outline" onclick="closeQuot()">Cancel</button>
+        <button class="btn btn-outline btn-green" id="quot-save-btn" onclick="saveQuot()">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+          Save Quotation
+        </button>
         <button class="btn btn-primary" onclick="printQuot()">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
           Preview &amp; Print
@@ -994,6 +1073,12 @@
     d.setDate(d.getDate() + 30);
     document.getElementById('quot-valid').value = d.toISOString().split('T')[0];
 
+    // Reset save state for a fresh quotation
+    currentQuotId = null;
+    const sb = document.getElementById('quot-save-btn');
+    if (sb) { sb.textContent = ''; sb.disabled = false; }
+    if (sb) sb.innerHTML = `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg> Save Quotation`;
+
     document.getElementById('quot-modal').style.display = 'block';
     document.body.style.overflow = 'hidden';
   };
@@ -1014,6 +1099,215 @@
       document.getElementById('quot-img-lbl-' + id).style.display = 'none';
     };
     reader.readAsDataURL(file);
+  };
+
+  /* ── Toast ─────────────────────────────────────────────────── */
+  function showToast(msg, type) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.className = 'show ' + (type === 'err' ? 't-err' : 't-ok');
+    clearTimeout(t._tid);
+    t._tid = setTimeout(() => { t.className = ''; }, 2800);
+  }
+
+  /* ── MongoDB API ─────────────────────────────────────────── */
+  const API = 'https://supernotes.onrender.com/api/quotations';
+  let currentQuotId = null;
+
+  window.saveQuot = async function () {
+    const calcs = Object.keys(items)
+      .map(id => ({ id, r: calc(id), d: items[id] }))
+      .filter(x => x.r && x.d.qty && x.d.vp);
+
+    const calculatorItems = calcs.map(x => ({
+      type: x.d.type, vp: x.d.vp, qty: x.d.qty,
+      logos: x.d.logos, uv: x.d.uv, laser: x.d.laser,
+      boxPrint: x.d.boxPrint, comm: x.d.comm, profit: x.d.profit
+    }));
+
+    const quotationItems = calcs.map(x => {
+      const thumb = document.getElementById('quot-img-thumb-' + x.id);
+      return {
+        description: document.getElementById('quot-desc-' + x.id)?.value.trim() || '',
+        imgDataUrl: thumb && thumb.src && !thumb.src.endsWith(window.location.href) ? thumb.src : null
+      };
+    });
+
+    const grandTotal = calcs.reduce((s, x) => s + Math.round(x.r.total * 1.18), 0);
+    const payload = {
+      clientName:       document.getElementById('quot-client').value.trim(),
+      contact:          document.getElementById('quot-contact').value.trim(),
+      quotNum:          document.getElementById('quot-num').value.trim(),
+      validIso:         document.getElementById('quot-valid').value,
+      notes:            document.getElementById('quot-notes').value.trim(),
+      grandTotal, calculatorItems, quotationItems
+    };
+
+    const btn = document.getElementById('quot-save-btn');
+    btn.disabled = true;
+    btn.textContent = 'Saving…';
+
+    try {
+      if (currentQuotId) {
+        await fetch(`${API}/${currentQuotId}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        showToast('Quotation updated');
+      } else {
+        const res  = await fetch(API, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        const data = await res.json();
+        currentQuotId = data.id;
+        showToast('Quotation saved');
+      }
+      btn.innerHTML = `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg> Update Quotation`;
+    } catch {
+      showToast('Save failed — is the server running?', 'err');
+      btn.innerHTML = `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg> Save Quotation`;
+    }
+    btn.disabled = false;
+  };
+
+  /* ── Saved Quotations Modal ──────────────────────────────── */
+  window.openSaved = async function () {
+    document.getElementById('saved-modal').style.display = 'block';
+    document.body.style.overflow = 'hidden';
+    const body = document.getElementById('saved-body');
+    body.innerHTML = '<div class="saved-empty">Loading&hellip;</div>';
+
+    try {
+      const res    = await fetch(API);
+      const quotes = await res.json();
+
+      if (!quotes.length) {
+        body.innerHTML = '<div class="saved-empty">No saved quotations yet.</div>';
+        return;
+      }
+
+      body.innerHTML = quotes.map(q => {
+        const date  = new Date(q.createdAt).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
+        const grand = q.grandTotal ? '₹' + q.grandTotal.toLocaleString('en-IN') : '';
+        const ref   = q.quotNum ? q.quotNum + ' · ' : '';
+        return `<div class="saved-item">
+          <div class="saved-info">
+            <div class="s-client">${q.clientName || 'Unnamed Client'}</div>
+            <div class="s-meta">${ref}${date}${grand ? ' · ' + grand : ''} · ${(q.calculatorItems || []).length} item(s)</div>
+          </div>
+          <div class="saved-btns">
+            <button class="btn btn-outline btn-sm" onclick="loadQuot('${q._id}')">Load &amp; Edit</button>
+            <button class="btn btn-outline btn-sm btn-danger" onclick="deleteQuot('${q._id}', this)">Delete</button>
+          </div>
+        </div>`;
+      }).join('');
+    } catch {
+      body.innerHTML = '<div class="saved-empty" style="color:var(--danger)">Could not load — is the server running?</div>';
+    }
+  };
+
+  window.closeSaved = function () {
+    document.getElementById('saved-modal').style.display = 'none';
+    document.body.style.overflow = '';
+  };
+
+  window.deleteQuot = async function (id, btn) {
+    if (!confirm('Delete this quotation? This cannot be undone.')) return;
+    btn.disabled = true;
+    try {
+      await fetch(`${API}/${id}`, { method: 'DELETE' });
+      btn.closest('.saved-item').remove();
+      showToast('Quotation deleted');
+      const body = document.getElementById('saved-body');
+      if (!body.querySelector('.saved-item'))
+        body.innerHTML = '<div class="saved-empty">No saved quotations yet.</div>';
+    } catch {
+      showToast('Delete failed', 'err');
+      btn.disabled = false;
+    }
+  };
+
+  window.loadQuot = async function (qid) {
+    try {
+      const res = await fetch(`${API}/${qid}`);
+      const q   = await res.json();
+
+      // Clear calculator state
+      Object.keys(items).forEach(id => {
+        const c = document.getElementById('card-' + id);
+        if (c) c.remove();
+        delete items[id];
+      });
+      document.getElementById('items-list').innerHTML =
+        '<div class="empty-state" id="empty-msg">No items added yet. Click "Add Item" to begin.</div>';
+      counter = 0;
+
+      // Restore calculator items
+      (q.calculatorItems || []).forEach(ci => {
+        addItem();
+        const id = 'i' + counter;
+        const typeEl = document.getElementById('type-' + id);
+        if (typeEl) { typeEl.value = ci.type || 'bottle'; items[id].type = ci.type || 'bottle'; }
+        if (isCombo(ci.type)) document.getElementById('bprow-' + id)?.classList.add('visible');
+
+        const set = (field, val) => {
+          const el = document.getElementById(field + '-' + id);
+          if (el) el.value = val;
+          items[id][field] = val;
+        };
+        set('vp', ci.vp); set('qty', ci.qty); set('logos', ci.logos);
+        set('comm', ci.comm || '0.30');
+
+        const uvEl    = document.getElementById('uv-' + id);
+        const laserEl = document.getElementById('laser-' + id);
+        if (uvEl)    { uvEl.checked    = !!ci.uv;    items[id].uv    = !!ci.uv; }
+        if (laserEl) { laserEl.checked = !!ci.laser; items[id].laser = !!ci.laser; }
+
+        if (ci.boxPrint) {
+          const bpEl = document.getElementById('bp-' + id);
+          if (bpEl) { bpEl.value = ci.boxPrint; items[id].boxPrint = ci.boxPrint; }
+        }
+        items[id].profit = ci.profit || '';
+        renderItem(id);
+      });
+
+      closeSaved();
+      currentQuotId = qid;
+      openQuot();
+
+      // Pre-fill quotation form after DOM renders
+      setTimeout(() => {
+        document.getElementById('quot-client').value = q.clientName || '';
+        document.getElementById('quot-contact').value = q.contact   || '';
+        document.getElementById('quot-num').value     = q.quotNum   || '';
+        document.getElementById('quot-valid').value   = q.validIso  || '';
+        document.getElementById('quot-notes').value   = q.notes     || '';
+
+        const ids = Object.keys(items);
+        (q.quotationItems || []).forEach((qi, i) => {
+          const id = ids[i];
+          if (!id) return;
+          const descEl = document.getElementById('quot-desc-' + id);
+          if (descEl) descEl.value = qi.description || '';
+          if (qi.imgDataUrl) {
+            document.getElementById('quot-img-thumb-' + id).src = qi.imgDataUrl;
+            document.getElementById('quot-img-name-' + id).textContent = 'Saved image';
+            document.getElementById('quot-img-preview-' + id).style.display = 'flex';
+            document.getElementById('quot-img-lbl-' + id).style.display = 'none';
+          }
+        });
+
+        const sb = document.getElementById('quot-save-btn');
+        if (sb) sb.innerHTML = `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg> Update Quotation`;
+      }, 120);
+
+      showToast('Quotation loaded');
+    } catch {
+      showToast('Failed to load quotation', 'err');
+    }
   };
 
   window.removeQuotImg = function (id) {
