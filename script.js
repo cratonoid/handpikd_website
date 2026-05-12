@@ -557,7 +557,7 @@ function showLightboxGallery(images, title) {
       document.body.removeChild(lightbox);
     }
     document.body.style.overflow = "auto";
-    
+
     // Remove history state if gallery was closed manually
     if (window.history.state && window.history.state.galleryOpen) {
       history.back();
@@ -855,4 +855,87 @@ document.addEventListener("DOMContentLoaded", function () {
       });
     });
   });
+
+  // Feedback Form Handler
+  const feedbackForm = document.getElementById("feedbackForm");
+  if (feedbackForm) {
+    feedbackForm.addEventListener("submit", async function (e) {
+      e.preventDefault();
+
+      const submitBtn = document.getElementById("submitBtn");
+      const formMessage = document.getElementById("formMessage");
+
+      // Disable submit button and show loading
+      submitBtn.disabled = true;
+      submitBtn.textContent = "Submitting...";
+
+      // Clear previous messages
+      formMessage.style.display = "none";
+
+      try {
+        // Get form data
+        const formData = new FormData(feedbackForm);
+        const timestamp = new Date().toLocaleString("en-IN", {
+          timeZone: "Asia/Kolkata",
+          year: "numeric",
+          month: "2-digit",
+          day: "2-digit",
+          hour: "2-digit",
+          minute: "2-digit",
+          second: "2-digit",
+        });
+
+        const submissionData = {
+          timestamp: timestamp,
+          name: formData.get("name"),
+          email: formData.get("email"),
+          rating: formData.get("rating"),
+          feedback_message: formData.get("feedback_message"),
+        };
+
+        // Send to Google Apps Script
+        const response = await fetch(
+          "https://script.google.com/macros/s/AKfycby70HLsQrxp4OVLggIrvYxkk_9XZ-_x3185rmtq3M7sQe5uyZGqAKvfgqNNG-tcx4A92Q/exec",
+          {
+            method: "POST",
+            mode: "no-cors",
+            headers: {
+              "Content-Type": "text/plain",
+            },
+            body: JSON.stringify(submissionData),
+          },
+        );
+
+        // Since mode is 'no-cors', we can't read the response
+        // Assume success if no error thrown
+        formMessage.style.display = "block";
+        formMessage.style.background = "#d4edda";
+        formMessage.style.color = "#155724";
+        formMessage.style.border = "1px solid #c3e6cb";
+        formMessage.textContent =
+          "Thank you for your feedback! We've received it successfully.";
+
+        // Reset form
+        feedbackForm.reset();
+
+        // Track feedback submission
+        gtag("event", "form_submit", {
+          event_category: "feedback",
+          event_label: "feedback_form",
+        });
+      } catch (error) {
+        console.error("Feedback submission error:", error);
+        formMessage.style.display = "block";
+        formMessage.style.background = "#f8d7da";
+        formMessage.style.color = "#721c24";
+        formMessage.style.border = "1px solid #f5c6cb";
+        formMessage.textContent =
+          "Sorry, there was an error submitting your feedback. Please try again or contact us directly.";
+      } finally {
+        // Re-enable submit button
+        submitBtn.disabled = false;
+        submitBtn.textContent = "Submit Feedback";
+      }
+    });
+  }
 });

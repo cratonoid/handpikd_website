@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-DW9TNLFM1C"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-DW9TNLFM1C');
+    </script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Share Your Feedback | HANDPIKD Corporate Gifting Bangalore</title>
+    <meta name="description" content="We'd love to hear about your experience with HANDPIKD. Share your feedback and help us deliver even better corporate gifting experiences in Bangalore.">
+    <meta name="author" content="HANDPIKD">
+    <link rel="canonical" href="https://handpikd.co/feedback">
+    <meta property="og:title" content="Share Your Feedback — HANDPIKD">
+    <meta property="og:description" content="Tell us about your HANDPIKD experience. Your feedback helps us craft better corporate gifting solutions for businesses across Bangalore.">
+    <meta property="og:url" content="https://handpikd.co/feedback">
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="HANDPIKD">
+    <link rel="icon" type="image/png" href="images/hp logo.png">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* ── Banner ── */
+        .feedback-banner {
+            background: var(--bg-light);
+            padding: 130px 0 64px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .feedback-banner::before {
+            content: '';
+            position: absolute;
+            top: -80px;
+            right: -80px;
+            width: 320px;
+            height: 320px;
+            background: radial-gradient(circle, rgba(210,198,182,0.35) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .feedback-banner::after {
+            content: '';
+            position: absolute;
+            bottom: -60px;
+            left: -60px;
+            width: 240px;
+            height: 240px;
+            background: radial-gradient(circle, rgba(210,198,182,0.2) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .feedback-banner .section-tag {
+            margin-bottom: 1rem;
+        }
+
+        .feedback-banner h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(2rem, 5vw, 3rem);
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+            line-height: 1.2;
+        }
+
+        .feedback-banner p {
+            color: #0D0E09;
+            font-size: 1.05rem;
+            max-width: 520px;
+            margin: 0 auto 2rem;
+            line-height: 1.75;
+        }
+
+        .banner-badges {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .banner-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            background: var(--white);
+            border: 1px solid rgba(210,198,182,0.6);
+            border-radius: 30px;
+            padding: 0.35rem 1rem;
+            font-size: 0.8rem;
+            font-family: 'Poppins', sans-serif;
+            color: #0D0E09;
+            font-weight: 500;
+        }
+
+        /* ── Section wrapper ── */
+        .feedback-section {
+            padding: 72px 0 100px;
+            background: var(--white);
+        }
+
+        .feedback-layout {
+            display: grid;
+            grid-template-columns: 1fr 1.8fr;
+            gap: 4rem;
+            align-items: start;
+        }
+
+        /* ── Left info panel ── */
+        .feedback-info {
+            position: sticky;
+            top: 100px;
+        }
+
+        .feedback-info h3 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.6rem;
+            color: var(--primary-color);
+            margin-bottom: 0.75rem;
+            line-height: 1.3;
+        }
+
+        .feedback-info > p {
+            color: #0D0E09;
+            line-height: 1.75;
+            margin-bottom: 2rem;
+            font-size: 0.95rem;
+        }
+
+        .info-card {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.9rem;
+            padding: 1rem;
+            border-radius: 10px;
+            background: var(--bg-light);
+            margin-bottom: 0.75rem;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .info-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 16px rgba(0,0,0,0.06);
+        }
+
+        .info-card .ic-icon {
+            font-size: 1.25rem;
+            flex-shrink: 0;
+            width: 2.2rem;
+            text-align: center;
+            padding-top: 1px;
+        }
+
+        .info-card .ic-text strong {
+            display: block;
+            font-size: 0.88rem;
+            font-weight: 600;
+            color: var(--primary-color);
+            margin-bottom: 0.2rem;
+        }
+
+        .info-card .ic-text span {
+            font-size: 0.82rem;
+            color: #0D0E09;
+            line-height: 1.5;
+        }
+
+        .feedback-divider {
+            height: 1px;
+            background: rgba(210,198,182,0.4);
+            margin: 1.5rem 0;
+        }
+
+        .feedback-cta-note {
+            font-size: 0.82rem;
+            color: var(--text-light);
+            line-height: 1.6;
+        }
+
+        .feedback-cta-note a {
+            color: var(--secondary-color);
+            text-decoration: underline;
+            font-weight: 500;
+        }
+
+        /* ── Google Form container ── */
+        .form-card {
+            background: var(--bg-light);
+            border-radius: 14px;
+            overflow: hidden;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.08);
+            border: 1px solid rgba(210,198,182,0.3);
+        }
+
+        .form-card-header {
+            background: var(--primary-color);
+            padding: 1.25rem 1.75rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .form-card-header span {
+            font-family: 'Poppins', sans-serif;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--white);
+            letter-spacing: 0.03em;
+        }
+
+        .form-card-dots {
+            display: flex;
+            gap: 5px;
+            margin-right: auto;
+        }
+
+        .form-card-dots i {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.25);
+            display: block;
+        }
+
+        /*
+         * ─────────────────────────────────────────────────────────
+         * GOOGLE FORM IFRAME — HOW TO CONNECT:
+         *   1. Open your Google Form at forms.google.com
+         *   2. Click the "Send" button (top-right)
+         *   3. Click the Embed tab (</>)
+         *   4. Copy the URL inside  src="..."  from that iframe code
+         *   5. Replace  YOUR_GOOGLE_FORM_EMBED_URL  below with it
+         *   Example src value:
+         *   https://docs.google.com/forms/d/e/ABCDEF.../viewform?embedded=true
+         * ─────────────────────────────────────────────────────────
+         */
+        .form-card iframe {
+            display: block;
+            width: 100%;
+            min-height: 680px;
+            border: none;
+            background: #fff;
+        }
+
+        /* Custom Feedback Form Styles */
+        .custom-form-container {
+            padding: 2rem;
+            background: #fff;
+        }
+
+        .custom-form-container .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .custom-form-container label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: var(--primary-color);
+            font-size: 0.95rem;
+        }
+
+        .custom-form-container input,
+        .custom-form-container select,
+        .custom-form-container textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid rgba(210,198,182,0.4);
+            border-radius: 6px;
+            font-size: 1rem;
+            box-sizing: border-box;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .custom-form-container input:focus,
+        .custom-form-container select:focus,
+        .custom-form-container textarea:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(210,198,182,0.2);
+        }
+
+        .custom-form-container textarea {
+            resize: vertical;
+            min-height: 120px;
+        }
+
+        .custom-form-container button {
+            width: 100%;
+            padding: 1rem;
+            background: var(--primary-color);
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s ease, transform 0.2s ease;
+        }
+
+        .custom-form-container button:hover:not(:disabled) {
+            background: var(--secondary-color);
+            transform: translateY(-1px);
+        }
+
+        .custom-form-container button:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        #formMessage {
+            margin-top: 1rem;
+            padding: 1rem;
+            border-radius: 6px;
+            font-weight: 500;
+        }
+
+        /* ── Responsive ── */
+        @media (max-width: 960px) {
+            .feedback-layout {
+                grid-template-columns: 1fr;
+                gap: 2.5rem;
+            }
+
+            .feedback-info {
+                position: static;
+                text-align: center;
+                order: 2; /* Info panel comes second on mobile */
+            }
+
+            .form-card {
+                order: 1; /* Form comes first on mobile */
+            }
+
+            .info-card {
+                text-align: left;
+            }
+
+            .feedback-cta-note {
+                text-align: center;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .feedback-section {
+                padding: 48px 0 72px;
+            }
+
+            .form-card {
+                border-radius: 10px;
+            }
+
+            .form-card iframe {
+                min-height: 820px;
+            }
+
+            .banner-badge {
+                font-size: 0.75rem;
+                padding: 0.3rem 0.8rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-wrapper">
+                <div class="logo">
+                    <img src="images/logo.png" alt="HANDPIKD Logo">
+                </div>
+                <ul class="nav-menu">
+                    <li><a href="/">Home</a></li>
+                    <li><a href="/#about">About</a></li>
+                    <li><a href="/#services">Services</a></li>
+                    <li><a href="catalogue">Catalogue</a></li>
+                    <li><a href="blogs/blogs-list">Blogs</a></li>
+                    <li><a href="/#contact">Contact</a></li>
+                </ul>
+                <div class="hamburger">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Page Banner -->
+    <div class="feedback-banner">
+        <div class="container">
+            <span class="section-tag">Your Voice Matters</span>
+            <h1>Share Your Experience</h1>
+            <p>Your feedback directly shapes the future of corporate gifting in Bangalore. Help us deliver exceptional experiences that businesses love — it only takes 2 minutes.</p>
+            <div class="banner-badges">
+                <span class="banner-badge">&#128274; 100% Confidential</span>
+                <span class="banner-badge">&#9889; Takes &lt; 2 Minutes</span>
+                <span class="banner-badge">&#128233; Response in 48 Hours</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Feedback Section -->
+    <section class="feedback-section">
+        <div class="container">
+            <div class="feedback-layout">
+
+                <!-- Left: info panel -->
+                <div class="feedback-info">
+                    <h3>Why Your Feedback Matters</h3>
+                    <p>Every response helps us understand what's working and where we can raise the bar for businesses across Bangalore and India.</p>
+
+                    <div class="info-card">
+                        <div class="ic-icon">&#127873;</div>
+                        <div class="ic-text">
+                            <strong>Elevated Gift Quality</strong>
+                            <span>Your insights help us curate premium, memorable gifts that truly impress clients and employees</span>
+                        </div>
+                    </div>
+                    <div class="info-card">
+                        <div class="ic-icon">&#9889;</div>
+                        <div class="ic-text">
+                            <strong>Reliable Delivery</strong>
+                            <span>Shape our processes to ensure timely delivery, even for urgent corporate requirements</span>
+                        </div>
+                    </div>
+                    <div class="info-card">
+                        <div class="ic-icon">&#127775;</div>
+                        <div class="ic-text">
+                            <strong>Personalized Support</strong>
+                            <span>Help us provide the exceptional customer experience that sets HANDPIKD apart</span>
+                        </div>
+                    </div>
+                    <div class="info-card">
+                        <div class="ic-icon">&#128274;</div>
+                        <div class="ic-text">
+                            <strong>Complete Privacy</strong>
+                            <span>Your feedback is secure, anonymous, and never used for marketing or shared externally</span>
+                        </div>
+                    </div>
+
+                    <div class="feedback-divider"></div>
+
+                    <p class="feedback-cta-note">
+                        Prefer to reach us directly?<br>
+                        Email us at <a href="mailto:info@handpikd.co">info@handpikd.co</a>
+                        or <a href="https://wa.me/917411690399" target="_blank" rel="noopener noreferrer">chat on WhatsApp</a>.
+                    </p>
+                </div>
+
+                <!-- Right: Custom Feedback Form -->
+                <div class="form-card">
+                    <div class="form-card-header">
+                        <div class="form-card-dots">
+                            <i></i><i></i><i></i>
+                        </div>
+                        <span>HANDPIKD Feedback Form</span>
+                    </div>
+
+                    <div class="custom-form-container">
+                        <form id="feedbackForm">
+                            <div class="form-group">
+                                <label for="name">Name *</label>
+                                <input type="text" id="name" name="name" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="email">Email *</label>
+                                <input type="email" id="email" name="email" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="rating">Rating *</label>
+                                <select id="rating" name="rating" required>
+                                    <option value="">Select a rating</option>
+                                    <option value="5">⭐⭐⭐⭐⭐ Excellent</option>
+                                    <option value="4">⭐⭐⭐⭐ Very Good</option>
+                                    <option value="3">⭐⭐⭐ Good</option>
+                                    <option value="2">⭐⭐ Fair</option>
+                                    <option value="1">⭐ Poor</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="feedback_message">Your Feedback *</label>
+                                <textarea id="feedback_message" name="feedback_message" required rows="5" placeholder="Please share your experience with HANDPIKD..."></textarea>
+                            </div>
+
+                            <button type="submit" id="submitBtn">Submit Feedback</button>
+                        </form>
+
+                        <div id="formMessage"></div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-logo">
+                    <img src="images/logo.png" alt="HANDPIKD Logo">
+                    <p>Curating excellence in corporate gifting</p>
+                </div>
+                <div class="footer-links">
+                    <h4>Quick Links</h4>
+                    <ul>
+                        <li><a href="/#about">About Us</a></li>
+                        <li><a href="/#services">Services</a></li>
+                        <li><a href="blogs/blogs-list">Blogs</a></li>
+                        <li><a href="/#contact">Contact</a></li>
+                    </ul>
+                </div>
+                <div class="footer-social">
+                    <h4>Reach Us</h4>
+                    <div class="social-links">
+                        <a href="#">Instagram</a>
+                        <a href="https://wa.me/917411690399" target="_blank" rel="noopener noreferrer">WhatsApp</a>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2026 HANDPIKD. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
