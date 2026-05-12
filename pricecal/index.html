@@ -287,12 +287,14 @@
     .item-result table { width: 100%; border-collapse: collapse; }
     .item-result td { padding: 3px 0; }
     .item-result td:last-child { text-align: right; font-weight: 600; }
+    .item-result td:last-child input { text-align: right; }
     .item-result .total-row td {
       border-top: 1px solid var(--border);
       padding-top: 8px;
       color: var(--brand);
       font-weight: 700;
       font-size: .95rem;
+      padding-bottom: 8px;
     }
 
     .btn {
@@ -340,6 +342,81 @@
     .muted-label { color: rgba(255,255,255,.6); font-size: .83rem; }
 
     .empty-state { text-align: center; padding: 40px 20px; color: var(--muted); font-size: .95rem; }
+
+    /* ── Quotation Modal ── */
+    #quot-modal {
+      display: none; position: fixed; inset: 0;
+      background: rgba(0,0,0,.65); z-index: 1000;
+      overflow-y: auto; padding: 24px 16px;
+    }
+    .quot-inner {
+      background: #fff; border-radius: 16px; max-width: 680px;
+      margin: 0 auto; overflow: hidden;
+      box-shadow: 0 24px 80px rgba(0,0,0,.45);
+    }
+    .quot-hdr {
+      background: var(--brand); color: #fff;
+      padding: 20px 28px; display: flex;
+      align-items: center; justify-content: space-between;
+    }
+    .quot-hdr .q-logo { font-size: 1.2rem; font-weight: 800; letter-spacing: 2px; color: var(--accent); }
+    .quot-hdr .q-sub  { font-size: .78rem; color: rgba(255,255,255,.5); margin-top: 2px; }
+    .quot-body { padding: 28px; }
+    .quot-sec {
+      font-size: .8rem; font-weight: 700; text-transform: uppercase;
+      letter-spacing: .7px; color: var(--brand);
+      border-bottom: 2px solid var(--accent);
+      padding-bottom: 6px; margin-bottom: 14px;
+    }
+    .quot-gap { margin-top: 22px; }
+    .quot-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px; }
+    .quot-field { display: flex; flex-direction: column; gap: 5px; }
+    .quot-field label { font-size: .78rem; font-weight: 600; text-transform: uppercase; letter-spacing: .5px; color: var(--muted); }
+    .quot-field input, .quot-field textarea {
+      border: 1px solid var(--border); border-radius: 6px;
+      padding: 9px 12px; font-size: .93rem; color: var(--text);
+      background: #fafaf8; width: 100%; font-family: inherit;
+      transition: border-color .2s, box-shadow .2s;
+    }
+    .quot-field input:focus, .quot-field textarea:focus {
+      outline: none; border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(232,176,75,.15);
+    }
+    .quot-item-row {
+      background: #f8f7f2; border: 1px solid var(--border);
+      border-radius: 8px; padding: 12px 14px; margin-bottom: 10px;
+    }
+    .quot-item-meta { font-size: .82rem; color: var(--muted); margin-bottom: 8px; display: flex; align-items: center; gap: 8px; }
+    .quot-item-num {
+      background: var(--brand); color: var(--accent); border-radius: 50%;
+      width: 22px; height: 22px; display: inline-flex; align-items: center;
+      justify-content: center; font-weight: 700; font-size: .75rem; flex-shrink: 0;
+    }
+    .quot-foot { display: flex; gap: 12px; justify-content: flex-end; margin-top: 24px; }
+    .close-quot { background: rgba(255,255,255,.1); border: 1px solid rgba(255,255,255,.25); color: #fff; border-radius: 8px; padding: 7px 16px; cursor: pointer; font-size: .88rem; transition: background .2s; }
+    .close-quot:hover { background: rgba(255,255,255,.2); }
+    .quot-img-label {
+      display: flex; align-items: center; gap: 8px; margin-top: 8px;
+      border: 2px dashed var(--border); border-radius: 6px;
+      padding: 9px 14px; cursor: pointer; font-size: .82rem;
+      color: var(--muted); transition: border-color .2s, color .2s;
+      font-weight: 500;
+    }
+    .quot-img-label:hover { border-color: var(--accent); color: var(--accent2); }
+    .quot-img-preview {
+      display: none; align-items: center; gap: 12px;
+      margin-top: 8px; flex-wrap: wrap;
+    }
+    .quot-img-preview img { width: 72px; height: 72px; object-fit: cover; border-radius: 6px; border: 1px solid var(--border); }
+    .quot-img-name { font-size: .82rem; color: var(--muted); flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .quot-img-rm { background: var(--danger); color: #fff; border: none; border-radius: 4px; padding: 4px 10px; font-size: .78rem; cursor: pointer; flex-shrink: 0; }
+
+    @media (max-width: 600px) {
+      #quot-modal { padding: 12px 8px; }
+      .quot-body { padding: 16px; }
+      .quot-grid { grid-template-columns: 1fr; }
+      .quot-hdr { padding: 14px 16px; }
+    }
 
     @media (max-width: 600px) {
       /* Lock screen */
@@ -454,12 +531,71 @@
         Add Item
       </button>
       <button class="btn btn-outline" onclick="clearAll()">Clear All</button>
+      <button class="btn btn-outline" onclick="openQuot()" style="border-color:var(--accent);color:var(--accent2);">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+        Generate Quotation
+      </button>
     </div>
 
     <div id="summary">
       <h2>Quotation Summary</h2>
       <div id="summary-body">
         <div class="empty-state" style="color:rgba(255,255,255,.4);padding:20px 0">Add items above to see the summary.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════
+     QUOTATION BUILDER MODAL
+═════════════════════════════════════════ -->
+<div id="quot-modal">
+  <div class="quot-inner">
+    <div class="quot-hdr">
+      <div>
+        <div class="q-logo">HANDPIKD</div>
+        <div class="q-sub">Quotation Builder</div>
+      </div>
+      <button class="close-quot" onclick="closeQuot()">&#10005; Close</button>
+    </div>
+    <div class="quot-body">
+
+      <div class="quot-sec">Client Information</div>
+      <div class="quot-grid">
+        <div class="quot-field">
+          <label>Client / Company Name</label>
+          <input type="text" id="quot-client" placeholder="e.g. Acme Pvt. Ltd.">
+        </div>
+        <div class="quot-field">
+          <label>Contact Person (optional)</label>
+          <input type="text" id="quot-contact" placeholder="e.g. Rahul Sharma">
+        </div>
+      </div>
+      <div class="quot-grid">
+        <div class="quot-field">
+          <label>Quotation Ref. (optional)</label>
+          <input type="text" id="quot-num" placeholder="e.g. Q-2026-001">
+        </div>
+        <div class="quot-field">
+          <label>Valid Till</label>
+          <input type="date" id="quot-valid">
+        </div>
+      </div>
+
+      <div class="quot-sec quot-gap">Item Descriptions</div>
+      <div id="quot-items"></div>
+
+      <div class="quot-sec quot-gap">Additional Notes (optional)</div>
+      <div class="quot-field">
+        <textarea id="quot-notes" rows="3" placeholder="e.g. Prices are inclusive of printing costs and GST."></textarea>
+      </div>
+
+      <div class="quot-foot">
+        <button class="btn btn-outline" onclick="closeQuot()">Cancel</button>
+        <button class="btn btn-primary" onclick="printQuot()">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+          Preview &amp; Print
+        </button>
       </div>
     </div>
   </div>
@@ -483,11 +619,6 @@
   function showApp() {
     document.getElementById('lock-screen').style.display = 'none';
     document.getElementById('app').style.display = 'block';
-  }
-
-  // Restore session without re-entering passkey
-  if (sessionStorage.getItem(SESSION_KEY) === DIGEST) {
-    showApp();
   }
 
   window.unlock = async function () {
@@ -524,6 +655,13 @@
       ? '<line x1="1" y1="1" x2="23" y2="23"/><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/>'
       : '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>';
   };
+
+  // Restore session without re-entering passkey
+  try {
+    if (sessionStorage.getItem(SESSION_KEY) === DIGEST) {
+      showApp();
+    }
+  } catch (e) {}
 
   /* ── Pricing config ────────────────────────────────────────────────── */
   const RATES = {
@@ -565,19 +703,29 @@
     const vp    = parseFloat(d.vp)   || 0;
     const logos = parseFloat(d.logos)|| 0;
 
-    const base     = qty * vp;
-    const baseGST  = base * 0.18;
-    const r        = RATES[rateKey(d.type)];
-    const uvCost    = d.uv    ? r.uv    * qty * logos : 0;
+    const base      = qty * vp;
+    const baseGST   = base * 0.18;
+    const r         = RATES[rateKey(d.type)];
+    const uvBase    = d.uv    ? r.uv    * qty * logos : 0;
+    const uvGST     = uvBase * 0.18;
+    const uvCost    = uvBase + uvGST;
     const laserCost = d.laser ? r.laser * qty * logos : 0;
     const printing  = uvCost + laserCost;
-    const boxCost  = (isCombo(d.type) && d.boxPrint === 'yes') ? BOX_SURCHARGE * qty : 0;
-    const sub      = base + baseGST + printing + boxCost;
-    const cr       = parseFloat(d.comm) || 0.30;
-    const comm     = sub * cr;
-    const total    = sub + comm;
+    const boxCost   = (isCombo(d.type) && d.boxPrint === 'yes') ? BOX_SURCHARGE * qty : 0;
+    const sub       = base + baseGST + printing + boxCost;
 
-    return { base, baseGST, uvCost, laserCost, printing, boxCost, sub, cr, comm, total };
+    const editedComm = parseFloat(d.commAmt);
+    let cr, comm;
+    if (!isNaN(editedComm) && d.commAmt !== '') {
+      comm = Math.max(0, editedComm);
+      cr   = sub > 0 ? comm / sub : 0;
+    } else {
+      cr   = (parseFloat(d.comm) || 30) / 100;
+      comm = sub * cr;
+    }
+    const total = sub + comm;
+
+    return { base, baseGST, uvBase, uvGST, uvCost, laserCost, printing, boxCost, sub, cr, comm, total };
   }
 
   /* ── Render item result ── */
@@ -595,17 +743,33 @@
       ? `<tr><td colspan="2" style="color:#b45309;font-size:.82rem;padding-top:6px">&#9888; Enter "No. of Logos" to calculate printing cost</td></tr>`
       : '';
 
+    const saleGST   = r.total * 0.18;
+    const salePrice = r.total * 1.18;
+    const gstDiff   = saleGST - r.baseGST;
+
+    const prevComm    = document.getElementById('comm-amt-' + id);
+    const commFocused = prevComm && document.activeElement === prevComm;
+
     el.style.display = '';
     el.innerHTML = `<table>
       <tr><td>Base cost (qty × vendor price)</td><td>${fmt(r.base)}</td></tr>
-      <tr><td>GST on base (18%)</td><td>${fmt(r.baseGST)}</td></tr>
-      ${d.uv    && hasLogos ? `<tr><td>UV printing (₹${RATES[rateKey(d.type)].uv} × ${d.qty} × ${d.logos})</td><td>${fmt(r.uvCost)}</td></tr>` : ''}
+      <tr><td>Purchase GST (18%)</td><td>${fmt(r.baseGST)}</td></tr>
+      ${d.uv && hasLogos ? `<tr><td>UV printing base (₹${RATES[rateKey(d.type)].uv} × ${d.qty} × ${d.logos})</td><td>${fmt(r.uvBase)}</td></tr><tr><td>UV printing GST (18%)</td><td>${fmt(r.uvGST)}</td></tr>` : ''}
       ${d.laser && hasLogos ? `<tr><td>Laser printing (₹${RATES[rateKey(d.type)].laser} × ${d.qty} × ${d.logos})</td><td>${fmt(r.laserCost)}</td></tr>` : ''}
       ${noLogosHint}
       ${r.boxCost > 0 ? `<tr><td>Print on box surcharge (₹25 × ${d.qty})</td><td>${fmt(r.boxCost)}</td></tr>` : ''}
-      <tr><td>Commission (${(r.cr*100).toFixed(0)}%)</td><td>${fmt(r.comm)}</td></tr>
+      <tr style="background:#fff8ee;border-top:1px solid var(--border)"><td style="font-weight:600;color:#d97706">Commission (${(r.cr * 100).toFixed(1)}%)</td><td><input type="number" id="comm-amt-${id}" value="${r.comm.toFixed(2)}" min="0" step="0.01" style="width:100%;padding:4px 8px;border:1px solid #ffb347;border-radius:4px;font-weight:700;color:#d97706;background:#fff9f0;font-size:.95rem" oninput="onCommAmt('${id}',this.value)"></td></tr>
       <tr class="total-row"><td>Item Total</td><td>${fmt(r.total)}</td></tr>
+      <tr style="background:#f0f8ff;border-top:2px solid var(--border)"><td>Sales GST (18% on total)</td><td>${fmt(saleGST)}</td></tr>
+      <tr style="background:#f0f8ff"><td style="font-weight:600;color:var(--accent2)">Sale Price (with GST)</td><td style="font-weight:700;color:var(--accent2);font-size:1.05rem">${fmt(salePrice)}</td></tr>
+      <tr style="background:#fef3e2;border-top:1px solid var(--border);font-size:.88rem"><td style="color:#666">GST Difference (Sales - Purchase)</td><td style="color:#666">${gstDiff >= 0 ? '' : ''}${fmt(gstDiff)}</td></tr>
     </table>`;
+
+    if (commFocused) {
+      const newInput = document.getElementById('comm-amt-' + id);
+      if (newInput) newInput.focus();
+    }
+
     renderSummary();
   }
 
@@ -640,7 +804,7 @@
   window.addItem = function () {
     counter++;
     const id = 'i' + counter;
-    items[id] = { qty: '', vp: '', logos: '1', uv: false, laser: false, type: 'bottle', boxPrint: '', comm: '0.30' };
+    items[id] = { qty: '', vp: '', logos: '1', uv: false, laser: false, type: 'bottle', boxPrint: '', comm: '30', commAmt: '' };
 
     document.getElementById('empty-msg').style.display = 'none';
 
@@ -693,13 +857,9 @@
         </div>
         <div class="row two-col">
           <div class="field">
-            <label>Commission</label>
-            <select id="comm-${id}" onchange="onComm('${id}',this.value)">
-              <option value="0.30">30%</option>
-              <option value="0.25">25%</option>
-              <option value="0.20">20%</option>
-              <option value="0.15">15%</option>
-            </select>
+            <label>Commission (%)</label>
+            <input type="number" id="comm-${id}" min="0" max="100" step="0.5" value="30"
+              oninput="onComm('${id}',this.value)">
           </div>
         </div>
         <div class="row box-print-row" id="bprow-${id}">
@@ -772,7 +932,14 @@
 
   window.onComm = function (id, val) {
     if (!items[id]) return;
-    items[id].comm = val;
+    items[id].comm    = val;
+    items[id].commAmt = '';
+    renderItem(id);
+  };
+
+  window.onCommAmt = function (id, val) {
+    if (!items[id]) return;
+    items[id].commAmt = val;
     renderItem(id);
   };
 
@@ -785,6 +952,231 @@
       ? '+₹25/pc on box'
       : val === 'no' ? `UV ₹${r.uv}/logo · Laser ₹${r.laser}/logo` : '';
     renderItem(id);
+  };
+
+  /* ── Quotation Builder ─────────────────────────────────────────────── */
+  window.openQuot = function () {
+    const calcs = Object.keys(items)
+      .map(id => ({ id, r: calc(id), d: items[id] }))
+      .filter(x => x.r && x.d.qty && x.d.vp);
+
+    if (!calcs.length) {
+      alert('Please add and configure at least one item before generating a quotation.');
+      return;
+    }
+
+    document.getElementById('quot-items').innerHTML = calcs.map((x, i) => {
+      const qty       = parseFloat(x.d.qty);
+      const unitPrice = x.r.total / qty;
+      const total     = Math.round(x.r.total * 1.18);
+      return `<div class="quot-item-row">
+        <div class="quot-item-meta">
+          <span class="quot-item-num">${i + 1}</span>
+          <span>${typeLabel(x.d.type)} &nbsp;&middot;&nbsp; Qty: ${qty} &nbsp;&middot;&nbsp; Unit: &#8377;${Math.round(unitPrice)} &nbsp;&middot;&nbsp; Total: &#8377;${total.toLocaleString('en-IN')}</span>
+        </div>
+        <div class="quot-field">
+          <input type="text" id="quot-desc-${x.id}" placeholder="Description for client (e.g. A5 Hardbound Notebook with UV Print)">
+        </div>
+        <input type="file" id="quot-img-${x.id}" accept="image/*" style="display:none" onchange="onQuotImg('${x.id}',this)">
+        <label class="quot-img-label" for="quot-img-${x.id}" id="quot-img-lbl-${x.id}">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+          Upload product image (optional)
+        </label>
+        <div class="quot-img-preview" id="quot-img-preview-${x.id}">
+          <img id="quot-img-thumb-${x.id}" src="" alt="preview">
+          <span class="quot-img-name" id="quot-img-name-${x.id}"></span>
+          <button class="quot-img-rm" onclick="removeQuotImg('${x.id}')">Remove</button>
+        </div>
+      </div>`;
+    }).join('');
+
+    const d = new Date();
+    d.setDate(d.getDate() + 30);
+    document.getElementById('quot-valid').value = d.toISOString().split('T')[0];
+
+    document.getElementById('quot-modal').style.display = 'block';
+    document.body.style.overflow = 'hidden';
+  };
+
+  window.closeQuot = function () {
+    document.getElementById('quot-modal').style.display = 'none';
+    document.body.style.overflow = '';
+  };
+
+  window.onQuotImg = function (id, input) {
+    const file = input.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = e => {
+      document.getElementById('quot-img-thumb-' + id).src = e.target.result;
+      document.getElementById('quot-img-name-' + id).textContent = file.name;
+      document.getElementById('quot-img-preview-' + id).style.display = 'flex';
+      document.getElementById('quot-img-lbl-' + id).style.display = 'none';
+    };
+    reader.readAsDataURL(file);
+  };
+
+  window.removeQuotImg = function (id) {
+    document.getElementById('quot-img-' + id).value = '';
+    document.getElementById('quot-img-thumb-' + id).src = '';
+    document.getElementById('quot-img-name-' + id).textContent = '';
+    document.getElementById('quot-img-preview-' + id).style.display = 'none';
+    document.getElementById('quot-img-lbl-' + id).style.display = 'flex';
+  };
+
+  window.printQuot = function () {
+    const calcs = Object.keys(items)
+      .map(id => ({ id, r: calc(id), d: items[id] }))
+      .filter(x => x.r && x.d.qty && x.d.vp);
+
+    const clientName = document.getElementById('quot-client').value.trim() || 'Valued Client';
+    const contact    = document.getElementById('quot-contact').value.trim();
+    const quotNum    = document.getElementById('quot-num').value.trim();
+    const validIso   = document.getElementById('quot-valid').value;
+    const notes      = document.getElementById('quot-notes').value.trim();
+
+    const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    const fmtDate = iso => {
+      if (!iso) return '';
+      const [y, m, dd] = iso.split('-');
+      return `${parseInt(dd)} ${months[parseInt(m) - 1]} ${y}`;
+    };
+    const today    = fmtDate(new Date().toISOString().split('T')[0]);
+    const validStr = fmtDate(validIso);
+
+    const tableRows = calcs.map((x, i) => {
+      const desc       = (document.getElementById('quot-desc-' + x.id)?.value.trim()) || typeLabel(x.d.type);
+      const qty        = parseFloat(x.d.qty);
+      const unitPrice  = x.r.total / qty;
+      const gstPerUnit = unitPrice * 0.18;
+      const total      = Math.round(x.r.total * 1.18);
+      const thumb      = document.getElementById('quot-img-thumb-' + x.id);
+      const imgSrc     = thumb && thumb.src && !thumb.src.endsWith(window.location.href) ? thumb.src : null;
+      const imgRow     = imgSrc
+        ? `<tr><td colspan="6" style="padding:16px 20px;border:1px solid #ddd;background:#fff;"><img src="${imgSrc}" style="max-height:220px;max-width:320px;display:block;border-radius:6px;border:1px solid #eee;"></td></tr>`
+        : '';
+      return `<tr>
+        <td style="padding:14px 10px;border:1px solid #ddd;text-align:center;font-weight:700;">${i + 1}.</td>
+        <td style="padding:14px 10px;border:1px solid #ddd;">${desc}</td>
+        <td style="padding:14px 10px;border:1px solid #ddd;text-align:center;">&#8377;${Math.round(unitPrice)}/-</td>
+        <td style="padding:14px 10px;border:1px solid #ddd;text-align:center;">${qty}</td>
+        <td style="padding:14px 10px;border:1px solid #ddd;text-align:center;">${gstPerUnit.toFixed(2)}</td>
+        <td style="padding:14px 10px;border:1px solid #ddd;text-align:center;font-weight:700;">&#8377;${total.toLocaleString('en-IN')}/-</td>
+      </tr>${imgRow}`;
+    }).join('');
+
+    const grandTotal = calcs.reduce((s, x) => s + Math.round(x.r.total * 1.18), 0);
+    const logoSrc    = new URL('../images/logo.png', window.location.href).href;
+    const notesHtml  = notes
+      ? notes.replace(/\n/g, '<br>')
+      : 'The prices are inclusive of printing costs.<br>The price quotations are inclusive of GST.<br>GST is applicable on all the products and will be applied on the final generated invoice.';
+
+    const w = window.open('', '_blank', 'width=960,height=720');
+    w.document.write(`<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Quotation — HANDPIKD${quotNum ? ' ' + quotNum : ''}</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Segoe UI',Arial,sans-serif;background:#fff;color:#1a1a2e;min-height:100vh}
+@media print{body{-webkit-print-color-adjust:exact;print-color-adjust:exact}.no-print{display:none!important}}
+.tr-blk{position:fixed;top:0;right:0;width:0;height:0;border-style:solid;border-width:0 110px 110px 0;border-color:transparent #1a1a2e transparent transparent;z-index:0}
+.tr-yel{position:fixed;top:0;right:0;width:0;height:0;border-style:solid;border-width:0 70px 70px 0;border-color:transparent #e8b04b transparent transparent;z-index:0}
+.bl-blk{position:fixed;bottom:0;left:0;width:0;height:0;border-style:solid;border-width:110px 0 0 110px;border-color:transparent transparent transparent #1a1a2e;z-index:0}
+.bl-yel{position:fixed;bottom:0;left:0;width:0;height:0;border-style:solid;border-width:70px 0 0 70px;border-color:transparent transparent transparent #e8b04b;z-index:0}
+.page{max-width:860px;margin:0 auto;padding:44px 52px 60px;position:relative;z-index:1}
+.logo-img{height:72px;width:auto;display:block;margin-bottom:28px}
+.info-row{display:flex;justify-content:space-between;gap:32px;margin-bottom:30px}
+.info-row p{font-size:.87rem;color:#444;line-height:1.75}
+.info-right{text-align:right}
+.quot-title-row{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:14px}
+.quot-title{font-size:1rem;font-weight:800;text-transform:uppercase;letter-spacing:2px}
+.quot-for{font-size:.85rem;color:#555;margin-top:4px}
+.quot-for strong{color:#1a1a2e}
+.quot-meta{font-size:.8rem;color:#666;text-align:right;line-height:2}
+table{width:100%;border-collapse:collapse}
+thead tr{background:#1a1a2e}
+thead th{padding:11px 10px;color:#fff;font-size:.78rem;letter-spacing:.5px;font-weight:700;border:1px solid #111;text-align:center}
+thead th:nth-child(2){text-align:left}
+tbody tr{background:#fffde7}
+tbody tr:nth-child(even){background:#fff9e0}
+tbody td{border:1px solid #ddd;font-size:.9rem;color:#1a1a2e;vertical-align:middle}
+.grand-row td{background:#1a1a2e!important;color:#e8b04b;font-weight:800;font-size:.95rem;padding:13px 10px;border:1px solid #111;text-align:center}
+.grand-row td:first-child{text-align:right;letter-spacing:.5px}
+.note-section{margin-top:22px}
+.note-section strong{font-size:.85rem;color:#1a1a2e;display:block;margin-bottom:4px}
+.note-section p{font-size:.82rem;color:#555;line-height:1.75}
+.tc-section{margin-top:24px;border-top:2px solid #e8b04b;padding-top:14px}
+.tc-section h3{font-size:.85rem;font-weight:700;text-align:center;margin-bottom:8px;color:#1a1a2e}
+.tc-section p{font-size:.76rem;color:#666;line-height:1.75;text-align:center}
+.dates{display:flex;gap:32px;margin-top:18px}
+.dates span{font-size:.8rem;color:#e8b04b;font-weight:600}
+.print-btn{position:fixed;bottom:24px;right:24px;background:#1a1a2e;color:#e8b04b;border:none;border-radius:8px;padding:12px 26px;font-size:.95rem;font-weight:700;cursor:pointer;box-shadow:0 4px 16px rgba(0,0,0,.3);letter-spacing:.5px;z-index:10}
+.print-btn:hover{background:#2a2a45}
+</style>
+</head>
+<body>
+<div class="tr-blk"></div><div class="tr-yel"></div>
+<div class="bl-blk"></div><div class="bl-yel"></div>
+<div class="page">
+  <img src="${logoSrc}" class="logo-img" alt="HANDPIKD Corporate Gifts">
+
+  <div class="info-row">
+    <div><p>Address &mdash; 2nd Cross Road, SGN Layout,<br>Vinobha Nagar, Sudhama Nagar,<br>Bengaluru, Karnataka &mdash; 560027.</p></div>
+    <div class="info-right"><p>Name &nbsp;&nbsp;: Alvin Abreo (Co-Founder)<br>Phone &nbsp;: 8824773308<br>Email &nbsp;&nbsp;: info@handpikd.co<br>Website : www.handpikd.co</p></div>
+  </div>
+
+  <div class="quot-title-row">
+    <div>
+      <div class="quot-title">Quotation</div>
+      <div class="quot-for">Prepared for: <strong>${clientName}${contact ? ' &mdash; ' + contact : ''}</strong></div>
+    </div>
+    <div class="quot-meta">
+      ${quotNum ? 'Ref: ' + quotNum + '<br>' : ''}
+      Issue Date: ${today}${validStr ? '<br>Valid Till: ' + validStr : ''}
+    </div>
+  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th style="width:44px">NO.</th>
+        <th style="text-align:left">DESCRIPTION</th>
+        <th style="width:100px">UNIT PRICE</th>
+        <th style="width:56px">QTY</th>
+        <th style="width:100px">GST (18%)</th>
+        <th style="width:120px">TOTAL<br><span style="font-size:.65rem;font-weight:400;opacity:.7">(ROUNDED OFF)</span></th>
+      </tr>
+    </thead>
+    <tbody>
+      ${tableRows}
+      <tr class="grand-row">
+        <td colspan="5">GRAND TOTAL</td>
+        <td>&#8377;${grandTotal.toLocaleString('en-IN')}/-</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="note-section">
+    <strong>Please Note:</strong>
+    <p>${notesHtml}</p>
+  </div>
+
+  <div class="tc-section">
+    <h3>Terms and Conditions</h3>
+    <p>Goods once sold will not be taken back or exchanged. Any damage, shortage, or discrepancy must be reported within 48 hours of delivery. Risk passes to the buyer upon delivery; ownership remains with the seller until full payment is received. Orders once confirmed cannot be cancelled without seller approval and may attract cancellation charges. Products are supplied as per manufacturer specifications; no warranty unless explicitly stated. Seller&rsquo;s liability is limited to the invoice value of the goods supplied. All disputes are subject to Bangalore jurisdiction only.</p>
+  </div>
+
+  <div class="dates">
+    <span>Issue Date: ${today}</span>
+    ${validStr ? '<span>Valid Till: ' + validStr + '</span>' : ''}
+  </div>
+</div>
+<button class="print-btn no-print" onclick="window.print()">Print / Save PDF</button>
+`);
+    w.document.write('\x3c/body>\x3c/html>');
+    w.document.close();
   };
 
 })();
