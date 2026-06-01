@@ -764,6 +764,15 @@
     { value: 'others', label: 'Others',        isCombo: false }
   ];
 
+  const COMBO_ITEM_OPTIONS = [
+    { value: 'bottle', label: 'Bottle' },
+    { value: 'pen',    label: 'Pen'    },
+    { value: 'diary',  label: 'Diary'  },
+    { value: 'mug',    label: 'Mug'    },
+    { value: 'bag',    label: 'Bag'    },
+    { value: 'others', label: 'Others' }
+  ];
+
   let counter = 0;
   const items = {};
 
@@ -773,25 +782,67 @@
   }
   function isCombo(v)    { const t = ITEM_TYPES.find(x => x.value === v); return t ? t.isCombo : false; }
   function rateKey(v)    { return ['combo2','combo3','combo4','combo5'].includes(v) ? v : 'standard'; }
-  function typeLabel(v)  { const t = ITEM_TYPES.find(x => x.value === v); return t ? t.label : v; }
+  function typeLabel(v, comboItems) {
+    const t    = ITEM_TYPES.find(x => x.value === v);
+    const base = t ? t.label : v;
+    if (comboItems && comboItems.length) {
+      const names = comboItems.map(ci => {
+        const opt = COMBO_ITEM_OPTIONS.find(o => o.value === ci);
+        return opt ? opt.label : '';
+      }).filter(Boolean);
+      if (names.length) return base + ' (' + names.join(', ') + ')';
+    }
+    return base;
+  }
   /* ── Calculation ── */
   function calc(id) {
     const d = items[id];
     if (!d) return null;
-    const qty   = parseFloat(d.qty)  || 0;
-    const vp    = parseFloat(d.vp)   || 0;
-    const logos = parseFloat(d.logos)|| 0;
+    const qty = parseFloat(d.qty) || 0;
+    const vp  = parseFloat(d.vp)  || 0;
 
     const base      = qty * vp;
     const baseGST   = base * 0.18;
-    const r         = RATES[rateKey(d.type)];
-    const uvBase    = d.uv    ? r.uv    * qty * logos : 0;
-    const uvGST     = uvBase * 0.18;
-    const uvCost    = uvBase + uvGST;
-    const laserCost = d.laser ? r.laser * qty * logos : 0;
-    const printing  = uvCost + laserCost;
-    const boxCost   = (isCombo(d.type) && d.boxPrint === 'yes') ? BOX_SURCHARGE * qty : 0;
-    const sub       = base + baseGST + printing + boxCost;
+    const defaults  = RATES[rateKey(d.type)];
+
+    let uvBase = 0, uvGST = 0, uvCost = 0, laserCost = 0;
+    let uvRateUsed = defaults.uv, laserRateUsed = defaults.laser;
+    let comboCalcDetails = [];
+
+    if (isCombo(d.type)) {
+      (d.comboItemDetails || []).forEach(det => {
+        const logos  = parseFloat(det.logos) || 0;
+        const uvR    = (det.uvRate    !== '' && !isNaN(parseFloat(det.uvRate)))    ? parseFloat(det.uvRate)    : defaults.uv;
+        const lR     = (det.laserRate !== '' && !isNaN(parseFloat(det.laserRate))) ? parseFloat(det.laserRate) : defaults.laser;
+        const subUvBase = det.uv    ? uvR * qty * logos : 0;
+        const subUvGST  = subUvBase * 0.18;
+        const subUvCost = subUvBase + subUvGST;
+        const subLCost  = det.laser ? lR  * qty * logos : 0;
+        uvBase    += subUvBase;
+        uvGST     += subUvGST;
+        uvCost    += subUvCost;
+        laserCost += subLCost;
+        comboCalcDetails.push({ uvBase: subUvBase, uvGST: subUvGST, laserCost: subLCost, logos, uvRateUsed: uvR, laserRateUsed: lR, uv: det.uv, laser: det.laser });
+      });
+    } else {
+      const logos = parseFloat(d.logos) || 0;
+      uvRateUsed    = (d.uvRate    !== '' && !isNaN(parseFloat(d.uvRate)))    ? parseFloat(d.uvRate)    : defaults.uv;
+      laserRateUsed = (d.laserRate !== '' && !isNaN(parseFloat(d.laserRate))) ? parseFloat(d.laserRate) : defaults.laser;
+      uvBase    = d.uv    ? uvRateUsed    * qty * logos : 0;
+      uvGST     = uvBase * 0.18;
+      uvCost    = uvBase + uvGST;
+      laserCost = d.laser ? laserRateUsed * qty * logos : 0;
+    }
+
+    const printing = uvCost + laserCost;
+    let boxCost = 0, boxUvBase = 0, boxUvGST = 0, boxLaserCost = 0;
+    if (isCombo(d.type) && d.boxPrint === 'yes') {
+      boxUvBase    = d.boxPrintUv    ? (parseFloat(d.boxPrintUvRate)    || 25) * qty : 0;
+      boxUvGST     = boxUvBase * 0.18;
+      boxLaserCost = d.boxPrintLaser ? (parseFloat(d.boxPrintLaserRate) || 25) * qty : 0;
+      boxCost      = boxUvBase + boxUvGST + boxLaserCost;
+    }
+    const sub      = base + baseGST + printing + boxCost;
 
     const editedComm = parseFloat(d.commAmt);
     let cr, comm;
@@ -804,7 +855,7 @@
     }
     const total = sub + comm;
 
-    return { base, baseGST, uvBase, uvGST, uvCost, laserCost, printing, boxCost, sub, cr, comm, total };
+    return { base, baseGST, uvBase, uvGST, uvCost, laserCost, printing, boxCost, boxUvBase, boxUvGST, boxLaserCost, sub, cr, comm, total, uvRateUsed, laserRateUsed, comboCalcDetails };
   }
 
   /* ── Render item result ── */
@@ -816,11 +867,19 @@
 
     if (!r || !d.qty || !d.vp) { el.style.display = 'none'; renderSummary(); return; }
 
-    const hasLogos   = parseFloat(d.logos) > 0;
-    const printingOn = d.uv || d.laser;
-    const noLogosHint = printingOn && !hasLogos
-      ? `<tr><td colspan="2" style="color:#b45309;font-size:.82rem;padding-top:6px">&#9888; Enter "No. of Logos" to calculate printing cost</td></tr>`
-      : '';
+    const combo      = isCombo(d.type);
+    const hasLogos   = combo ? false : parseFloat(d.logos) > 0;
+    const printingOn = combo
+      ? (d.comboItemDetails || []).some(det => det.uv || det.laser)
+      : d.uv || d.laser;
+    const noLogosHint = (() => {
+      if (!printingOn) return '';
+      if (combo) {
+        const warn = (d.comboItemDetails || []).some(det => (det.uv || det.laser) && !(parseFloat(det.logos) > 0));
+        return warn ? `<tr><td colspan="2" style="color:#b45309;font-size:.82rem;padding-top:6px">&#9888; Enter logos count for each printing sub-item</td></tr>` : '';
+      }
+      return !hasLogos ? `<tr><td colspan="2" style="color:#b45309;font-size:.82rem;padding-top:6px">&#9888; Enter "No. of Logos" to calculate printing cost</td></tr>` : '';
+    })();
 
     const saleGST   = r.total * 0.18;
     const salePrice = r.total * 1.18;
@@ -833,11 +892,25 @@
     el.innerHTML = `<table>
       <tr><td>Base cost (qty × vendor price)</td><td>${fmt(r.base)}</td></tr>
       <tr><td>Purchase GST (18%)</td><td>${fmt(r.baseGST)}</td></tr>
-      ${d.uv && hasLogos ? `<tr><td>UV printing base (₹${RATES[rateKey(d.type)].uv} × ${d.qty} × ${d.logos})</td><td>${fmt(r.uvBase)}</td></tr><tr><td>UV printing GST (18%)</td><td>${fmt(r.uvGST)}</td></tr>` : ''}
-      ${d.laser && hasLogos ? `<tr><td>Laser printing (₹${RATES[rateKey(d.type)].laser} × ${d.qty} × ${d.logos})</td><td>${fmt(r.laserCost)}</td></tr>` : ''}
+      ${combo
+        ? r.comboCalcDetails.map((det, i) => {
+            const ciVal  = d.comboItems && d.comboItems[i];
+            const ciOpt  = ciVal ? COMBO_ITEM_OPTIONS.find(o => o.value === ciVal) : null;
+            const name   = ciOpt ? ciOpt.label : `Item ${i + 1}`;
+            const hasL   = parseFloat(d.comboItemDetails[i]?.logos) > 0;
+            return [
+              det.uv && hasL ? `<tr><td>UV – ${name} (₹${det.uvRateUsed} × ${d.qty} × ${det.logos})</td><td>${fmt(det.uvBase)}</td></tr><tr><td>&nbsp;&nbsp;&nbsp;↳ UV GST (18%)</td><td>${fmt(det.uvGST)}</td></tr>` : '',
+              det.laser && hasL ? `<tr><td>Laser – ${name} (₹${det.laserRateUsed} × ${d.qty} × ${det.logos})</td><td>${fmt(det.laserCost)}</td></tr>` : ''
+            ].join('');
+          }).join('')
+        : `${d.uv && hasLogos ? `<tr><td>UV printing base (₹${r.uvRateUsed} × ${d.qty} × ${d.logos})</td><td>${fmt(r.uvBase)}</td></tr><tr><td>UV printing GST (18%)</td><td>${fmt(r.uvGST)}</td></tr>` : ''}${d.laser && hasLogos ? `<tr><td>Laser printing (₹${r.laserRateUsed} × ${d.qty} × ${d.logos})</td><td>${fmt(r.laserCost)}</td></tr>` : ''}`
+      }
       ${noLogosHint}
-      ${r.boxCost > 0 ? `<tr><td>Print on box surcharge (₹25 × ${d.qty})</td><td>${fmt(r.boxCost)}</td></tr>` : ''}
-      <tr style="background:#fff8ee;border-top:1px solid var(--border)"><td style="font-weight:600;color:#d97706">Commission (${(r.cr * 100).toFixed(1)}%)</td><td><input type="number" id="comm-amt-${id}" value="${r.comm.toFixed(2)}" min="0" step="0.01" style="width:100%;padding:4px 8px;border:1px solid #ffb347;border-radius:4px;font-weight:700;color:#d97706;background:#fff9f0;font-size:.95rem" oninput="onCommAmt('${id}',this.value)"></td></tr>
+      ${r.boxUvBase > 0 ? `<tr><td>Box UV printing (₹${parseFloat(d.boxPrintUvRate)||25} × ${d.qty})</td><td>${fmt(r.boxUvBase)}</td></tr><tr><td>&nbsp;&nbsp;&nbsp;↳ Box UV GST (18%)</td><td>${fmt(r.boxUvGST)}</td></tr>` : ''}
+      ${r.boxLaserCost > 0 ? `<tr><td>Box Laser printing (₹${parseFloat(d.boxPrintLaserRate)||25} × ${d.qty})</td><td>${fmt(r.boxLaserCost)}</td></tr>` : ''}
+      ${(d.boxPrint === 'yes' && !d.boxPrintUv && !d.boxPrintLaser) ? `<tr><td colspan="2" style="color:#b45309;font-size:.82rem;padding-top:6px">&#9888; Select UV or Laser for box printing</td></tr>` : ''}
+      <tr style="border-top:1px solid var(--border)"><td style="font-weight:600;color:var(--brand)">Item Subtotal</td><td style="font-weight:600">${fmt(r.sub)}</td></tr>
+      <tr style="background:#fff8ee"><td style="font-weight:600;color:#d97706">Commission (${(r.cr * 100).toFixed(1)}%)</td><td><input type="number" id="comm-amt-${id}" value="${r.comm.toFixed(2)}" min="0" step="0.01" style="width:100%;padding:4px 8px;border:1px solid #ffb347;border-radius:4px;font-weight:700;color:#d97706;background:#fff9f0;font-size:.95rem" oninput="onCommAmt('${id}',this.value)"></td></tr>
       <tr class="total-row"><td>Item Total</td><td>${fmt(r.total)}</td></tr>
       <tr style="background:#f0f8ff;border-top:2px solid var(--border)"><td>Sales GST (18% on total)</td><td>${fmt(saleGST)}</td></tr>
       <tr style="background:#f0f8ff"><td style="font-weight:600;color:var(--accent2)">Sale Price (with GST)</td><td style="font-weight:700;color:var(--accent2);font-size:1.05rem">${fmt(salePrice)}</td></tr>
@@ -868,7 +941,7 @@
     const grand = sub + gst;
 
     const rows = calcs.map((x, i) =>
-      `<tr><td>Item ${i+1} — ${typeLabel(items[x.id].type)}</td><td>${fmt(x.r.total)}</td></tr>`
+      `<tr><td>Item ${i+1} — ${typeLabel(items[x.id].type, items[x.id].comboItems)}</td><td>${fmt(x.r.total)}</td></tr>`
     ).join('');
 
     body.innerHTML = `<table class="summary-table">
@@ -883,7 +956,7 @@
   window.addItem = function () {
     counter++;
     const id = 'i' + counter;
-    items[id] = { qty: '', vp: '', logos: '1', uv: false, laser: false, type: 'bottle', boxPrint: '', comm: '30', commAmt: '' };
+    items[id] = { qty: '', vp: '', logos: '1', uv: false, laser: false, type: 'bottle', boxPrint: '', comm: '30', commAmt: '', comboItems: [], comboItemDetails: [], uvRate: '', laserRate: '', boxPrintUv: false, boxPrintLaser: false, boxPrintUvRate: '', boxPrintLaserRate: '' };
 
     document.getElementById('empty-msg').style.display = 'none';
 
@@ -908,6 +981,12 @@
             </select>
           </div>
         </div>
+        <div class="row" id="combo-items-row-${id}" style="display:none">
+          <div class="field" style="flex:1 1 100%">
+            <label>Items in Combo</label>
+            <div id="combo-selects-${id}" style="display:flex;flex-wrap:wrap;gap:10px;"></div>
+          </div>
+        </div>
         <div class="row two-col">
           <div class="field">
             <label>Vendor Price (₹)</label>
@@ -920,7 +999,7 @@
               oninput="onF('${id}','qty',this.value)">
           </div>
         </div>
-        <div class="row two-col">
+        <div class="row two-col" id="print-row-${id}">
           <div class="field">
             <label>Printing Type</label>
             <div class="multiselect-wrap">
@@ -932,6 +1011,18 @@
             <label>No. of Logos</label>
             <input type="number" id="logos-${id}" min="0" step="1" value="1"
               oninput="onF('${id}','logos',this.value)">
+          </div>
+        </div>
+        <div class="row" id="rates-row-${id}" style="display:none">
+          <div class="field" id="uv-rate-field-${id}" style="display:none">
+            <label>UV Rate (₹/logo/pc)</label>
+            <input type="number" id="uv-rate-${id}" min="0" step="0.5" placeholder="Default"
+              oninput="onF('${id}','uvRate',this.value)">
+          </div>
+          <div class="field" id="laser-rate-field-${id}" style="display:none">
+            <label>Laser Rate (₹/logo/pc)</label>
+            <input type="number" id="laser-rate-${id}" min="0" step="0.5" placeholder="Default"
+              oninput="onF('${id}','laserRate',this.value)">
           </div>
         </div>
         <div class="row two-col">
@@ -947,11 +1038,32 @@
             <select id="bp-${id}" onchange="onBP('${id}',this.value)">
               <option value="">-- Select --</option>
               <option value="no">No</option>
-              <option value="yes">Yes  (+₹25/pc surcharge)</option>
+              <option value="yes">Yes</option>
             </select>
           </div>
           <div class="field" style="justify-content:flex-end;padding-bottom:2px">
             <span class="info-tag" id="rtag-${id}"></span>
+          </div>
+        </div>
+        <div class="row" id="bptype-row-${id}" style="display:none">
+          <div class="field">
+            <label>Box Print Type</label>
+            <div class="multiselect-wrap">
+              <label><input type="checkbox" id="bp-uv-${id}" onchange="onBPType('${id}','uv',this.checked)"> UV</label>
+              <label><input type="checkbox" id="bp-laser-${id}" onchange="onBPType('${id}','laser',this.checked)"> Laser</label>
+            </div>
+          </div>
+        </div>
+        <div class="row" id="bprates-row-${id}" style="display:none">
+          <div class="field" id="bp-uv-rate-field-${id}" style="display:none">
+            <label>Box UV Rate (₹/pc)</label>
+            <input type="number" id="bp-uv-rate-${id}" min="0" step="0.5" placeholder="Default: ₹25"
+              oninput="onF('${id}','boxPrintUvRate',this.value)">
+          </div>
+          <div class="field" id="bp-laser-rate-field-${id}" style="display:none">
+            <label>Box Laser Rate (₹/pc)</label>
+            <input type="number" id="bp-laser-rate-${id}" min="0" step="0.5" placeholder="Default: ₹25"
+              oninput="onF('${id}','boxPrintLaserRate',this.value)">
           </div>
         </div>
         <div class="item-result" id="res-${id}" style="display:none"></div>
@@ -987,24 +1099,134 @@
   window.onPrint = function (id, type, checked) {
     if (!items[id]) return;
     items[id][type] = checked;
+    const d          = items[id];
+    const defaults   = RATES[rateKey(d.type)];
+    const ratesRow   = document.getElementById('rates-row-' + id);
+    const uvField    = document.getElementById('uv-rate-field-' + id);
+    const laserField = document.getElementById('laser-rate-field-' + id);
+    if (type === 'uv') {
+      if (checked) {
+        uvField.style.display = '';
+        document.getElementById('uv-rate-' + id).placeholder = `Default: ₹${defaults.uv}`;
+      } else {
+        uvField.style.display = 'none';
+        d.uvRate = '';
+        document.getElementById('uv-rate-' + id).value = '';
+      }
+    }
+    if (type === 'laser') {
+      if (checked) {
+        laserField.style.display = '';
+        document.getElementById('laser-rate-' + id).placeholder = `Default: ₹${defaults.laser}`;
+      } else {
+        laserField.style.display = 'none';
+        d.laserRate = '';
+        document.getElementById('laser-rate-' + id).value = '';
+      }
+    }
+    ratesRow.style.display = (d.uv || d.laser) ? '' : 'none';
     renderItem(id);
   };
 
   window.onType = function (id) {
     if (!items[id]) return;
     const val = document.getElementById('type-' + id).value;
-    items[id].type     = val;
-    items[id].boxPrint = '';
-    const row  = document.getElementById('bprow-' + id);
-    const rtag = document.getElementById('rtag-' + id);
-    const bpEl = document.getElementById('bp-' + id);
+    items[id].type             = val;
+    items[id].boxPrint         = '';
+    items[id].comboItems       = [];
+    items[id].comboItemDetails = [];
+    const row      = document.getElementById('bprow-' + id);
+    const rtag     = document.getElementById('rtag-' + id);
+    const bpEl     = document.getElementById('bp-' + id);
+    const ciRow    = document.getElementById('combo-items-row-' + id);
+    const ciWrap   = document.getElementById('combo-selects-' + id);
+    const printRow = document.getElementById('print-row-' + id);
+    const ratesRow = document.getElementById('rates-row-' + id);
+
     if (isCombo(val)) {
+      // Hide top-level printing controls; they move into each sub-item slot
+      printRow.style.display = 'none';
+      ratesRow.style.display = 'none';
+      items[id].uv = false; items[id].laser = false;
+      items[id].uvRate = ''; items[id].laserRate = '';
+      items[id].boxPrintUv = false; items[id].boxPrintLaser = false;
+      items[id].boxPrintUvRate = ''; items[id].boxPrintLaserRate = '';
+      const bptRowT = document.getElementById('bptype-row-' + id);
+      const bprRowT = document.getElementById('bprates-row-' + id);
+      if (bptRowT) bptRowT.style.display = 'none';
+      if (bprRowT) bprRowT.style.display = 'none';
+
+      const count    = parseInt(val.replace('combo', ''));
+      const defaults = RATES[rateKey(val)];
+      const opts     = COMBO_ITEM_OPTIONS.map(o =>
+        `<option value="${o.value}">${o.label}</option>`
+      ).join('');
+
+      ciWrap.innerHTML = '';
+      for (let i = 0; i < count; i++) {
+        items[id].comboItems.push('');
+        items[id].comboItemDetails.push({ uv: false, laser: false, logos: '1', uvRate: '', laserRate: '' });
+
+        const slot = document.createElement('div');
+        slot.id = `combo-slot-${id}-${i}`;
+        slot.style.cssText = 'flex:1 1 200px;border:1px solid var(--border);border-radius:8px;padding:12px;background:#fafaf8;';
+        slot.innerHTML = `
+          <div style="font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);margin-bottom:8px">Item ${i + 1}</div>
+          <select id="combo-item-${id}-${i}" style="width:100%;border:1px solid var(--border);border-radius:6px;padding:8px 10px;font-size:.9rem;color:var(--text);background:#fff;margin-bottom:8px" onchange="onComboItem('${id}')">
+            <option value="">Select…</option>${opts}
+          </select>
+          <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:4px">
+            <label style="display:flex;align-items:center;gap:5px;font-size:.85rem;font-weight:500;cursor:pointer;color:var(--text)">
+              <input type="checkbox" id="combo-uv-${id}-${i}" style="accent-color:var(--accent);width:15px;height:15px" onchange="onComboItemPrint('${id}',${i},'uv',this.checked)"> UV
+            </label>
+            <label style="display:flex;align-items:center;gap:5px;font-size:.85rem;font-weight:500;cursor:pointer;color:var(--text)">
+              <input type="checkbox" id="combo-laser-${id}-${i}" style="accent-color:var(--accent);width:15px;height:15px" onchange="onComboItemPrint('${id}',${i},'laser',this.checked)"> Laser
+            </label>
+            <div style="display:flex;align-items:center;gap:4px;margin-left:auto">
+              <span style="font-size:.75rem;color:var(--muted);white-space:nowrap">Logos:</span>
+              <input type="number" id="combo-logos-${id}-${i}" value="1" min="0" step="1" style="width:54px;border:1px solid var(--border);border-radius:6px;padding:5px 7px;font-size:.88rem;color:var(--text);background:#fff;" oninput="onComboItemField('${id}',${i},'logos',this.value)">
+            </div>
+          </div>
+          <div id="combo-rates-${id}-${i}" style="display:none;gap:6px;flex-wrap:wrap;margin-top:6px">
+            <div id="combo-uv-rate-f-${id}-${i}" style="display:none;flex:1 1 120px">
+              <input type="number" id="combo-uv-rate-${id}-${i}" placeholder="UV ₹/logo (def: ₹${defaults.uv})" min="0" step="0.5" style="width:100%;border:1px solid #ffb347;border-radius:6px;padding:6px 8px;font-size:.82rem;color:var(--text);background:#fff9f0;" oninput="onComboItemField('${id}',${i},'uvRate',this.value)">
+            </div>
+            <div id="combo-laser-rate-f-${id}-${i}" style="display:none;flex:1 1 120px">
+              <input type="number" id="combo-laser-rate-${id}-${i}" placeholder="Laser ₹/logo (def: ₹${defaults.laser})" min="0" step="0.5" style="width:100%;border:1px solid #7bb3d8;border-radius:6px;padding:6px 8px;font-size:.82rem;color:var(--text);background:#f0f8ff;" oninput="onComboItemField('${id}',${i},'laserRate',this.value)">
+            </div>
+          </div>`;
+        ciWrap.appendChild(slot);
+      }
+
+      ciRow.style.display = '';
       row.classList.add('visible');
       bpEl.value = '';
       rtag.textContent = '';
     } else {
+      // Restore top-level printing controls; reset any stale state
+      printRow.style.display = '';
+      items[id].uv = false; items[id].laser = false;
+      items[id].uvRate = ''; items[id].laserRate = '';
+      const uvEl    = document.getElementById('uv-' + id);
+      const laserEl = document.getElementById('laser-' + id);
+      if (uvEl)    uvEl.checked    = false;
+      if (laserEl) laserEl.checked = false;
+      ratesRow.style.display = 'none';
+      const uvField    = document.getElementById('uv-rate-field-' + id);
+      const laserField = document.getElementById('laser-rate-field-' + id);
+      if (uvField)    uvField.style.display    = 'none';
+      if (laserField) laserField.style.display = 'none';
+
+      ciRow.style.display = 'none';
+      ciWrap.innerHTML    = '';
       row.classList.remove('visible');
       rtag.textContent = '';
+      const bptRowE = document.getElementById('bptype-row-' + id);
+      const bprRowE = document.getElementById('bprates-row-' + id);
+      if (bptRowE) bptRowE.style.display = 'none';
+      if (bprRowE) bprRowE.style.display = 'none';
+      items[id].boxPrintUv = false; items[id].boxPrintLaser = false;
+      items[id].boxPrintUvRate = ''; items[id].boxPrintLaserRate = '';
     }
     renderItem(id);
   };
@@ -1022,14 +1244,98 @@
     renderItem(id);
   };
 
+  window.onComboItem = function (id) {
+    if (!items[id]) return;
+    const count = parseInt(items[id].type.replace('combo', ''));
+    items[id].comboItems = [];
+    for (let i = 0; i < count; i++) {
+      const sel = document.getElementById(`combo-item-${id}-${i}`);
+      items[id].comboItems.push(sel ? sel.value : '');
+    }
+  };
+
+  window.onComboItemPrint = function (id, i, type, checked) {
+    if (!items[id] || !items[id].comboItemDetails[i]) return;
+    const det      = items[id].comboItemDetails[i];
+    det[type]      = checked;
+    const ratesDiv = document.getElementById(`combo-rates-${id}-${i}`);
+    if (type === 'uv') {
+      const uvRateF = document.getElementById(`combo-uv-rate-f-${id}-${i}`);
+      if (checked) {
+        uvRateF.style.display = '';
+      } else {
+        uvRateF.style.display = 'none';
+        det.uvRate = '';
+        const inp = document.getElementById(`combo-uv-rate-${id}-${i}`);
+        if (inp) inp.value = '';
+      }
+    }
+    if (type === 'laser') {
+      const lRateF = document.getElementById(`combo-laser-rate-f-${id}-${i}`);
+      if (checked) {
+        lRateF.style.display = '';
+      } else {
+        lRateF.style.display = 'none';
+        det.laserRate = '';
+        const inp = document.getElementById(`combo-laser-rate-${id}-${i}`);
+        if (inp) inp.value = '';
+      }
+    }
+    ratesDiv.style.display = (det.uv || det.laser) ? 'flex' : 'none';
+    renderItem(id);
+  };
+
+  window.onComboItemField = function (id, i, field, val) {
+    if (!items[id] || !items[id].comboItemDetails[i]) return;
+    items[id].comboItemDetails[i][field] = val;
+    renderItem(id);
+  };
+
   window.onBP = function (id, val) {
     if (!items[id]) return;
     items[id].boxPrint = val;
-    const rtag = document.getElementById('rtag-' + id);
-    const r    = RATES[rateKey(items[id].type)];
-    rtag.textContent = val === 'yes'
-      ? '+₹25/pc on box'
-      : val === 'no' ? `UV ₹${r.uv}/logo · Laser ₹${r.laser}/logo` : '';
+    const rtag    = document.getElementById('rtag-' + id);
+    const bptRow  = document.getElementById('bptype-row-' + id);
+    const bprRow  = document.getElementById('bprates-row-' + id);
+    const r       = RATES[rateKey(items[id].type)];
+    if (val === 'yes') {
+      rtag.textContent = '';
+      if (bptRow) bptRow.style.display = '';
+    } else {
+      rtag.textContent = val === 'no' ? `UV ₹${r.uv}/logo · Laser ₹${r.laser}/logo` : '';
+      if (bptRow) bptRow.style.display = 'none';
+      if (bprRow) bprRow.style.display = 'none';
+      items[id].boxPrintUv = false; items[id].boxPrintLaser = false;
+      items[id].boxPrintUvRate = ''; items[id].boxPrintLaserRate = '';
+      const uvCb    = document.getElementById('bp-uv-' + id);
+      const laserCb = document.getElementById('bp-laser-' + id);
+      if (uvCb)    uvCb.checked    = false;
+      if (laserCb) laserCb.checked = false;
+      const uvRF    = document.getElementById('bp-uv-rate-field-' + id);
+      const laserRF = document.getElementById('bp-laser-rate-field-' + id);
+      if (uvRF)    uvRF.style.display    = 'none';
+      if (laserRF) laserRF.style.display = 'none';
+    }
+    renderItem(id);
+  };
+
+  window.onBPType = function (id, type, checked) {
+    if (!items[id]) return;
+    const d = items[id];
+    if (type === 'uv')    d.boxPrintUv    = checked;
+    if (type === 'laser') d.boxPrintLaser = checked;
+    const bprRow  = document.getElementById('bprates-row-' + id);
+    const uvRF    = document.getElementById('bp-uv-rate-field-' + id);
+    const laserRF = document.getElementById('bp-laser-rate-field-' + id);
+    if (type === 'uv') {
+      if (checked) { uvRF.style.display = ''; }
+      else { uvRF.style.display = 'none'; d.boxPrintUvRate = ''; const inp = document.getElementById('bp-uv-rate-' + id); if (inp) inp.value = ''; }
+    }
+    if (type === 'laser') {
+      if (checked) { laserRF.style.display = ''; }
+      else { laserRF.style.display = 'none'; d.boxPrintLaserRate = ''; const inp = document.getElementById('bp-laser-rate-' + id); if (inp) inp.value = ''; }
+    }
+    if (bprRow) bprRow.style.display = (d.boxPrintUv || d.boxPrintLaser) ? '' : 'none';
     renderItem(id);
   };
 
@@ -1051,7 +1357,7 @@
       return `<div class="quot-item-row">
         <div class="quot-item-meta">
           <span class="quot-item-num">${i + 1}</span>
-          <span>${typeLabel(x.d.type)} &nbsp;&middot;&nbsp; Qty: ${qty} &nbsp;&middot;&nbsp; Unit: &#8377;${Math.round(unitPrice)} &nbsp;&middot;&nbsp; Total: &#8377;${total.toLocaleString('en-IN')}</span>
+          <span>${typeLabel(x.d.type, x.d.comboItems)} &nbsp;&middot;&nbsp; Qty: ${qty} &nbsp;&middot;&nbsp; Unit: &#8377;${Math.round(unitPrice)} &nbsp;&middot;&nbsp; Total: &#8377;${total.toLocaleString('en-IN')}</span>
         </div>
         <div class="quot-field">
           <input type="text" id="quot-desc-${x.id}" placeholder="Description for client (e.g. A5 Hardbound Notebook with UV Print)">
@@ -1122,7 +1428,11 @@
     const calculatorItems = calcs.map(x => ({
       type: x.d.type, vp: x.d.vp, qty: x.d.qty,
       logos: x.d.logos, uv: x.d.uv, laser: x.d.laser,
-      boxPrint: x.d.boxPrint, comm: x.d.comm, profit: x.d.profit
+      boxPrint: x.d.boxPrint, comm: x.d.comm, profit: x.d.profit,
+      comboItems: x.d.comboItems || [], comboItemDetails: x.d.comboItemDetails || [],
+      uvRate: x.d.uvRate || '', laserRate: x.d.laserRate || '',
+      boxPrintUv: x.d.boxPrintUv || false, boxPrintLaser: x.d.boxPrintLaser || false,
+      boxPrintUvRate: x.d.boxPrintUvRate || '', boxPrintLaserRate: x.d.boxPrintLaserRate || ''
     }));
 
     const quotationItems = calcs.map(x => {
@@ -1250,8 +1560,7 @@
         addItem();
         const id = 'i' + counter;
         const typeEl = document.getElementById('type-' + id);
-        if (typeEl) { typeEl.value = ci.type || 'bottle'; items[id].type = ci.type || 'bottle'; }
-        if (isCombo(ci.type)) document.getElementById('bprow-' + id)?.classList.add('visible');
+        if (typeEl) { typeEl.value = ci.type || 'bottle'; items[id].type = ci.type || 'bottle'; onType(id); }
 
         const set = (field, val) => {
           const el = document.getElementById(field + '-' + id);
@@ -1266,11 +1575,100 @@
         if (uvEl)    { uvEl.checked    = !!ci.uv;    items[id].uv    = !!ci.uv; }
         if (laserEl) { laserEl.checked = !!ci.laser; items[id].laser = !!ci.laser; }
 
+        // Restore rate override fields
+        if (ci.uv || ci.laser) {
+          const ratesRow   = document.getElementById('rates-row-' + id);
+          const loadDefs   = RATES[rateKey(items[id].type)];
+          if (ratesRow) ratesRow.style.display = '';
+          if (ci.uv) {
+            const uvField = document.getElementById('uv-rate-field-' + id);
+            if (uvField) uvField.style.display = '';
+            const uvInp = document.getElementById('uv-rate-' + id);
+            if (uvInp) { uvInp.placeholder = `Default: ₹${loadDefs.uv}`; if (ci.uvRate) uvInp.value = ci.uvRate; }
+            items[id].uvRate = ci.uvRate || '';
+          }
+          if (ci.laser) {
+            const laserField = document.getElementById('laser-rate-field-' + id);
+            if (laserField) laserField.style.display = '';
+            const laserInp = document.getElementById('laser-rate-' + id);
+            if (laserInp) { laserInp.placeholder = `Default: ₹${loadDefs.laser}`; if (ci.laserRate) laserInp.value = ci.laserRate; }
+            items[id].laserRate = ci.laserRate || '';
+          }
+        }
+
         if (ci.boxPrint) {
           const bpEl = document.getElementById('bp-' + id);
           if (bpEl) { bpEl.value = ci.boxPrint; items[id].boxPrint = ci.boxPrint; }
+          if (ci.boxPrint === 'yes') {
+            const bptRow = document.getElementById('bptype-row-' + id);
+            if (bptRow) bptRow.style.display = '';
+            items[id].boxPrintUv    = !!ci.boxPrintUv;
+            items[id].boxPrintLaser = !!ci.boxPrintLaser;
+            items[id].boxPrintUvRate    = ci.boxPrintUvRate    || '';
+            items[id].boxPrintLaserRate = ci.boxPrintLaserRate || '';
+            const uvCb    = document.getElementById('bp-uv-' + id);
+            const laserCb = document.getElementById('bp-laser-' + id);
+            if (uvCb)    uvCb.checked    = !!ci.boxPrintUv;
+            if (laserCb) laserCb.checked = !!ci.boxPrintLaser;
+            if (ci.boxPrintUv || ci.boxPrintLaser) {
+              const bprRow = document.getElementById('bprates-row-' + id);
+              if (bprRow) bprRow.style.display = '';
+              if (ci.boxPrintUv) {
+                const uvRF = document.getElementById('bp-uv-rate-field-' + id);
+                if (uvRF) uvRF.style.display = '';
+                if (ci.boxPrintUvRate) { const inp = document.getElementById('bp-uv-rate-' + id); if (inp) inp.value = ci.boxPrintUvRate; }
+              }
+              if (ci.boxPrintLaser) {
+                const lRF = document.getElementById('bp-laser-rate-field-' + id);
+                if (lRF) lRF.style.display = '';
+                if (ci.boxPrintLaserRate) { const inp = document.getElementById('bp-laser-rate-' + id); if (inp) inp.value = ci.boxPrintLaserRate; }
+              }
+            }
+          }
         }
         items[id].profit = ci.profit || '';
+
+        if (ci.comboItems && ci.comboItems.length) {
+          ci.comboItems.forEach((val, i) => {
+            const sel = document.getElementById(`combo-item-${id}-${i}`);
+            if (sel) sel.value = val;
+          });
+          items[id].comboItems = [...ci.comboItems];
+        }
+
+        if (ci.comboItemDetails && ci.comboItemDetails.length) {
+          ci.comboItemDetails.forEach((det, i) => {
+            if (!items[id].comboItemDetails[i]) return;
+            items[id].comboItemDetails[i] = { ...det };
+            const uvCb     = document.getElementById(`combo-uv-${id}-${i}`);
+            const laserCb  = document.getElementById(`combo-laser-${id}-${i}`);
+            const logosInp = document.getElementById(`combo-logos-${id}-${i}`);
+            if (uvCb)    uvCb.checked    = !!det.uv;
+            if (laserCb) laserCb.checked = !!det.laser;
+            if (logosInp && det.logos !== undefined) logosInp.value = det.logos;
+            const ratesDiv = document.getElementById(`combo-rates-${id}-${i}`);
+            if (det.uv || det.laser) {
+              if (ratesDiv) ratesDiv.style.display = 'flex';
+              if (det.uv) {
+                const uvRateF = document.getElementById(`combo-uv-rate-f-${id}-${i}`);
+                if (uvRateF) uvRateF.style.display = '';
+                if (det.uvRate) {
+                  const inp = document.getElementById(`combo-uv-rate-${id}-${i}`);
+                  if (inp) inp.value = det.uvRate;
+                }
+              }
+              if (det.laser) {
+                const lRateF = document.getElementById(`combo-laser-rate-f-${id}-${i}`);
+                if (lRateF) lRateF.style.display = '';
+                if (det.laserRate) {
+                  const inp = document.getElementById(`combo-laser-rate-${id}-${i}`);
+                  if (inp) inp.value = det.laserRate;
+                }
+              }
+            }
+          });
+        }
+
         renderItem(id);
       });
 
@@ -1339,7 +1737,7 @@
     const validStr = fmtDate(validIso);
 
     const tableRows = calcs.map((x, i) => {
-      const desc       = (document.getElementById('quot-desc-' + x.id)?.value.trim()) || typeLabel(x.d.type);
+      const desc       = (document.getElementById('quot-desc-' + x.id)?.value.trim()) || typeLabel(x.d.type, x.d.comboItems);
       const qty        = parseFloat(x.d.qty);
       const unitPrice  = x.r.total / qty;
       const gstPerUnit = unitPrice * 0.18;
