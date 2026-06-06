@@ -888,9 +888,22 @@ document.addEventListener("DOMContentLoaded", function () {
         const submissionData = {
           timestamp: timestamp,
           name: formData.get("name"),
+          firm: formData.get("firm"),
           email: formData.get("email"),
-          rating: formData.get("rating"),
-          feedback_message: formData.get("feedback_message"),
+          order_date: formData.get("order_date"),
+          order_contents: formData.getAll("order_contents").join(", "),
+          order_contents_other: formData.get("order_contents_other"),
+          overall_rating: formData.get("overall_rating"),
+          quality_products: formData.get("quality_products"),
+          presentation_packaging: formData.get("presentation_packaging"),
+          value_for_money: formData.get("value_for_money"),
+          delivery_timing: formData.get("delivery_timing"),
+          improve_most: formData.get("improve_most"),
+          order_again: formData.get("order_again"),
+          occasions: formData.getAll("occasions").join(", "),
+          occasions_other: formData.get("occasions_other"),
+          future_preferences: formData.getAll("future_preferences").join(", "),
+          additional_comments: formData.get("additional_comments"),
         };
 
         // Send to Google Apps Script
@@ -938,4 +951,34 @@ document.addEventListener("DOMContentLoaded", function () {
       }
     });
   }
+
+  // Open the date picker when clicking anywhere in the "Date of Order" field,
+  // not just on the calendar icon
+  const orderDateInput = document.getElementById("order_date");
+  if (orderDateInput) {
+    orderDateInput.addEventListener("click", function () {
+      if (typeof this.showPicker === "function") {
+        this.showPicker();
+      }
+    });
+  }
+
+  // Reveal a free-text field when an "Other(s)" checkbox is selected
+  function bindOtherToggle(checkboxId, wrapId) {
+    const checkbox = document.getElementById(checkboxId);
+    const wrap = document.getElementById(wrapId);
+    if (!checkbox || !wrap) return;
+    const input = wrap.querySelector("input");
+    checkbox.addEventListener("change", function () {
+      wrap.hidden = !checkbox.checked;
+      if (checkbox.checked) {
+        input.focus();
+      } else {
+        input.value = "";
+      }
+    });
+  }
+
+  bindOtherToggle("order_contents_other_toggle", "order_contents_other_wrap");
+  bindOtherToggle("occasions_other_toggle", "occasions_other_wrap");
 });
