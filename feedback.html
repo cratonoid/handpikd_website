@@ -480,6 +480,26 @@
             transform: none;
         }
 
+        .custom-form-container input.input-error:not([type="checkbox"]):not([type="radio"]),
+        .custom-form-container select.input-error,
+        .custom-form-container textarea.input-error {
+            border-color: #dc3545;
+            box-shadow: 0 0 0 3px rgba(220, 53, 69, 0.15);
+        }
+
+        .radio-group.group-error,
+        .checkbox-group.group-error {
+            border-radius: 8px;
+            outline: 2px solid #dc3545;
+            outline-offset: 3px;
+        }
+
+        .matrix-row.row-error {
+            background: rgba(220, 53, 69, 0.06);
+            outline: 1px solid rgba(220, 53, 69, 0.5);
+            outline-offset: -1px;
+        }
+
         #formMessage {
             margin-top: 1rem;
             padding: 1rem;
@@ -642,7 +662,7 @@
                     </div>
 
                     <div class="custom-form-container">
-                        <form id="feedbackForm">
+                        <form id="feedbackForm" novalidate>
 
                             <div class="form-group">
                                 <label for="name">Name *</label>
@@ -691,7 +711,7 @@
                             </div>
 
                             <div class="form-group">
-                                <label>How would you rate the gifts on the following?</label>
+                                <label>How would you rate the gifts on the following? *</label>
                                 <div class="rating-matrix">
                                     <div class="matrix-header">
                                         <div class="matrix-label-placeholder"></div>
@@ -705,7 +725,7 @@
                                     <div class="matrix-row">
                                         <div class="matrix-label">Quality of products</div>
                                         <div class="matrix-options">
-                                            <label><input type="radio" name="quality_products" value="Excellent"></label>
+                                            <label><input type="radio" name="quality_products" value="Excellent" required></label>
                                             <label><input type="radio" name="quality_products" value="Good"></label>
                                             <label><input type="radio" name="quality_products" value="Average"></label>
                                             <label><input type="radio" name="quality_products" value="Poor"></label>
@@ -714,7 +734,7 @@
                                     <div class="matrix-row">
                                         <div class="matrix-label">Presentation &amp; packaging</div>
                                         <div class="matrix-options">
-                                            <label><input type="radio" name="presentation_packaging" value="Excellent"></label>
+                                            <label><input type="radio" name="presentation_packaging" value="Excellent" required></label>
                                             <label><input type="radio" name="presentation_packaging" value="Good"></label>
                                             <label><input type="radio" name="presentation_packaging" value="Average"></label>
                                             <label><input type="radio" name="presentation_packaging" value="Poor"></label>
@@ -723,7 +743,7 @@
                                     <div class="matrix-row">
                                         <div class="matrix-label">Value for money</div>
                                         <div class="matrix-options">
-                                            <label><input type="radio" name="value_for_money" value="Excellent"></label>
+                                            <label><input type="radio" name="value_for_money" value="Excellent" required></label>
                                             <label><input type="radio" name="value_for_money" value="Good"></label>
                                             <label><input type="radio" name="value_for_money" value="Average"></label>
                                             <label><input type="radio" name="value_for_money" value="Poor"></label>
@@ -732,7 +752,7 @@
                                     <div class="matrix-row">
                                         <div class="matrix-label">Delivery &amp; timing</div>
                                         <div class="matrix-options">
-                                            <label><input type="radio" name="delivery_timing" value="Excellent"></label>
+                                            <label><input type="radio" name="delivery_timing" value="Excellent" required></label>
                                             <label><input type="radio" name="delivery_timing" value="Good"></label>
                                             <label><input type="radio" name="delivery_timing" value="Average"></label>
                                             <label><input type="radio" name="delivery_timing" value="Poor"></label>
@@ -742,9 +762,9 @@
                             </div>
 
                             <div class="form-group">
-                                <label>Which part of the experience could we improve the most?</label>
+                                <label>Which part of the experience could we improve the most? *</label>
                                 <div class="radio-group vertical">
-                                    <label class="radio-item"><input type="radio" name="improve_most" value="Product quality"> Product quality</label>
+                                    <label class="radio-item"><input type="radio" name="improve_most" value="Product quality" required> Product quality</label>
                                     <label class="radio-item"><input type="radio" name="improve_most" value="Packaging & presentation"> Packaging &amp; presentation</label>
                                     <label class="radio-item"><input type="radio" name="improve_most" value="Customization options"> Customization options</label>
                                     <label class="radio-item"><input type="radio" name="improve_most" value="Communication & coordination"> Communication &amp; coordination</label>
@@ -755,9 +775,9 @@
                             </div>
 
                             <div class="form-group">
-                                <label>Would you order from us again?</label>
+                                <label>Would you order from us again? *</label>
                                 <div class="radio-group">
-                                    <label class="radio-item"><input type="radio" name="order_again" value="Definitely"> Definitely</label>
+                                    <label class="radio-item"><input type="radio" name="order_again" value="Definitely" required> Definitely</label>
                                     <label class="radio-item"><input type="radio" name="order_again" value="Probably"> Probably</label>
                                     <label class="radio-item"><input type="radio" name="order_again" value="Maybe"> Maybe</label>
                                     <label class="radio-item"><input type="radio" name="order_again" value="Probably not"> Probably not</label>
@@ -766,7 +786,7 @@
                             </div>
 
                             <div class="form-group">
-                                <label>Which occasions might you need corporate gifts for in the next 6–12 months?</label>
+                                <label>Which occasions might you need corporate gifts for in the next 6–12 months? *</label>
                                 <div class="checkbox-group">
                                     <label class="checkbox-item"><input type="checkbox" name="occasions" value="Diwali"> Diwali</label>
                                     <label class="checkbox-item"><input type="checkbox" name="occasions" value="New Year"> New Year</label>
@@ -783,7 +803,7 @@
                             </div>
 
                             <div class="form-group">
-                                <label>What would you like to see more of in future orders?</label>
+                                <label>What would you like to see more of in future orders? *</label>
                                 <div class="checkbox-group">
                                     <label class="checkbox-item"><input type="checkbox" name="future_preferences" value="Premium / luxury items"> Premium / luxury items</label>
                                     <label class="checkbox-item"><input type="checkbox" name="future_preferences" value="Eco-friendly & sustainable gifts"> Eco-friendly &amp; sustainable gifts</label>

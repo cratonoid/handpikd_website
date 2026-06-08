@@ -865,6 +865,9 @@ document.addEventListener("DOMContentLoaded", function () {
       const submitBtn = document.getElementById("submitBtn");
       const formMessage = document.getElementById("formMessage");
 
+      // Validate all required fields
+      if (!validateFeedbackForm(feedbackForm)) return;
+
       // Disable submit button and show loading
       submitBtn.disabled = true;
       submitBtn.textContent = "Submitting...";
@@ -926,10 +929,11 @@ document.addEventListener("DOMContentLoaded", function () {
         formMessage.style.color = "#155724";
         formMessage.style.border = "1px solid #c3e6cb";
         formMessage.textContent =
-          "Thank you for your feedback! We've received it successfully.";
+          "Thank you for your feedback! We've received it successfully. Redirecting...";
 
         // Reset form
         feedbackForm.reset();
+        setTimeout(() => { window.location.href = "/"; }, 2000);
 
         // Track feedback submission
         gtag("event", "form_submit", {
@@ -956,6 +960,7 @@ document.addEventListener("DOMContentLoaded", function () {
   // not just on the calendar icon
   const orderDateInput = document.getElementById("order_date");
   if (orderDateInput) {
+    orderDateInput.max = new Date().toISOString().split("T")[0];
     orderDateInput.addEventListener("click", function () {
       if (typeof this.showPicker === "function") {
         this.showPicker();
@@ -981,4 +986,88 @@ document.addEventListener("DOMContentLoaded", function () {
 
   bindOtherToggle("order_contents_other_toggle", "order_contents_other_wrap");
   bindOtherToggle("occasions_other_toggle", "occasions_other_wrap");
+
+  // ── Feedback form validation ──────────────────────────────────────────────
+
+  function validateFeedbackForm(form) {
+    let valid = true;
+    let firstError = null;
+
+    // Clear previous highlights
+    form.querySelectorAll(".input-error").forEach(el => el.classList.remove("input-error"));
+    form.querySelectorAll(".group-error").forEach(el => el.classList.remove("group-error"));
+    form.querySelectorAll(".row-error").forEach(el => el.classList.remove("row-error"));
+
+    // Text / email / date inputs
+    ["name", "firm", "email", "order_date"].forEach(name => {
+      const el = form.querySelector(`[name="${name}"]`);
+      if (el && !el.value.trim()) {
+        el.classList.add("input-error");
+        valid = false;
+        if (!firstError) firstError = el;
+      }
+    });
+
+    // Simple radio groups
+    ["overall_rating", "improve_most", "order_again"].forEach(name => {
+      if (!form.querySelector(`input[name="${name}"]:checked`)) {
+        const container = form.querySelector(`input[name="${name}"]`).closest(".radio-group");
+        container.classList.add("group-error");
+        valid = false;
+        if (!firstError) firstError = container;
+      }
+    });
+
+    // Rating matrix — highlight each unchecked row individually
+    ["quality_products", "presentation_packaging", "value_for_money", "delivery_timing"].forEach(name => {
+      if (!form.querySelector(`input[name="${name}"]:checked`)) {
+        const row = form.querySelector(`input[name="${name}"]`).closest(".matrix-row");
+        row.classList.add("row-error");
+        valid = false;
+        if (!firstError) firstError = firstError || form.querySelector(".rating-matrix");
+      }
+    });
+
+    // Checkbox groups — at least one must be checked
+    ["order_contents", "occasions", "future_preferences"].forEach(name => {
+      if (form.querySelectorAll(`input[name="${name}"]:checked`).length === 0) {
+        const container = form.querySelector(`input[name="${name}"]`).closest(".checkbox-group");
+        container.classList.add("group-error");
+        valid = false;
+        if (!firstError) firstError = container;
+      }
+    });
+
+    if (firstError) {
+      firstError.scrollIntoView({ behavior: "smooth", block: "center" });
+    }
+
+    return valid;
+  }
+
+  // Clear error highlights as the user fills in each field
+  const feedbackFormEl = document.getElementById("feedbackForm");
+  if (feedbackFormEl) {
+    feedbackFormEl.querySelectorAll("input:not([type='checkbox']):not([type='radio']), textarea").forEach(input => {
+      input.addEventListener("input", function () {
+        this.classList.remove("input-error");
+      });
+    });
+
+    feedbackFormEl.querySelectorAll("input[type='radio']").forEach(radio => {
+      radio.addEventListener("change", function () {
+        const group = this.closest(".radio-group");
+        if (group) group.classList.remove("group-error");
+        const row = this.closest(".matrix-row");
+        if (row) row.classList.remove("row-error");
+      });
+    });
+
+    feedbackFormEl.querySelectorAll("input[type='checkbox']").forEach(checkbox => {
+      checkbox.addEventListener("change", function () {
+        const group = this.closest(".checkbox-group");
+        if (group) group.classList.remove("group-error");
+      });
+    });
+  }
 });
