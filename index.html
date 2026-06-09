@@ -115,6 +115,7 @@
                     <li><a href="/">Home</a></li>
                     <li><a href="/#about">About</a></li>
                     <li><a href="/#services">Services</a></li>
+                    <li><a href="shop">Shop</a></li>
                     <li><a href="catalogue">Catalogue</a></li>
                     <li><a href="blogs/blogs-list">Blogs</a></li>
                     <li><a href="/#contact">Contact</a></li>
@@ -137,7 +138,7 @@
                 <p class="hero-subtitle">Premium corporate gifting solutions in Bangalore – Curated luxury gifts and custom business gifting that leave lasting impressions on clients and employees across India</p>
                 <div class="hero-buttons">
                     <button class="btn btn-primary" id="getStartedBtn">Plan My Gifting</button>
-                    <a href="catalogue" class="btn btn-secondary">Catalogue</a>
+                    <a href="shop" class="btn btn-secondary">Shop Products</a>
                 </div>
             </div>
         </div>
@@ -230,6 +231,36 @@
                     <h3>Guest Felicitation</h3>
                     <p>Elegant and thoughtful gifts to honor your distinguished guests, dignitaries, and VIPs. Premium welcome gifts for corporate guests and business partners.</p>
                 </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Shop by Category Section -->
+    <section id="shop" class="homepage-shop-categories">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-tag">Browse Collections</span>
+                <h2>Shop by Category</h2>
+                <p class="section-subtitle">From elegant trophies to premium drinkware — explore our full range of corporate gifts.</p>
+            </div>
+            <div class="homepage-categories-grid" id="homeCategoriesGrid"></div>
+            <div class="view-all-link" style="margin-top:2.5rem;text-align:center;">
+                <a href="shop" class="btn btn-primary">View All Categories</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Featured Products Section -->
+    <section class="homepage-featured-products">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-tag">Bestsellers</span>
+                <h2>Featured Products</h2>
+                <p class="section-subtitle">Our most popular picks — hand-curated for every corporate gifting need.</p>
+            </div>
+            <div class="products-grid" id="homeFeaturedGrid"></div>
+            <div class="view-all-link">
+                <a href="shop" class="btn btn-outline-dark" style="margin-top:2rem;">Explore All Products</a>
             </div>
         </div>
     </section>
@@ -361,6 +392,7 @@
                     <ul>
                         <li><a href="#about">About Us</a></li>
                         <li><a href="#services">Services</a></li>
+                        <li><a href="shop">Shop</a></li>
                         <li><a href="blogs/blogs-list">Blogs</a></li>
                         <li><a href="#contact">Contact</a></li>
                     </ul>
@@ -443,6 +475,52 @@
         </div>
     </div>
 
+    <script src="products-data.js"></script>
     <script src="script.js"></script>
+    <script>
+        // Render homepage categories
+        (function() {
+            const grid = document.getElementById('homeCategoriesGrid');
+            if (!grid) return;
+            grid.innerHTML = PRODUCTS_DATA.categories.map(cat => `
+                <a href="category?id=${cat.id}" class="hp-cat-card">
+                    <div class="hp-cat-img">
+                        <img src="${cat.image}" alt="${cat.name}" loading="lazy">
+                    </div>
+                    <div class="hp-cat-body">
+                        <h4>${cat.name}</h4>
+                        <span>${cat.products.length} Products</span>
+                    </div>
+                </a>
+            `).join('');
+        })();
+
+        // Render homepage featured products
+        (function() {
+            const grid = document.getElementById('homeFeaturedGrid');
+            if (!grid) return;
+            const featured = PRODUCTS_DATA.getFeatured();
+            grid.innerHTML = featured.map(p => `
+                <div class="product-card">
+                    <a href="product?id=${p.id}" class="product-card-img-link">
+                        <div class="product-card-img-wrap">
+                            <span class="discount-badge">-${PRODUCTS_DATA.getDiscount(p.price, p.offerPrice)}%</span>
+                            <img src="${p.image}" alt="${p.name}" loading="lazy">
+                        </div>
+                    </a>
+                    <div class="product-card-body">
+                        <span class="product-category-tag">${p.categoryName}</span>
+                        <h3 class="product-card-name"><a href="product?id=${p.id}">${p.name}</a></h3>
+                        <p class="product-card-desc">${p.shortDesc}</p>
+                        <div class="product-pricing">
+                            <span class="price-mrp">${PRODUCTS_DATA.formatPrice(p.price)}</span>
+                            <span class="price-offer">${PRODUCTS_DATA.formatPrice(p.offerPrice)}</span>
+                        </div>
+                        <a href="product?id=${p.id}" class="btn btn-outline-dark btn-sm">View Details</a>
+                    </div>
+                </div>
+            `).join('');
+        })();
+    </script>
 </body>
 </html>

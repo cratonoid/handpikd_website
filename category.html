@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-DW9TNLFM1C"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-DW9TNLFM1C');
+    </script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Category | HANDPIKD</title>
+    <meta name="description" content="Browse products in this category at HANDPIKD — premium corporate gifts with custom branding.">
+    <link rel="icon" type="image/png" href="images/hp logo.png">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-wrapper">
+                <div class="logo">
+                    <a href="/"><img src="images/logo.png" alt="HANDPIKD Logo"></a>
+                </div>
+                <ul class="nav-menu">
+                    <li><a href="/">Home</a></li>
+                    <li><a href="/#about">About</a></li>
+                    <li><a href="/#services">Services</a></li>
+                    <li><a href="shop" class="active">Shop</a></li>
+                    <li><a href="catalogue">Catalogue</a></li>
+                    <li><a href="blogs/blogs-list">Blogs</a></li>
+                    <li><a href="/#contact">Contact</a></li>
+                </ul>
+                <div class="hamburger">
+                    <span></span><span></span><span></span>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Category Hero -->
+    <section class="category-hero-section" id="categoryHero">
+        <div class="category-hero-overlay"></div>
+        <div class="container">
+            <!-- Breadcrumb -->
+            <nav class="breadcrumb" aria-label="Breadcrumb">
+                <a href="/">Home</a>
+                <span class="bc-sep">›</span>
+                <a href="shop">Shop</a>
+                <span class="bc-sep">›</span>
+                <span id="bcCategory">Category</span>
+            </nav>
+            <div class="category-hero-text" id="categoryHeroText">
+                <h1 id="categoryName">Loading…</h1>
+                <p id="categoryDesc"></p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Products Grid -->
+    <section class="category-products-section">
+        <div class="container">
+            <div class="category-products-header">
+                <div>
+                    <span class="section-tag" id="catProductCount"></span>
+                </div>
+                <p class="category-moq-note">Minimum order quantities apply. <a href="/#contact">Contact us</a> for bulk pricing.</p>
+            </div>
+            <div class="products-grid" id="productsGrid"></div>
+        </div>
+    </section>
+
+    <!-- Other Categories -->
+    <section class="other-categories-section">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-tag">More Collections</span>
+                <h2>Explore Other Categories</h2>
+            </div>
+            <div class="other-cats-grid" id="otherCatsGrid"></div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-logo">
+                    <img src="images/logo.png" alt="HANDPIKD Logo">
+                    <p>Curating excellence in corporate gifting</p>
+                </div>
+                <div class="footer-links">
+                    <h4>Quick Links</h4>
+                    <ul>
+                        <li><a href="/#about">About Us</a></li>
+                        <li><a href="/#services">Services</a></li>
+                        <li><a href="shop">Shop</a></li>
+                        <li><a href="blogs/blogs-list">Blogs</a></li>
+                        <li><a href="/#contact">Contact</a></li>
+                    </ul>
+                </div>
+                <div class="footer-social">
+                    <h4>Reach Us</h4>
+                    <div class="social-links">
+                        <a href="#">Instagram</a>
+                        <a href="https://wa.me/917411690399" target="_blank" rel="noopener noreferrer">WhatsApp</a>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2026 HANDPIKD. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="products-data.js"></script>
+    <script>
+        // Hamburger nav
+        const hamburger = document.querySelector('.hamburger');
+        const navMenu = document.querySelector('.nav-menu');
+        hamburger.addEventListener('click', () => {
+            navMenu.classList.toggle('active');
+            hamburger.classList.toggle('active');
+        });
+        document.querySelectorAll('.nav-menu a').forEach(link => {
+            link.addEventListener('click', () => {
+                navMenu.classList.remove('active');
+                hamburger.classList.remove('active');
+            });
+        });
+
+        function renderPage() {
+            const params = new URLSearchParams(window.location.search);
+            const catId = params.get('id');
+
+            const category = PRODUCTS_DATA.getCategoryById(catId);
+
+            if (!category) {
+                document.getElementById('categoryName').textContent = 'Category Not Found';
+                document.getElementById('categoryDesc').textContent = 'The category you are looking for does not exist.';
+                return;
+            }
+
+            // Update page title & meta
+            document.title = category.name + ' | HANDPIKD';
+
+            // Breadcrumb
+            document.getElementById('bcCategory').textContent = category.name;
+
+            // Hero
+            const hero = document.getElementById('categoryHero');
+            hero.style.backgroundImage = `linear-gradient(rgba(0,0,0,0.55), rgba(0,0,0,0.55)), url('${category.image}')`;
+
+            document.getElementById('categoryName').textContent = category.name;
+            document.getElementById('categoryDesc').textContent = category.description;
+
+            // Product count tag
+            document.getElementById('catProductCount').textContent = category.products.length + ' Products';
+
+            // Products grid
+            const grid = document.getElementById('productsGrid');
+            grid.innerHTML = category.products.map(p => `
+                <div class="product-card">
+                    <a href="product?id=${p.id}" class="product-card-img-link">
+                        <div class="product-card-img-wrap">
+                            <span class="discount-badge">-${PRODUCTS_DATA.getDiscount(p.price, p.offerPrice)}%</span>
+                            <img src="${p.image}" alt="${p.name}" loading="lazy">
+                        </div>
+                    </a>
+                    <div class="product-card-body">
+                        <span class="product-category-tag">${category.name}</span>
+                        <h3 class="product-card-name"><a href="product?id=${p.id}">${p.name}</a></h3>
+                        <p class="product-card-desc">${p.shortDesc}</p>
+                        <div class="product-pricing">
+                            <span class="price-mrp">${PRODUCTS_DATA.formatPrice(p.price)}</span>
+                            <span class="price-offer">${PRODUCTS_DATA.formatPrice(p.offerPrice)}</span>
+                        </div>
+                        <div class="product-moq-line">Min. Order: ${p.moq} units</div>
+                        <a href="product?id=${p.id}" class="btn btn-outline-dark btn-sm">View Details</a>
+                    </div>
+                </div>
+            `).join('');
+
+            // Other categories
+            const otherGrid = document.getElementById('otherCatsGrid');
+            const others = PRODUCTS_DATA.categories.filter(c => c.id !== catId);
+            otherGrid.innerHTML = others.map(c => `
+                <a href="category?id=${c.id}" class="other-cat-card">
+                    <div class="other-cat-img">
+                        <img src="${c.image}" alt="${c.name}" loading="lazy">
+                    </div>
+                    <div class="other-cat-info">
+                        <h4>${c.name}</h4>
+                        <span>${c.products.length} Products</span>
+                    </div>
+                </a>
+            `).join('');
+        }
+
+        renderPage();
+    </script>
+</body>
+</html>

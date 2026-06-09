@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-DW9TNLFM1C"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-DW9TNLFM1C');
+    </script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product | HANDPIKD</title>
+    <meta name="description" content="Premium corporate gift product details and enquiry at HANDPIKD.">
+    <link rel="icon" type="image/png" href="images/hp logo.png">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-wrapper">
+                <div class="logo">
+                    <a href="/"><img src="images/logo.png" alt="HANDPIKD Logo"></a>
+                </div>
+                <ul class="nav-menu">
+                    <li><a href="/">Home</a></li>
+                    <li><a href="/#about">About</a></li>
+                    <li><a href="/#services">Services</a></li>
+                    <li><a href="shop" class="active">Shop</a></li>
+                    <li><a href="catalogue">Catalogue</a></li>
+                    <li><a href="blogs/blogs-list">Blogs</a></li>
+                    <li><a href="/#contact">Contact</a></li>
+                </ul>
+                <div class="hamburger">
+                    <span></span><span></span><span></span>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Product Detail -->
+    <section class="product-detail-section">
+        <div class="container">
+            <!-- Breadcrumb -->
+            <nav class="breadcrumb" aria-label="Breadcrumb">
+                <a href="/">Home</a>
+                <span class="bc-sep">›</span>
+                <a href="shop">Shop</a>
+                <span class="bc-sep">›</span>
+                <a href="#" id="bcCategoryLink">Category</a>
+                <span class="bc-sep">›</span>
+                <span id="bcProduct">Product</span>
+            </nav>
+
+            <div class="product-detail-grid" id="productDetailGrid">
+                <div class="product-detail-placeholder">Loading product…</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Product Description & Features -->
+    <section class="product-info-section" id="productInfoSection" style="display:none;">
+        <div class="container">
+            <div class="product-info-grid">
+                <div class="product-full-desc">
+                    <h2>About This Product</h2>
+                    <p id="productFullDesc"></p>
+                </div>
+                <div class="product-key-features">
+                    <h2>Key Features</h2>
+                    <ul class="features-list" id="productFeaturesList"></ul>
+                    <div class="moq-box">
+                        <span class="moq-label">Minimum Order Quantity</span>
+                        <span class="moq-value" id="productMoq"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Related Products -->
+    <section class="related-products-section" id="relatedSection" style="display:none;">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-tag">Same Category</span>
+                <h2>You May Also Like</h2>
+            </div>
+            <div class="products-grid" id="relatedProductsGrid"></div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-logo">
+                    <img src="images/logo.png" alt="HANDPIKD Logo">
+                    <p>Curating excellence in corporate gifting</p>
+                </div>
+                <div class="footer-links">
+                    <h4>Quick Links</h4>
+                    <ul>
+                        <li><a href="/#about">About Us</a></li>
+                        <li><a href="/#services">Services</a></li>
+                        <li><a href="shop">Shop</a></li>
+                        <li><a href="blogs/blogs-list">Blogs</a></li>
+                        <li><a href="/#contact">Contact</a></li>
+                    </ul>
+                </div>
+                <div class="footer-social">
+                    <h4>Reach Us</h4>
+                    <div class="social-links">
+                        <a href="#">Instagram</a>
+                        <a href="https://wa.me/917411690399" target="_blank" rel="noopener noreferrer">WhatsApp</a>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2026 HANDPIKD. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Enquiry Modal -->
+    <div id="enquiryModal" class="modal enquiry-modal">
+        <div class="modal-content">
+            <span class="modal-close" id="enquiryModalClose">&times;</span>
+            <div class="modal-header">
+                <h2>Send Enquiry</h2>
+                <p>We'll get back to you within 24 hours with pricing and availability.</p>
+            </div>
+            <div class="enquiry-product-tag" id="enquiryProductTag"></div>
+            <form id="enquiryForm" class="modal-form">
+                <input type="hidden" name="product" id="enquiryProductName">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Full Name *</label>
+                        <input type="text" name="name" placeholder="Alex Johnson" required maxlength="20" data-validation="name">
+                        <span class="error-message" id="enq-name-error"></span>
+                    </div>
+                    <div class="form-group">
+                        <label>Email Address *</label>
+                        <input type="email" name="email" placeholder="john@company.com" required data-validation="email">
+                        <span class="error-message" id="enq-email-error"></span>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>WhatsApp Number *</label>
+                        <input type="tel" name="phone" placeholder="98765 43210" required data-validation="phone">
+                        <span class="error-message" id="enq-phone-error"></span>
+                    </div>
+                    <div class="form-group">
+                        <label>Quantity Required *</label>
+                        <input type="number" name="quantity" placeholder="50" min="1" max="500000" required data-validation="quantity" id="enquiryQtyInput">
+                        <span class="error-message" id="enq-quantity-error"></span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Additional Requirements <span class="word-count" id="enq-message-count">0/100 words</span></label>
+                    <textarea name="message" rows="4" placeholder="Tell us about branding, customisation, delivery timeline, or any special requirements…" data-validation="message"></textarea>
+                    <span class="error-message" id="enq-message-error"></span>
+                </div>
+                <button type="submit" class="btn btn-primary btn-submit" id="enquirySubmitBtn">Send Enquiry</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="products-data.js"></script>
+    <script>
+        // Hamburger nav
+        const hamburger = document.querySelector('.hamburger');
+        const navMenu = document.querySelector('.nav-menu');
+        hamburger.addEventListener('click', () => {
+            navMenu.classList.toggle('active');
+            hamburger.classList.toggle('active');
+        });
+        document.querySelectorAll('.nav-menu a').forEach(link => {
+            link.addEventListener('click', () => {
+                navMenu.classList.remove('active');
+                hamburger.classList.remove('active');
+            });
+        });
+
+        // Google Sheets endpoint (reuse from script.js)
+        const SHEETS_URL = 'https://script.google.com/macros/s/AKfycbzAtwSR9ecYYjL-gqPy0x0bpSw_Dy1Uoob44083l1HRBGL3Im52nPGuL6plEv8uJm07/exec';
+
+        let currentProduct = null;
+
+        function renderPage() {
+            const params = new URLSearchParams(window.location.search);
+            const productId = params.get('id');
+            const product = PRODUCTS_DATA.getProductById(productId);
+
+            if (!product) {
+                document.getElementById('productDetailGrid').innerHTML = `
+                    <div style="text-align:center;padding:4rem 0;grid-column:1/-1;">
+                        <h2>Product Not Found</h2>
+                        <p style="margin:1rem 0;">The product you're looking for doesn't exist.</p>
+                        <a href="shop" class="btn btn-primary" style="margin-top:1.5rem;">Back to Shop</a>
+                    </div>`;
+                return;
+            }
+
+            currentProduct = product;
+            document.title = product.name + ' | HANDPIKD';
+
+            const discount = PRODUCTS_DATA.getDiscount(product.price, product.offerPrice);
+
+            // Breadcrumb
+            document.getElementById('bcCategoryLink').textContent = product.categoryName;
+            document.getElementById('bcCategoryLink').href = 'category?id=' + product.category;
+            document.getElementById('bcProduct').textContent = product.name;
+
+            // Product detail grid
+            document.getElementById('productDetailGrid').innerHTML = `
+                <div class="product-image-col">
+                    <div class="product-main-image">
+                        <span class="discount-badge discount-badge-lg">-${discount}% OFF</span>
+                        <img src="${product.image}" alt="${product.name}" id="mainProductImg">
+                    </div>
+                </div>
+                <div class="product-info-col">
+                    <a href="category?id=${product.category}" class="product-category-tag">${product.categoryName}</a>
+                    <h1 class="product-detail-name">${product.name}</h1>
+                    <div class="product-detail-pricing">
+                        <span class="pd-price-mrp">${PRODUCTS_DATA.formatPrice(product.price)}</span>
+                        <span class="pd-price-offer">${PRODUCTS_DATA.formatPrice(product.offerPrice)}</span>
+                        <span class="pd-discount-text">Save ${PRODUCTS_DATA.formatPrice(product.price - product.offerPrice)}</span>
+                    </div>
+                    <p class="product-detail-short-desc">${product.shortDesc}</p>
+                    <div class="product-detail-moq">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 7H4a2 2 0 00-2 2v10a2 2 0 002 2h16a2 2 0 002-2V9a2 2 0 00-2-2z"/><path d="M16 3H8a2 2 0 00-2 2v2h12V5a2 2 0 00-2-2z"/></svg>
+                        Minimum Order: <strong>${product.moq} units</strong>
+                    </div>
+                    <div class="product-cta-group">
+                        <button class="btn btn-primary btn-enquire" id="openEnquiryBtn">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right:8px;vertical-align:middle"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                            Send Enquiry
+                        </button>
+                        <a href="https://wa.me/917411690399?text=Hi!%20I'm%20interested%20in%20the%20${encodeURIComponent(product.name)}%20from%20HANDPIKD.%20Please%20share%20bulk%20pricing%20details." target="_blank" class="btn btn-whatsapp">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" style="margin-right:6px;vertical-align:middle"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+                            WhatsApp Us
+                        </a>
+                    </div>
+                    <div class="product-trust-badges">
+                        <div class="trust-badge">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                            Custom Branding Available
+                        </div>
+                        <div class="trust-badge">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                            Pan-India Delivery
+                        </div>
+                        <div class="trust-badge">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                            Bulk Pricing Available
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            // Attach enquiry button listener
+            document.getElementById('openEnquiryBtn').addEventListener('click', openEnquiryModal);
+
+            // Product info section
+            document.getElementById('productInfoSection').style.display = 'block';
+            document.getElementById('productFullDesc').textContent = product.description;
+            document.getElementById('productFeaturesList').innerHTML = product.features.map(f =>
+                `<li><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>${f}</li>`
+            ).join('');
+            document.getElementById('productMoq').textContent = product.moq + ' units';
+
+            // Related products
+            const related = PRODUCTS_DATA.getRelatedProducts(product.id, product.category);
+            if (related.length > 0) {
+                document.getElementById('relatedSection').style.display = 'block';
+                document.getElementById('relatedProductsGrid').innerHTML = related.map(p => `
+                    <div class="product-card">
+                        <a href="product?id=${p.id}" class="product-card-img-link">
+                            <div class="product-card-img-wrap">
+                                <span class="discount-badge">-${PRODUCTS_DATA.getDiscount(p.price, p.offerPrice)}%</span>
+                                <img src="${p.image}" alt="${p.name}" loading="lazy">
+                            </div>
+                        </a>
+                        <div class="product-card-body">
+                            <span class="product-category-tag">${p.categoryName}</span>
+                            <h3 class="product-card-name"><a href="product?id=${p.id}">${p.name}</a></h3>
+                            <p class="product-card-desc">${p.shortDesc}</p>
+                            <div class="product-pricing">
+                                <span class="price-mrp">${PRODUCTS_DATA.formatPrice(p.price)}</span>
+                                <span class="price-offer">${PRODUCTS_DATA.formatPrice(p.offerPrice)}</span>
+                            </div>
+                            <a href="product?id=${p.id}" class="btn btn-outline-dark btn-sm">View Details</a>
+                        </div>
+                    </div>
+                `).join('');
+            }
+        }
+
+        // Enquiry Modal
+        function openEnquiryModal() {
+            if (!currentProduct) return;
+            document.getElementById('enquiryProductName').value = currentProduct.name;
+            document.getElementById('enquiryProductTag').textContent = 'Enquiry for: ' + currentProduct.name;
+            document.getElementById('enquiryQtyInput').min = currentProduct.moq;
+            document.getElementById('enquiryQtyInput').placeholder = currentProduct.moq + ' (min)';
+            document.getElementById('enquiryModal').style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+        }
+
+        document.getElementById('enquiryModalClose').addEventListener('click', () => {
+            document.getElementById('enquiryModal').style.display = 'none';
+            document.body.style.overflow = 'auto';
+        });
+
+        window.addEventListener('click', (e) => {
+            if (e.target === document.getElementById('enquiryModal')) {
+                document.getElementById('enquiryModal').style.display = 'none';
+                document.body.style.overflow = 'auto';
+            }
+        });
+
+        // Form validation helpers
+        function validateEnqField(input, errorId) {
+            const value = input.value.trim();
+            const type = input.getAttribute('data-validation');
+            const errorEl = document.getElementById(errorId);
+            if (!errorEl) return true;
+            errorEl.textContent = '';
+            input.classList.remove('error');
+
+            if (input.hasAttribute('required') && !value) {
+                errorEl.textContent = 'This field is required';
+                input.classList.add('error');
+                return false;
+            }
+            if (type === 'name' && value) {
+                if (!/^[A-Za-z ]+$/.test(value)) { errorEl.textContent = 'Letters and spaces only'; input.classList.add('error'); return false; }
+                if (value.length > 20) { errorEl.textContent = 'Max 20 characters'; input.classList.add('error'); return false; }
+            }
+            if (type === 'email' && value) {
+                if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) { errorEl.textContent = 'Valid email required'; input.classList.add('error'); return false; }
+            }
+            if (type === 'phone' && value) {
+                if (!/^[6-9][0-9]{9}$/.test(value.replace(/\D/g, ''))) { errorEl.textContent = 'Valid 10-digit Indian number'; input.classList.add('error'); return false; }
+            }
+            if (type === 'quantity' && value) {
+                const n = parseInt(value);
+                if (n < 1) { errorEl.textContent = 'Minimum 1'; input.classList.add('error'); return false; }
+            }
+            if (type === 'message' && value) {
+                const words = value.trim().split(/\s+/).length;
+                const counter = document.getElementById('enq-message-count');
+                if (counter) counter.textContent = words + '/100 words';
+                if (words > 100) { errorEl.textContent = 'Max 100 words'; input.classList.add('error'); return false; }
+            }
+            return true;
+        }
+
+        // Wire up real-time validation
+        document.querySelectorAll('#enquiryForm [data-validation]').forEach(input => {
+            const name = input.name;
+            const errorId = 'enq-' + name + '-error';
+            input.addEventListener('input', () => validateEnqField(input, errorId));
+            input.addEventListener('blur', () => validateEnqField(input, errorId));
+        });
+
+        // Message word counter
+        const msgArea = document.querySelector('#enquiryForm textarea[name="message"]');
+        if (msgArea) {
+            msgArea.addEventListener('input', () => {
+                const words = msgArea.value.trim() ? msgArea.value.trim().split(/\s+/).length : 0;
+                document.getElementById('enq-message-count').textContent = words + '/100 words';
+            });
+        }
+
+        // Form submission
+        document.getElementById('enquiryForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const form = e.target;
+            const inputs = form.querySelectorAll('[data-validation]');
+            let valid = true;
+            inputs.forEach(input => {
+                const errorId = 'enq-' + input.name + '-error';
+                if (!validateEnqField(input, errorId)) valid = false;
+            });
+            if (!valid) {
+                const firstErr = form.querySelector('.error');
+                if (firstErr) firstErr.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                return;
+            }
+
+            const submitBtn = document.getElementById('enquirySubmitBtn');
+            submitBtn.textContent = 'Sending…';
+            submitBtn.disabled = true;
+
+            const data = Object.fromEntries(new FormData(form));
+            const timestamp = new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' });
+            const payload = {
+                timestamp,
+                name: data.name || '',
+                email: data.email || '',
+                phone: data.phone || '',
+                occasion: 'Product Enquiry: ' + (data.product || ''),
+                quantity: data.quantity || '',
+                budget: '',
+                message: data.message || '',
+            };
+
+            try {
+                await fetch(SHEETS_URL, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    headers: { 'Content-Type': 'text/plain' },
+                    body: JSON.stringify(payload),
+                });
+
+                const modalContent = document.querySelector('#enquiryModal .modal-content');
+                modalContent.innerHTML = `
+                    <div class="modal-success">
+                        <div class="success-icon">✓</div>
+                        <h2>Enquiry Sent!</h2>
+                        <p>Thank you, <strong>${data.name}</strong>! We've received your enquiry for <strong>${data.product}</strong> and will respond within 24 hours.</p>
+                        <button class="btn btn-primary" onclick="document.getElementById('enquiryModal').style.display='none';document.body.style.overflow='auto';">Close</button>
+                    </div>`;
+
+                if (typeof gtag !== 'undefined') {
+                    gtag('event', 'generate_lead', { event_category: 'product_enquiry', event_label: data.product });
+                }
+            } catch (err) {
+                alert('Something went wrong. Please try again or contact us on WhatsApp.');
+                submitBtn.textContent = 'Send Enquiry';
+                submitBtn.disabled = false;
+            }
+        });
+
+        renderPage();
+    </script>
+</body>
+</html>

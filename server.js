@@ -15,7 +15,7 @@ if (!MONGO_URI) {
 let db;
 
 app.use(express.json({ limit: '20mb' })); // allow base64 product images
-app.use(express.static(path.join(__dirname)));
+app.use(express.static(path.join(__dirname), { extensions: ['html'] }));
 
 // ── Quotations ─────────────────────────────────────────────────
 
