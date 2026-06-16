@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Account — HANDPIKD</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --brand: #1a1a2e; --accent: #e8b04b; --accent2: #c49a3c;
+      --bg: #f5f5f0; --card: #fff; --border: #e0ddd5;
+      --text: #2c2c2c; --muted: #888; --danger: #d64545; --radius: 10px;
+    }
+    body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+
+    /* Header */
+    header {
+      background: var(--brand); color: #fff;
+      padding: 16px 32px; display: flex; align-items: center; gap: 16px;
+      box-shadow: 0 2px 8px rgba(0,0,0,.25);
+    }
+    .h-logo { font-size: 1.25rem; font-weight: 800; letter-spacing: 2px; }
+    .h-sep  { color: rgba(255,255,255,.3); }
+    .h-title { font-size: .88rem; color: var(--accent); font-weight: 600; }
+    .h-user { margin-left: auto; font-size: .85rem; color: rgba(255,255,255,.75); }
+    .h-logout {
+      background: rgba(255,255,255,.1); border: 1px solid rgba(255,255,255,.2);
+      color: #fff; border-radius: 6px; padding: 6px 14px; font-size: .82rem;
+      font-weight: 600; cursor: pointer; transition: background .2s;
+    }
+    .h-logout:hover { background: rgba(255,255,255,.2); }
+
+    .container { max-width: 1000px; margin: 0 auto; padding: 28px 20px 60px; }
+
+    /* Stats */
+    .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 32px; }
+    .stat-card {
+      background: var(--card); border: 1px solid var(--border); border-radius: var(--radius);
+      padding: 20px 22px; box-shadow: 0 2px 6px rgba(0,0,0,.05);
+    }
+    .stat-label { font-size: .75rem; font-weight: 700; text-transform: uppercase; letter-spacing: .6px; color: var(--muted); margin-bottom: 8px; }
+    .stat-value { font-size: 1.7rem; font-weight: 800; color: var(--brand); }
+    .stat-card.points .stat-value { color: var(--accent2); }
+    .stat-sub { font-size: .78rem; color: var(--muted); margin-top: 4px; }
+
+    /* Section */
+    .section-title {
+      font-size: 1rem; font-weight: 700; color: var(--brand);
+      margin-bottom: 14px; display: flex; align-items: center; gap: 10px;
+    }
+
+    /* Orders table */
+    .table-wrap { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; box-shadow: 0 2px 6px rgba(0,0,0,.05); }
+    table { width: 100%; border-collapse: collapse; }
+    thead tr { background: var(--brand); color: #fff; }
+    th { padding: 12px 16px; font-size: .78rem; font-weight: 700; text-transform: uppercase; letter-spacing: .5px; text-align: left; white-space: nowrap; }
+    td { padding: 13px 16px; font-size: .9rem; border-bottom: 1px solid var(--border); vertical-align: middle; }
+    tbody tr:last-child td { border-bottom: none; }
+    tbody tr:hover { background: #fafaf8; }
+
+    /* Status badge */
+    .badge {
+      display: inline-block; padding: 3px 10px; border-radius: 20px;
+      font-size: .75rem; font-weight: 700; text-transform: uppercase; letter-spacing: .4px;
+    }
+    .badge-pending    { background: #fef9c3; color: #854d0e; }
+    .badge-processing { background: #dbeafe; color: #1e40af; }
+    .badge-delivered  { background: #dcfce7; color: #166534; }
+    .badge-cancelled  { background: #fee2e2; color: #991b1b; }
+
+    /* Download button */
+    .dl-btn {
+      display: inline-flex; align-items: center; gap: 5px;
+      background: var(--brand); color: #fff; border: none; border-radius: 6px;
+      padding: 6px 12px; font-size: .78rem; font-weight: 600; cursor: pointer;
+      transition: background .18s;
+    }
+    .dl-btn:hover { background: #2a2a45; }
+    .dl-btn:disabled { opacity: .5; cursor: not-allowed; }
+    .no-invoice { font-size: .78rem; color: var(--muted); }
+
+    .empty-state { text-align: center; padding: 50px 20px; color: var(--muted); font-size: .95rem; }
+
+    /* Points highlight card */
+    .points-banner {
+      background: var(--brand); color: #fff; border-radius: var(--radius);
+      padding: 20px 24px; margin-bottom: 28px;
+      display: flex; align-items: center; gap: 20px;
+      box-shadow: 0 4px 16px rgba(0,0,0,.18);
+    }
+    .points-icon { font-size: 2.2rem; line-height: 1; }
+    .points-info .pts-num { font-size: 2rem; font-weight: 800; color: var(--accent); }
+    .points-info .pts-label { font-size: .82rem; color: rgba(255,255,255,.65); margin-top: 2px; }
+
+    /* Spinner */
+    .spinner { width: 32px; height: 32px; border: 3px solid rgba(26,26,46,.1); border-top-color: var(--brand); border-radius: 50%; animation: spin .7s linear infinite; margin: 60px auto; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* Toast */
+    #toast {
+      position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
+      background: var(--brand); color: #fff; border-radius: 8px; padding: 10px 20px;
+      font-size: .88rem; font-weight: 500; box-shadow: 0 4px 20px rgba(0,0,0,.3);
+      opacity: 0; pointer-events: none; transition: opacity .25s; white-space: nowrap; z-index: 999;
+    }
+    #toast.show { opacity: 1; }
+
+    @media (max-width: 640px) {
+      header { padding: 12px 14px; }
+      .h-logo { font-size: 1.1rem; }
+      .stats { grid-template-columns: 1fr 1fr; }
+      .stats .stat-card:last-child { grid-column: 1 / -1; }
+      .container { padding: 14px 10px 40px; }
+      th, td { padding: 10px 12px; }
+      .h-user { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <span class="h-logo">HANDPIKD</span>
+  <span class="h-sep">|</span>
+  <span class="h-title">My Account</span>
+  <span class="h-user" id="h-user"></span>
+  <button class="h-logout" onclick="logout()">Log Out</button>
+</header>
+
+<div class="container">
+  <div id="loading"><div class="spinner"></div></div>
+  <div id="content" style="display:none">
+
+    <div class="points-banner">
+      <div class="points-icon">⭐</div>
+      <div class="points-info">
+        <div class="pts-num" id="pts-val">0</div>
+        <div class="pts-label">Loyalty Points Balance</div>
+      </div>
+    </div>
+
+    <div class="stats">
+      <div class="stat-card">
+        <div class="stat-label">Total Orders</div>
+        <div class="stat-value" id="stat-orders">0</div>
+        <div class="stat-sub">all time</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Total Spent</div>
+        <div class="stat-value" id="stat-spent">₹0</div>
+        <div class="stat-sub">across all orders</div>
+      </div>
+      <div class="stat-card points">
+        <div class="stat-label">Points Balance</div>
+        <div class="stat-value" id="stat-pts">0</div>
+        <div class="stat-sub">loyalty rewards</div>
+      </div>
+    </div>
+
+    <div class="section-title">
+      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+      Order History
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Order #</th>
+            <th>Description</th>
+            <th>Amount</th>
+            <th>Status</th>
+            <th>Date</th>
+            <th>Invoice</th>
+          </tr>
+        </thead>
+        <tbody id="orders-body">
+          <tr><td colspan="6"><div class="empty-state">Loading orders…</div></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+const API = 'https://supernotes.onrender.com';
+let me = null;
+
+function authH() {
+  const token = localStorage.getItem('hpkd_token');
+  return token ? { 'Authorization': 'Bearer ' + token } : {};
+}
+
+function fmt(n) {
+  return '₹' + Number((n||0).toFixed(2)).toLocaleString('en-IN', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+}
+function fmtDate(d) {
+  return new Date(d).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
+}
+function badge(status) {
+  const map = { pending: 'Pending', processing: 'Processing', delivered: 'Delivered', cancelled: 'Cancelled' };
+  return `<span class="badge badge-${status}">${map[status] || status}</span>`;
+}
+function toast(msg) {
+  const el = document.getElementById('toast');
+  el.textContent = msg; el.classList.add('show');
+  clearTimeout(el._t); el._t = setTimeout(() => el.classList.remove('show'), 2200);
+}
+
+function logout() {
+  localStorage.removeItem('hpkd_token');
+  location.href = '/portal/login.html';
+}
+
+async function downloadInvoice(orderId, name) {
+  const btn = document.getElementById('dl-' + orderId);
+  btn.disabled = true; btn.textContent = 'Downloading…';
+  try {
+    const res  = await fetch(`${API}/api/orders/${orderId}/invoice`, { headers: authH() });
+    if (!res.ok) throw new Error((await res.json()).error);
+    const data = await res.json();
+    const a    = document.createElement('a');
+    a.href     = data.invoicePdf;
+    a.download = data.invoiceName || 'invoice.pdf';
+    a.click();
+  } catch (e) {
+    toast('Could not download invoice: ' + e.message);
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> Download';
+  }
+}
+
+function renderOrders(orders) {
+  const tbody = document.getElementById('orders-body');
+  if (!orders.length) {
+    tbody.innerHTML = '<tr><td colspan="6"><div class="empty-state">No orders yet. Your orders will appear here once placed.</div></td></tr>';
+    return;
+  }
+  tbody.innerHTML = orders.map(o => `
+    <tr>
+      <td style="font-weight:600;color:var(--brand)">${o.orderNumber || '—'}</td>
+      <td>${o.description || '—'}${o.notes ? `<div style="font-size:.78rem;color:var(--muted);margin-top:3px">${o.notes}</div>` : ''}</td>
+      <td style="font-weight:600">${fmt(o.amount)}</td>
+      <td>${badge(o.status)}</td>
+      <td style="color:var(--muted);font-size:.85rem">${fmtDate(o.createdAt)}</td>
+      <td>
+        ${o.invoiceName
+          ? `<button class="dl-btn" id="dl-${o._id}" onclick="downloadInvoice('${o._id}','${o.invoiceName}')">
+               <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+               Download
+             </button>`
+          : '<span class="no-invoice">—</span>'}
+      </td>
+    </tr>`).join('');
+}
+
+(async function init() {
+  try {
+    if (!localStorage.getItem('hpkd_token')) { location.href = '/portal/login.html'; return; }
+    const r = await fetch(`${API}/api/auth/me`, { headers: authH() });
+    if (!r.ok) { localStorage.removeItem('hpkd_token'); location.href = '/portal/login.html'; return; }
+    me = await r.json();
+    if (me.isAdmin) { location.href = '/portal/admin.html'; return; }
+
+    document.getElementById('h-user').textContent = me.name + (me.company ? ` · ${me.company}` : '');
+    document.getElementById('pts-val').textContent = (me.points || 0).toLocaleString('en-IN');
+    document.getElementById('stat-pts').textContent = (me.points || 0).toLocaleString('en-IN');
+
+    const orders = await fetch(`${API}/api/orders`, { headers: authH() }).then(r => r.json());
+    const total  = orders.reduce((s, o) => s + (o.amount || 0), 0);
+    document.getElementById('stat-orders').textContent = orders.length;
+    document.getElementById('stat-spent').textContent  = fmt(total);
+
+    renderOrders(orders);
+
+    document.getElementById('loading').style.display  = 'none';
+    document.getElementById('content').style.display  = '';
+  } catch (e) {
+    location.href = '/portal/login.html';
+  }
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Reverse GST / % Calculator — HANDPIKD</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --brand:   #1a1a2e;
+      --accent:  #e8b04b;
+      --accent2: #c49a3c;
+      --bg:      #f5f5f0;
+      --card:    #ffffff;
+      --border:  #e0ddd5;
+      --text:    #2c2c2c;
+      --muted:   #888;
+      --danger:  #d64545;
+      --radius:  10px;
+    }
+
+    body {
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    header {
+      background: var(--brand);
+      color: #fff;
+      padding: 18px 32px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      box-shadow: 0 2px 8px rgba(0,0,0,.25);
+    }
+    header h1  { font-size: 1.3rem; font-weight: 700; letter-spacing: 1px; }
+    header span { font-size: .85rem; color: var(--accent); font-weight: 500; margin-left: auto; }
+
+    .container { max-width: 860px; margin: 0 auto; padding: 28px 20px 60px; }
+
+    .page-title    { font-size: 1.4rem; font-weight: 700; margin-bottom: 6px; color: var(--brand); }
+    .page-subtitle { color: var(--muted); font-size: .9rem; margin-bottom: 28px; }
+
+    /* ── Rate tabs ── */
+    .rate-tabs { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 12px; }
+    .rate-tab {
+      padding: 8px 20px;
+      border-radius: 20px;
+      border: 2px solid var(--border);
+      background: var(--card);
+      font-size: .88rem;
+      font-weight: 600;
+      color: var(--muted);
+      cursor: pointer;
+      transition: all .18s;
+    }
+    .rate-tab:hover  { border-color: var(--accent); color: var(--accent2); }
+    .rate-tab.active { background: var(--brand); border-color: var(--brand); color: var(--accent); }
+    .rate-tab.custom-tab.active { background: #5a3e9e; border-color: #5a3e9e; color: #e0d0ff; }
+
+    .custom-default-wrap {
+      display: none;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+    .custom-default-wrap.visible { display: flex; }
+    .custom-default-wrap label { font-size: .78rem; font-weight: 700; text-transform: uppercase; letter-spacing: .5px; color: var(--muted); white-space: nowrap; }
+    .custom-default-wrap input {
+      border: 2px solid #c4aef0;
+      border-radius: 8px;
+      padding: 8px 12px;
+      font-size: .95rem;
+      color: var(--text);
+      background: #f9f6ff;
+      width: 130px;
+      transition: border-color .2s, box-shadow .2s;
+    }
+    .custom-default-wrap input:focus {
+      outline: none;
+      border-color: #7c5cbf;
+      box-shadow: 0 0 0 3px rgba(124,92,191,.15);
+    }
+
+    /* ── Rows list ── */
+    #rows-list { display: flex; flex-direction: column; gap: 16px; }
+
+    .row-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      box-shadow: 0 2px 6px rgba(0,0,0,.06);
+    }
+
+    .row-header {
+      background: var(--brand);
+      color: #fff;
+      padding: 10px 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-weight: 600;
+      font-size: .92rem;
+    }
+    .row-num { color: var(--accent); margin-right: 8px; }
+
+    .remove-btn {
+      background: rgba(255,255,255,.12);
+      border: 1px solid rgba(255,255,255,.25);
+      color: #fff;
+      border-radius: 6px;
+      padding: 4px 12px;
+      cursor: pointer;
+      font-size: .8rem;
+      transition: background .2s;
+    }
+    .remove-btn:hover { background: var(--danger); border-color: var(--danger); }
+
+    .row-body {
+      padding: 18px 20px;
+      display: grid;
+      grid-template-columns: 2fr 1.2fr 1fr;
+      gap: 16px;
+      align-items: end;
+    }
+
+    .field { display: flex; flex-direction: column; gap: 6px; }
+
+    label {
+      font-size: .78rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: .5px;
+      color: var(--muted);
+    }
+
+    input[type="text"],
+    input[type="number"],
+    select {
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 9px 12px;
+      font-size: .95rem;
+      color: var(--text);
+      background: #fafaf8;
+      width: 100%;
+      transition: border-color .2s, box-shadow .2s;
+    }
+    input[type="text"]:focus,
+    input[type="number"]:focus,
+    select:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(232,176,75,.15);
+    }
+
+    /* custom % input inside a row */
+    .custom-rate-input {
+      display: none;
+      margin-top: 6px;
+      border: 2px solid #c4aef0 !important;
+      background: #f9f6ff !important;
+    }
+    .custom-rate-input:focus {
+      border-color: #7c5cbf !important;
+      box-shadow: 0 0 0 3px rgba(124,92,191,.15) !important;
+    }
+    .custom-rate-input.visible { display: block; }
+
+    /* ── Result strip ── */
+    .row-result {
+      margin: 0 20px 18px;
+      background: #f8f7f2;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 12px 16px;
+      font-size: .88rem;
+      display: none;
+    }
+    .row-result table { width: 100%; border-collapse: collapse; }
+    .row-result td { padding: 3px 0; }
+    .row-result td:last-child { text-align: right; font-weight: 600; }
+    .row-result .highlight-row td {
+      border-top: 1px solid var(--border);
+      padding-top: 8px;
+      color: var(--brand);
+      font-weight: 700;
+      font-size: .95rem;
+    }
+    .row-result .base-row td { color: #2e7d32; font-size: .95rem; font-weight: 700; }
+    .row-result .custom-row td { color: #5a3e9e; font-size: .95rem; font-weight: 700; }
+
+    /* ── Actions ── */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 11px 22px;
+      border-radius: 8px;
+      border: none;
+      font-size: .95rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background .2s, transform .1s;
+    }
+    .btn:active  { transform: scale(.97); }
+    .btn-primary { background: var(--accent); color: #1a1a2e; }
+    .btn-primary:hover { background: var(--accent2); }
+    .btn-outline { background: transparent; border: 2px solid var(--brand); color: var(--brand); }
+    .btn-outline:hover { background: var(--brand); color: #fff; }
+
+    .actions { display: flex; gap: 14px; flex-wrap: wrap; margin-top: 24px; }
+
+    /* ── Summary panel ── */
+    #summary {
+      margin-top: 36px;
+      background: var(--brand);
+      color: #fff;
+      border-radius: var(--radius);
+      padding: 28px 28px 24px;
+      box-shadow: 0 4px 16px rgba(0,0,0,.18);
+    }
+    #summary h2 {
+      font-size: 1.1rem;
+      margin-bottom: 18px;
+      color: var(--accent);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      border-bottom: 1px solid rgba(255,255,255,.12);
+      padding-bottom: 10px;
+    }
+    .sum-table { width: 100%; border-collapse: collapse; }
+    .sum-table td { padding: 6px 0; font-size: .93rem; }
+    .sum-table td:last-child { text-align: right; font-weight: 600; }
+    .sum-divider td { border-top: 1px solid rgba(255,255,255,.18); padding-top: 12px; }
+    .sum-total td { font-size: 1.2rem; font-weight: 800; color: var(--accent); padding-top: 10px; }
+    .muted-label { color: rgba(255,255,255,.55); font-size: .83rem; }
+
+    .empty-state { text-align: center; padding: 40px 20px; color: var(--muted); font-size: .95rem; }
+
+    /* ── Toast ── */
+    #toast {
+      position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%);
+      background: #1a1a2e; color: #fff; border-radius: 8px;
+      padding: 11px 22px; font-size: .9rem; font-weight: 500;
+      box-shadow: 0 4px 20px rgba(0,0,0,.3); z-index: 3000;
+      opacity: 0; pointer-events: none; transition: opacity .25s;
+      white-space: nowrap;
+    }
+    #toast.show { opacity: 1; }
+    #toast.t-ok { border-left: 4px solid #4caf50; }
+
+    /* ── Responsive ── */
+    @media (max-width: 640px) {
+      header { padding: 12px 14px; }
+      header h1 { font-size: 1.1rem; }
+      .container { padding: 14px 10px 40px; }
+      .page-title { font-size: 1.15rem; }
+      .row-body { grid-template-columns: 1fr 1fr; }
+      .row-body .field:first-child { grid-column: 1 / -1; }
+      #summary { padding: 16px 14px 14px; }
+      .sum-total td { font-size: 1.05rem; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>HANDPIKD</h1>
+  <span>Reverse GST / % Calculator</span>
+</header>
+
+<div class="container">
+  <div class="page-title">Reverse GST / % Calculator</div>
+  <div class="page-subtitle">Enter a GST-inclusive or markup-inclusive total to extract the base price and the added component.</div>
+
+  <div style="margin-bottom:20px">
+    <label style="display:block;font-size:.78rem;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);margin-bottom:10px">Default Rate (applied to new rows)</label>
+    <div class="rate-tabs" id="rate-tabs">
+      <button class="rate-tab" data-rate="5"      onclick="setDefaultRate(5)">5% GST</button>
+      <button class="rate-tab" data-rate="12"     onclick="setDefaultRate(12)">12% GST</button>
+      <button class="rate-tab active" data-rate="18" onclick="setDefaultRate(18)">18% GST</button>
+      <button class="rate-tab" data-rate="28"     onclick="setDefaultRate(28)">28% GST</button>
+      <button class="rate-tab custom-tab" data-rate="custom" onclick="setDefaultRate('custom')">Custom %</button>
+    </div>
+    <div class="custom-default-wrap" id="custom-default-wrap">
+      <label>Enter %</label>
+      <input type="number" id="custom-default-input" min="0" step="0.1" placeholder="e.g. 30"
+        oninput="onCustomDefault(this.value)">
+    </div>
+  </div>
+
+  <div id="rows-list">
+    <div class="empty-state" id="empty-msg">No rows added yet. Click "Add Row" to begin.</div>
+  </div>
+
+  <div class="actions">
+    <button class="btn btn-primary" onclick="addRow()">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      Add Row
+    </button>
+    <button class="btn btn-outline" onclick="clearAll()">Clear All</button>
+    <button class="btn btn-outline" onclick="copyResults()" style="border-color:var(--accent);color:var(--accent2);">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+      Copy Summary
+    </button>
+  </div>
+
+  <div id="summary">
+    <h2>Summary</h2>
+    <div id="summary-body">
+      <div class="empty-state" style="color:rgba(255,255,255,.4);padding:20px 0">Add rows above to see the summary.</div>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+(function () {
+
+  let counter          = 0;
+  let defaultRate      = 18;   // number or 'custom'
+  let defaultCustomPct = null; // number when defaultRate === 'custom'
+  const rows           = {};
+
+  /* ── Helpers ── */
+  function fmt(n) {
+    return '₹' + Number(n.toFixed(2)).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  }
+
+  function effectiveRate(d) {
+    if (d.rate === 'custom') return parseFloat(d.customRate) || null;
+    return d.rate;
+  }
+
+  function calcReverse(totalWithPct, rate) {
+    const divisor = 1 + rate / 100;
+    const base    = totalWithPct / divisor;
+    const added   = totalWithPct - base;
+    return { base, added, total: totalWithPct, rate };
+  }
+
+  function isGSTRate(rate) {
+    return [5, 12, 18, 28].includes(rate);
+  }
+
+  /* ── Default rate tabs ── */
+  window.setDefaultRate = function (rate) {
+    defaultRate = rate;
+    document.querySelectorAll('.rate-tab').forEach(t => {
+      const v = t.dataset.rate === 'custom' ? 'custom' : parseInt(t.dataset.rate);
+      t.classList.toggle('active', v === rate);
+    });
+    const wrap = document.getElementById('custom-default-wrap');
+    if (rate === 'custom') {
+      wrap.classList.add('visible');
+      document.getElementById('custom-default-input').focus();
+    } else {
+      wrap.classList.remove('visible');
+      defaultCustomPct = null;
+    }
+  };
+
+  window.onCustomDefault = function (val) {
+    defaultCustomPct = parseFloat(val) || null;
+  };
+
+  /* ── Toast ── */
+  function toast(msg, type = 't-ok') {
+    const el = document.getElementById('toast');
+    el.textContent = msg;
+    el.className   = 'show ' + type;
+    clearTimeout(el._t);
+    el._t = setTimeout(() => { el.className = ''; }, 2200);
+  }
+
+  /* ── Add row ── */
+  window.addRow = function () {
+    counter++;
+    const id = 'r' + counter;
+
+    const initialRate       = defaultRate;
+    const initialCustomRate = defaultRate === 'custom' ? (defaultCustomPct || '') : '';
+
+    rows[id] = { desc: '', amount: '', rate: initialRate, customRate: String(initialCustomRate) };
+
+    document.getElementById('empty-msg').style.display = 'none';
+
+    const rateOpts = [
+      { v: 5,        label: '5% GST'   },
+      { v: 12,       label: '12% GST'  },
+      { v: 18,       label: '18% GST'  },
+      { v: 28,       label: '28% GST'  },
+      { v: 'custom', label: 'Custom %' },
+    ].map(o => `<option value="${o.v}"${o.v === initialRate ? ' selected' : ''}>${o.label}</option>`).join('');
+
+    const card = document.createElement('div');
+    card.className = 'row-card';
+    card.id = 'card-' + id;
+    card.innerHTML = `
+      <div class="row-header">
+        <span><span class="row-num">#${counter}</span> Entry</span>
+        <button class="remove-btn" onclick="removeRow('${id}')">Remove</button>
+      </div>
+      <div class="row-body">
+        <div class="field">
+          <label>Description (optional)</label>
+          <input type="text" id="desc-${id}" placeholder="e.g. Vendor invoice, Commission…"
+            oninput="onField('${id}','desc',this.value)">
+        </div>
+        <div class="field">
+          <label>Total Amount incl. % (₹)</label>
+          <input type="number" id="amt-${id}" min="0" step="0.01" placeholder="0.00"
+            oninput="onField('${id}','amount',this.value)">
+        </div>
+        <div class="field">
+          <label>Rate</label>
+          <select id="rate-${id}" onchange="onRateSelect('${id}',this.value)">${rateOpts}</select>
+          <input type="number" id="custom-rate-${id}" class="custom-rate-input${initialRate === 'custom' ? ' visible' : ''}"
+            min="0" step="0.1" placeholder="Enter % e.g. 30"
+            value="${initialCustomRate}"
+            oninput="onField('${id}','customRate',this.value)">
+        </div>
+      </div>
+      <div class="row-result" id="res-${id}"></div>`;
+
+    document.getElementById('rows-list').appendChild(card);
+    document.getElementById('amt-' + id).focus();
+    renderSummary();
+  };
+
+  window.onRateSelect = function (id, val) {
+    if (!rows[id]) return;
+    rows[id].rate = val === 'custom' ? 'custom' : parseFloat(val);
+    const inp = document.getElementById('custom-rate-' + id);
+    if (val === 'custom') {
+      inp.classList.add('visible');
+      inp.focus();
+    } else {
+      inp.classList.remove('visible');
+      rows[id].customRate = '';
+    }
+    renderRow(id);
+  };
+
+  window.removeRow = function (id) {
+    const c = document.getElementById('card-' + id);
+    if (c) c.remove();
+    delete rows[id];
+    if (!Object.keys(rows).length) document.getElementById('empty-msg').style.display = '';
+    renderSummary();
+  };
+
+  window.clearAll = function () {
+    if (!confirm('Clear all rows?')) return;
+    Object.keys(rows).forEach(id => delete rows[id]);
+    document.getElementById('rows-list').innerHTML =
+      '<div class="empty-state" id="empty-msg">No rows added yet. Click "Add Row" to begin.</div>';
+    counter = 0;
+    renderSummary();
+  };
+
+  window.onField = function (id, key, val) {
+    if (!rows[id]) return;
+    rows[id][key] = val;
+    renderRow(id);
+  };
+
+  /* ── Render single row ── */
+  function renderRow(id) {
+    const el = document.getElementById('res-' + id);
+    if (!el) return;
+    const d   = rows[id];
+    const amt = parseFloat(d.amount);
+    const rt  = effectiveRate(d);
+
+    if (!amt || amt <= 0 || !rt || rt <= 0) { el.style.display = 'none'; renderSummary(); return; }
+
+    const r        = calcReverse(amt, rt);
+    const isGST    = isGSTRate(rt);
+    const rowClass = isGST ? 'base-row' : 'custom-row';
+    const addedLbl = isGST ? `GST component (${rt}%)` : `% component (${rt}%)`;
+    const baseLbl  = isGST ? 'Base price (pre-GST)'   : 'Base price (before %)';
+
+    el.style.display = '';
+    el.innerHTML = `<table>
+      <tr><td>Total (inclusive)</td><td>${fmt(r.total)}</td></tr>
+      <tr class="${rowClass}"><td>${baseLbl}</td><td>${fmt(r.base)}</td></tr>
+      <tr><td>${addedLbl}</td><td>${fmt(r.added)}</td></tr>
+      <tr class="highlight-row"><td>Effective rate check</td><td>${((r.added / r.base) * 100).toFixed(4)}%</td></tr>
+    </table>`;
+
+    renderSummary();
+  }
+
+  /* ── Summary ── */
+  function renderSummary() {
+    const ids   = Object.keys(rows);
+    const valid = ids
+      .map(id => {
+        const d  = rows[id];
+        const rt = effectiveRate(d);
+        const amt = parseFloat(d.amount);
+        if (!amt || amt <= 0 || !rt || rt <= 0) return null;
+        return { id, d, r: calcReverse(amt, rt) };
+      })
+      .filter(Boolean);
+
+    const body = document.getElementById('summary-body');
+    if (!valid.length) {
+      body.innerHTML = '<div class="empty-state" style="color:rgba(255,255,255,.4);padding:20px 0">Add rows above to see the summary.</div>';
+      return;
+    }
+
+    const totTotal = valid.reduce((s, x) => s + x.r.total, 0);
+    const totBase  = valid.reduce((s, x) => s + x.r.base,  0);
+    const totAdded = valid.reduce((s, x) => s + x.r.added, 0);
+
+    const itemRows = valid.map((x, i) => {
+      const label    = x.d.desc ? x.d.desc : `Entry ${i + 1}`;
+      const rateTag  = isGSTRate(x.r.rate) ? `${x.r.rate}% GST` : `${x.r.rate}%`;
+      return `<tr>
+        <td>${label} <span class="muted-label">(${rateTag})</span></td>
+        <td>${fmt(x.r.total)}</td>
+      </tr>
+      <tr>
+        <td style="padding-left:14px;font-size:.83rem" class="muted-label">↳ Base: ${fmt(x.r.base)} &nbsp;+&nbsp; Added: ${fmt(x.r.added)}</td>
+        <td></td>
+      </tr>`;
+    }).join('');
+
+    body.innerHTML = `<table class="sum-table">
+      ${itemRows}
+      <tr class="sum-divider"><td>Total (inclusive)</td><td>${fmt(totTotal)}</td></tr>
+      <tr><td>Total Base Price</td><td>${fmt(totBase)}</td></tr>
+      <tr><td>Total Added Component</td><td>${fmt(totAdded)}</td></tr>
+      <tr class="sum-total"><td>Net Base (Pre-%)</td><td>${fmt(totBase)}</td></tr>
+    </table>`;
+  }
+
+  /* ── Copy summary ── */
+  window.copyResults = function () {
+    const ids   = Object.keys(rows);
+    const valid = ids
+      .map(id => {
+        const d  = rows[id];
+        const rt = effectiveRate(d);
+        const amt = parseFloat(d.amount);
+        if (!amt || amt <= 0 || !rt || rt <= 0) return null;
+        return { id, d, r: calcReverse(amt, rt) };
+      })
+      .filter(Boolean);
+
+    if (!valid.length) { toast('No data to copy.'); return; }
+
+    const lines = valid.map((x, i) => {
+      const label   = x.d.desc || `Entry ${i + 1}`;
+      const rateTag = isGSTRate(x.r.rate) ? `${x.r.rate}% GST` : `${x.r.rate}%`;
+      return `${label} (${rateTag})\n  Total: ₹${x.r.total.toFixed(2)}\n  Base:  ₹${x.r.base.toFixed(2)}\n  Added: ₹${x.r.added.toFixed(2)}`;
+    });
+
+    const totTotal = valid.reduce((s, x) => s + x.r.total, 0);
+    const totBase  = valid.reduce((s, x) => s + x.r.base,  0);
+    const totAdded = valid.reduce((s, x) => s + x.r.added, 0);
+
+    const text = lines.join('\n\n') +
+      `\n\n─────────────────────\nTotal:      ₹${totTotal.toFixed(2)}\nTotal Base: ₹${totBase.toFixed(2)}\nTotal Added:₹${totAdded.toFixed(2)}`;
+
+    navigator.clipboard.writeText(text)
+      .then(() => toast('Copied to clipboard!'))
+      .catch(() => toast('Copy failed — try selecting manually.'));
+  };
+
+})();
+</script>
+</body>
+</html>
