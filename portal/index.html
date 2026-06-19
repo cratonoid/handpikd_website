@@ -211,7 +211,7 @@ function toast(msg) {
 
 function logout() {
   localStorage.removeItem('hpkd_token');
-  location.href = '/portal/login/';
+  location.href = '/portal/login';
 }
 
 async function downloadInvoice(orderId, name) {
@@ -259,11 +259,11 @@ function renderOrders(orders) {
 
 (async function init() {
   try {
-    if (!localStorage.getItem('hpkd_token')) { location.href = '/portal/login/'; return; }
+    if (!localStorage.getItem('hpkd_token')) { location.href = '/portal/login'; return; }
     const r = await fetch(`${API}/api/auth/me`, { headers: authH() });
-    if (!r.ok) { localStorage.removeItem('hpkd_token'); location.href = '/portal/login/'; return; }
+    if (!r.ok) { localStorage.removeItem('hpkd_token'); location.href = '/portal/login'; return; }
     me = await r.json();
-    if (me.isAdmin) { location.href = '/portal/admin/'; return; }
+    if (me.isAdmin) { location.href = '/portal/admin'; return; }
 
     document.getElementById('h-user').textContent = me.name + (me.company ? ` · ${me.company}` : '');
     document.getElementById('pts-val').textContent = (me.points || 0).toLocaleString('en-IN');
@@ -279,7 +279,7 @@ function renderOrders(orders) {
     document.getElementById('loading').style.display  = 'none';
     document.getElementById('content').style.display  = '';
   } catch (e) {
-    location.href = '/portal/login/';
+    location.href = '/portal/login';
   }
 })();
 </script>
