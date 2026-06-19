@@ -624,7 +624,7 @@ function clearErr(id) { document.getElementById(id).classList.remove('show'); }
 /* ── Auth ── */
 function logout() {
   localStorage.removeItem('hpkd_token');
-  location.href = '/portal/login.html';
+  location.href = '/portal/login/';
 }
 
 /* ── Load users ── */
@@ -1023,16 +1023,16 @@ document.getElementById('orders-modal').addEventListener('click', e => {
 /* ── Init ── */
 (async function init() {
   try {
-    if (!localStorage.getItem('hpkd_token')) { location.href = '/portal/login.html'; return; }
+    if (!localStorage.getItem('hpkd_token')) { location.href = '/portal/login/'; return; }
     const r = await fetch(`${API}/api/auth/me`, authH());
-    if (!r.ok) { localStorage.removeItem('hpkd_token'); location.href = '/portal/login.html'; return; }
+    if (!r.ok) { localStorage.removeItem('hpkd_token'); location.href = '/portal/login/'; return; }
     const me = await r.json();
     if (!me.isAdmin) { location.href = '/portal/'; return; }
     document.getElementById('h-user').textContent = me.name;
     await Promise.all([loadOverview(), loadUsers()]);
     document.getElementById('loading').style.display = 'none';
     document.getElementById('content').style.display = '';
-  } catch (e) { location.href = '/portal/login.html'; }
+  } catch (e) { location.href = '/portal/login/'; }
 })();
 
 /* ── Invoice bulk download ── */

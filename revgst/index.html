@@ -103,10 +103,28 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
+      gap: 10px;
       font-weight: 600;
       font-size: .92rem;
     }
     .row-num { color: var(--accent); margin-right: 8px; }
+
+    /* ── Input mode toggle ── */
+    .input-mode-toggle { display: flex; gap: 4px; margin-left: auto; }
+    .imode-btn {
+      background: rgba(255,255,255,.1);
+      border: 1px solid rgba(255,255,255,.22);
+      color: rgba(255,255,255,.65);
+      border-radius: 5px;
+      padding: 3px 11px;
+      cursor: pointer;
+      font-size: .75rem;
+      font-weight: 600;
+      transition: all .15s;
+      white-space: nowrap;
+    }
+    .imode-btn:hover { background: rgba(255,255,255,.2); color: #fff; }
+    .imode-btn.active { background: var(--accent); border-color: var(--accent2); color: var(--brand); }
 
     .remove-btn {
       background: rgba(255,255,255,.12);
@@ -117,6 +135,7 @@
       cursor: pointer;
       font-size: .8rem;
       transition: background .2s;
+      white-space: nowrap;
     }
     .remove-btn:hover { background: var(--danger); border-color: var(--danger); }
 
@@ -126,6 +145,67 @@
       grid-template-columns: 2fr 1.2fr 1fr;
       gap: 16px;
       align-items: end;
+    }
+
+    /* ── Optional strips ── */
+    .row-reduce, .row-reduce-gst {
+      padding: 14px 20px 16px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      border-top: 1px dashed var(--border);
+    }
+    .row-reduce label {
+      font-size: .78rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .5px;
+      color: var(--muted);
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+    .row-reduce-gst label {
+      font-size: .78rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .5px;
+      color: #1565c0;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+    .row-reduce label span,
+    .row-reduce-gst label span { font-weight: 400; text-transform: none; letter-spacing: 0; color: #bbb; }
+
+    .row-reduce input {
+      border: 2px solid #f5c2c2;
+      border-radius: 8px;
+      padding: 7px 12px;
+      font-size: .92rem;
+      color: var(--text);
+      background: #fff8f8;
+      width: 160px;
+      transition: border-color .2s, box-shadow .2s;
+    }
+    .row-reduce input:focus {
+      outline: none;
+      border-color: #d64545;
+      box-shadow: 0 0 0 3px rgba(214,69,69,.12);
+    }
+
+    .row-reduce-gst select {
+      border: 2px solid #90caf9 !important;
+      border-radius: 8px !important;
+      padding: 7px 12px !important;
+      font-size: .92rem;
+      color: var(--text);
+      background: #f0f6ff !important;
+      width: 160px !important;
+      transition: border-color .2s, box-shadow .2s;
+    }
+    .row-reduce-gst select:focus {
+      outline: none;
+      border-color: #1565c0 !important;
+      box-shadow: 0 0 0 3px rgba(21,101,192,.12) !important;
     }
 
     .field { display: flex; flex-direction: column; gap: 6px; }
@@ -191,8 +271,24 @@
       font-weight: 700;
       font-size: .95rem;
     }
-    .row-result .base-row td { color: #2e7d32; font-size: .95rem; font-weight: 700; }
-    .row-result .custom-row td { color: #5a3e9e; font-size: .95rem; font-weight: 700; }
+    .row-result .base-row td       { color: #2e7d32; font-size: .95rem; font-weight: 700; }
+    .row-result .custom-row td     { color: #5a3e9e; font-size: .95rem; font-weight: 700; }
+    .row-result .reduce-row td     { color: #d64545; font-size: .95rem; font-weight: 700; }
+    .row-result .gst-remove-row td { color: #1565c0; font-size: .95rem; font-weight: 700; }
+    .row-result .final-row td {
+      border-top: 1px solid var(--border);
+      padding-top: 8px;
+      color: var(--brand);
+      font-weight: 800;
+      font-size: 1rem;
+    }
+    .row-result .net-final-row td {
+      border-top: 2px solid var(--brand);
+      padding-top: 8px;
+      color: var(--brand);
+      font-weight: 800;
+      font-size: 1.05rem;
+    }
 
     /* ── Actions ── */
     .btn {
@@ -256,12 +352,14 @@
 
     /* ── Responsive ── */
     @media (max-width: 640px) {
-      header { padding: 12px 14px; }
+      header { padding: 12px 14px; flex-wrap: wrap; }
       header h1 { font-size: 1.1rem; }
       .container { padding: 14px 10px 40px; }
       .page-title { font-size: 1.15rem; }
       .row-body { grid-template-columns: 1fr 1fr; }
       .row-body .field:first-child { grid-column: 1 / -1; }
+      .row-reduce, .row-reduce-gst { flex-wrap: wrap; }
+      .input-mode-toggle { flex-wrap: wrap; }
       #summary { padding: 16px 14px 14px; }
       .sum-total td { font-size: 1.05rem; }
     }
@@ -276,7 +374,7 @@
 
 <div class="container">
   <div class="page-title">Reverse GST / % Calculator</div>
-  <div class="page-subtitle">Enter a GST-inclusive or markup-inclusive total to extract the base price and the added component.</div>
+  <div class="page-subtitle">Per row: optionally reverse-extract GST from a total, reduce the base by %, and remove a final GST component.</div>
 
   <div style="margin-bottom:20px">
     <label style="display:block;font-size:.78rem;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);margin-bottom:10px">Default Rate (applied to new rows)</label>
@@ -324,8 +422,8 @@
 (function () {
 
   let counter          = 0;
-  let defaultRate      = 18;   // number or 'custom'
-  let defaultCustomPct = null; // number when defaultRate === 'custom'
+  let defaultRate      = 18;
+  let defaultCustomPct = null;
   const rows           = {};
 
   /* ── Helpers ── */
@@ -379,6 +477,23 @@
     el._t = setTimeout(() => { el.className = ''; }, 2200);
   }
 
+  /* ── Input mode toggle ── */
+  window.setInputMode = function (id, mode) {
+    if (!rows[id]) return;
+    rows[id].inputMode = mode;
+
+    document.getElementById('imode-rev-' + id).classList.toggle('active', mode === 'reverse');
+    document.getElementById('imode-dir-' + id).classList.toggle('active', mode === 'direct');
+
+    const lbl = document.getElementById('amt-lbl-' + id);
+    if (lbl) lbl.textContent = mode === 'direct' ? 'Base Price (₹)' : 'Total Amount incl. % (₹)';
+
+    const rateWrap = document.getElementById('rate-field-' + id);
+    if (rateWrap) rateWrap.style.display = mode === 'direct' ? 'none' : '';
+
+    renderRow(id);
+  };
+
   /* ── Add row ── */
   window.addRow = function () {
     counter++;
@@ -387,7 +502,13 @@
     const initialRate       = defaultRate;
     const initialCustomRate = defaultRate === 'custom' ? (defaultCustomPct || '') : '';
 
-    rows[id] = { desc: '', amount: '', rate: initialRate, customRate: String(initialCustomRate) };
+    rows[id] = {
+      desc: '', amount: '',
+      rate: initialRate, customRate: String(initialCustomRate),
+      reduceBy: '',
+      gstReduce: '',
+      inputMode: 'reverse'
+    };
 
     document.getElementById('empty-msg').style.display = 'none';
 
@@ -405,6 +526,10 @@
     card.innerHTML = `
       <div class="row-header">
         <span><span class="row-num">#${counter}</span> Entry</span>
+        <div class="input-mode-toggle">
+          <button class="imode-btn active" id="imode-rev-${id}" onclick="setInputMode('${id}','reverse')">Reverse GST</button>
+          <button class="imode-btn"        id="imode-dir-${id}" onclick="setInputMode('${id}','direct')">Direct Base</button>
+        </div>
         <button class="remove-btn" onclick="removeRow('${id}')">Remove</button>
       </div>
       <div class="row-body">
@@ -414,11 +539,11 @@
             oninput="onField('${id}','desc',this.value)">
         </div>
         <div class="field">
-          <label>Total Amount incl. % (₹)</label>
+          <label id="amt-lbl-${id}">Total Amount incl. % (₹)</label>
           <input type="number" id="amt-${id}" min="0" step="0.01" placeholder="0.00"
             oninput="onField('${id}','amount',this.value)">
         </div>
-        <div class="field">
+        <div class="field" id="rate-field-${id}">
           <label>Rate</label>
           <select id="rate-${id}" onchange="onRateSelect('${id}',this.value)">${rateOpts}</select>
           <input type="number" id="custom-rate-${id}" class="custom-rate-input${initialRate === 'custom' ? ' visible' : ''}"
@@ -426,6 +551,21 @@
             value="${initialCustomRate}"
             oninput="onField('${id}','customRate',this.value)">
         </div>
+      </div>
+      <div class="row-reduce">
+        <label>Further reduce commission % <span>(optional)</span></label>
+        <input type="number" id="reduce-${id}" min="0" max="100" step="0.1" placeholder="e.g. 10"
+          oninput="onField('${id}','reduceBy',this.value)">
+      </div>
+      <div class="row-reduce-gst">
+        <label>Remove GST from final <span>(optional)</span></label>
+        <select id="gst-reduce-${id}" onchange="onField('${id}','gstReduce',this.value)">
+          <option value="">— None —</option>
+          <option value="5">5% GST</option>
+          <option value="12">12% GST</option>
+          <option value="18">18% GST</option>
+          <option value="28">28% GST</option>
+        </select>
       </div>
       <div class="row-result" id="res-${id}"></div>`;
 
@@ -471,45 +611,93 @@
     renderRow(id);
   };
 
+  /* ── Compute row values ── */
+  function computeRow(d) {
+    const amt = parseFloat(d.amount);
+    if (!amt || amt <= 0) return null;
+
+    const mode = d.inputMode || 'reverse';
+    let r;
+
+    if (mode === 'direct') {
+      // Skip reverse GST — the entered amount IS the base price
+      r = { base: amt, added: 0, total: amt, rate: null };
+    } else {
+      const rt = effectiveRate(d);
+      if (!rt || rt <= 0) return null;
+      r = calcReverse(amt, rt);
+    }
+
+    const reduceBy    = parseFloat(d.reduceBy) || 0;
+    const reduced     = reduceBy > 0 ? r.base * reduceBy / 100 : 0;
+    const afterReduce = r.base - reduced;
+
+    const gstReduce  = parseFloat(d.gstReduce) || 0;
+    let gstComponent = 0, netFinal = afterReduce;
+    if (gstReduce > 0) {
+      const g      = calcReverse(afterReduce, gstReduce);
+      gstComponent = g.added;
+      netFinal     = g.base;
+    }
+
+    return { r, reduceBy, reduced, afterReduce, gstReduce, gstComponent, netFinal, mode };
+  }
+
   /* ── Render single row ── */
   function renderRow(id) {
     const el = document.getElementById('res-' + id);
     if (!el) return;
-    const d   = rows[id];
-    const amt = parseFloat(d.amount);
-    const rt  = effectiveRate(d);
+    const d  = rows[id];
+    const cv = computeRow(d);
 
-    if (!amt || amt <= 0 || !rt || rt <= 0) { el.style.display = 'none'; renderSummary(); return; }
+    if (!cv) { el.style.display = 'none'; renderSummary(); return; }
 
-    const r        = calcReverse(amt, rt);
-    const isGST    = isGSTRate(rt);
-    const rowClass = isGST ? 'base-row' : 'custom-row';
-    const addedLbl = isGST ? `GST component (${rt}%)` : `% component (${rt}%)`;
-    const baseLbl  = isGST ? 'Base price (pre-GST)'   : 'Base price (before %)';
+    const { r, reduceBy, reduced, afterReduce, gstReduce, gstComponent, netFinal, mode } = cv;
+
+    let rows_html = '';
+
+    if (mode === 'direct') {
+      rows_html += `<tr class="base-row"><td>Base price (entered directly)</td><td>${fmt(r.base)}</td></tr>`;
+    } else {
+      const isGST    = isGSTRate(r.rate);
+      const rowClass = isGST ? 'base-row' : 'custom-row';
+      const addedLbl = isGST ? `GST component (${r.rate}%)` : `% component (${r.rate}%)`;
+      const baseLbl  = isGST ? 'Base price (pre-GST)'       : 'Base price (before %)';
+      rows_html += `
+        <tr><td>Total (inclusive)</td><td>${fmt(r.total)}</td></tr>
+        <tr class="${rowClass}"><td>${baseLbl}</td><td>${fmt(r.base)}</td></tr>
+        <tr><td>${addedLbl}</td><td>${fmt(r.added)}</td></tr>`;
+    }
+
+    if (reduceBy > 0) {
+      rows_html += `
+        <tr class="reduce-row"><td>Further reduction (${reduceBy}% of base)</td><td>− ${fmt(reduced)}</td></tr>
+        <tr class="final-row"><td>Price after reduction</td><td>${fmt(afterReduce)}</td></tr>`;
+    }
+
+    if (gstReduce > 0) {
+      rows_html += `
+        <tr class="gst-remove-row"><td>GST removed from final (${gstReduce}%)</td><td>− ${fmt(gstComponent)}</td></tr>
+        <tr class="net-final-row"><td>Net final (pre-GST)</td><td>${fmt(netFinal)}</td></tr>`;
+    }
+
+    if (mode === 'reverse') {
+      rows_html += `<tr class="highlight-row"><td>Effective rate check</td><td>${((r.added / r.base) * 100).toFixed(4)}%</td></tr>`;
+    }
 
     el.style.display = '';
-    el.innerHTML = `<table>
-      <tr><td>Total (inclusive)</td><td>${fmt(r.total)}</td></tr>
-      <tr class="${rowClass}"><td>${baseLbl}</td><td>${fmt(r.base)}</td></tr>
-      <tr><td>${addedLbl}</td><td>${fmt(r.added)}</td></tr>
-      <tr class="highlight-row"><td>Effective rate check</td><td>${((r.added / r.base) * 100).toFixed(4)}%</td></tr>
-    </table>`;
-
+    el.innerHTML = `<table>${rows_html}</table>`;
     renderSummary();
   }
 
   /* ── Summary ── */
   function renderSummary() {
     const ids   = Object.keys(rows);
-    const valid = ids
-      .map(id => {
-        const d  = rows[id];
-        const rt = effectiveRate(d);
-        const amt = parseFloat(d.amount);
-        if (!amt || amt <= 0 || !rt || rt <= 0) return null;
-        return { id, d, r: calcReverse(amt, rt) };
-      })
-      .filter(Boolean);
+    const valid = ids.map(id => {
+      const cv = computeRow(rows[id]);
+      if (!cv) return null;
+      return { id, d: rows[id], ...cv };
+    }).filter(Boolean);
 
     const body = document.getElementById('summary-body');
     if (!valid.length) {
@@ -517,61 +705,99 @@
       return;
     }
 
-    const totTotal = valid.reduce((s, x) => s + x.r.total, 0);
-    const totBase  = valid.reduce((s, x) => s + x.r.base,  0);
-    const totAdded = valid.reduce((s, x) => s + x.r.added, 0);
+    const totBase     = valid.reduce((s, x) => s + x.r.base,      0);
+    const totAdded    = valid.reduce((s, x) => s + x.r.added,     0);
+    const totNetFinal = valid.reduce((s, x) => s + x.netFinal,    0);
+    const hasReduce   = valid.some(x => x.reduceBy > 0);
+    const hasGSTRem   = valid.some(x => x.gstReduce > 0);
+    const hasReverse  = valid.some(x => x.mode === 'reverse');
 
     const itemRows = valid.map((x, i) => {
-      const label    = x.d.desc ? x.d.desc : `Entry ${i + 1}`;
-      const rateTag  = isGSTRate(x.r.rate) ? `${x.r.rate}% GST` : `${x.r.rate}%`;
+      const label = x.d.desc || `Entry ${i + 1}`;
+      let tag, sub;
+      if (x.mode === 'direct') {
+        tag = 'Direct';
+        sub = `↳ Base: ${fmt(x.r.base)}`;
+      } else {
+        const rateTag = isGSTRate(x.r.rate) ? `${x.r.rate}% GST` : `${x.r.rate}%`;
+        tag = rateTag;
+        sub = `↳ Base: ${fmt(x.r.base)} + Added: ${fmt(x.r.added)}`;
+      }
+      if (x.reduceBy > 0)  sub += ` → After reduction: ${fmt(x.afterReduce)} (−${x.reduceBy}%)`;
+      if (x.gstReduce > 0) sub += ` → Net: ${fmt(x.netFinal)} (−${x.gstReduce}% GST)`;
+      const totalAmt = x.mode === 'direct' ? fmt(x.r.base) : fmt(x.r.total);
       return `<tr>
-        <td>${label} <span class="muted-label">(${rateTag})</span></td>
-        <td>${fmt(x.r.total)}</td>
+        <td>${label} <span class="muted-label">(${tag})</span></td>
+        <td>${totalAmt}</td>
       </tr>
       <tr>
-        <td style="padding-left:14px;font-size:.83rem" class="muted-label">↳ Base: ${fmt(x.r.base)} &nbsp;+&nbsp; Added: ${fmt(x.r.added)}</td>
+        <td style="padding-left:14px;font-size:.82rem" class="muted-label">${sub}</td>
         <td></td>
       </tr>`;
     }).join('');
 
-    body.innerHTML = `<table class="sum-table">
-      ${itemRows}
-      <tr class="sum-divider"><td>Total (inclusive)</td><td>${fmt(totTotal)}</td></tr>
-      <tr><td>Total Base Price</td><td>${fmt(totBase)}</td></tr>
-      <tr><td>Total Added Component</td><td>${fmt(totAdded)}</td></tr>
-      <tr class="sum-total"><td>Net Base (Pre-%)</td><td>${fmt(totBase)}</td></tr>
-    </table>`;
+    let html = `<table class="sum-table">${itemRows}`;
+
+    if (hasReverse) {
+      const totTotal = valid.filter(x => x.mode === 'reverse').reduce((s, x) => s + x.r.total, 0);
+      html += `<tr class="sum-divider"><td>Total (inclusive, reverse rows)</td><td>${fmt(totTotal)}</td></tr>`;
+    }
+    html += `<tr${hasReverse ? '' : ' class="sum-divider"'}><td>Total Base Price</td><td>${fmt(totBase)}</td></tr>`;
+    if (hasReverse) {
+      html += `<tr><td>Total Added Component</td><td>${fmt(totAdded)}</td></tr>`;
+    }
+
+    if (hasGSTRem) {
+      html += `<tr class="sum-total"><td>Total Net Final (pre-GST)</td><td>${fmt(totNetFinal)}</td></tr>`;
+    } else if (hasReduce) {
+      const totAfterReduce = valid.reduce((s, x) => s + x.afterReduce, 0);
+      html += `<tr class="sum-total"><td>Total After Reductions</td><td>${fmt(totAfterReduce)}</td></tr>`;
+    } else {
+      html += `<tr class="sum-total"><td>Net Base (Pre-%)</td><td>${fmt(totBase)}</td></tr>`;
+    }
+
+    html += '</table>';
+    body.innerHTML = html;
   }
 
   /* ── Copy summary ── */
   window.copyResults = function () {
     const ids   = Object.keys(rows);
-    const valid = ids
-      .map(id => {
-        const d  = rows[id];
-        const rt = effectiveRate(d);
-        const amt = parseFloat(d.amount);
-        if (!amt || amt <= 0 || !rt || rt <= 0) return null;
-        return { id, d, r: calcReverse(amt, rt) };
-      })
-      .filter(Boolean);
+    const valid = ids.map(id => {
+      const cv = computeRow(rows[id]);
+      if (!cv) return null;
+      return { id, d: rows[id], ...cv };
+    }).filter(Boolean);
 
     if (!valid.length) { toast('No data to copy.'); return; }
 
     const lines = valid.map((x, i) => {
-      const label   = x.d.desc || `Entry ${i + 1}`;
-      const rateTag = isGSTRate(x.r.rate) ? `${x.r.rate}% GST` : `${x.r.rate}%`;
-      return `${label} (${rateTag})\n  Total: ₹${x.r.total.toFixed(2)}\n  Base:  ₹${x.r.base.toFixed(2)}\n  Added: ₹${x.r.added.toFixed(2)}`;
+      const label = x.d.desc || `Entry ${i + 1}`;
+      let line;
+      if (x.mode === 'direct') {
+        line = `${label} (Direct Base)\n  Base: ₹${x.r.base.toFixed(2)}`;
+      } else {
+        const rateTag = isGSTRate(x.r.rate) ? `${x.r.rate}% GST` : `${x.r.rate}%`;
+        line = `${label} (${rateTag})\n  Total: ₹${x.r.total.toFixed(2)}\n  Base:  ₹${x.r.base.toFixed(2)}\n  Added: ₹${x.r.added.toFixed(2)}`;
+      }
+      if (x.reduceBy > 0)  line += `\n  Reduction (${x.reduceBy}%): −₹${x.reduced.toFixed(2)} → ₹${x.afterReduce.toFixed(2)}`;
+      if (x.gstReduce > 0) line += `\n  GST removed (${x.gstReduce}%): −₹${x.gstComponent.toFixed(2)} → Net: ₹${x.netFinal.toFixed(2)}`;
+      return line;
     });
 
-    const totTotal = valid.reduce((s, x) => s + x.r.total, 0);
-    const totBase  = valid.reduce((s, x) => s + x.r.base,  0);
-    const totAdded = valid.reduce((s, x) => s + x.r.added, 0);
+    const totBase     = valid.reduce((s, x) => s + x.r.base,   0);
+    const totNetFinal = valid.reduce((s, x) => s + x.netFinal, 0);
+    const hasGSTRem   = valid.some(x => x.gstReduce > 0);
+    const hasReduce   = valid.some(x => x.reduceBy > 0);
 
-    const text = lines.join('\n\n') +
-      `\n\n─────────────────────\nTotal:      ₹${totTotal.toFixed(2)}\nTotal Base: ₹${totBase.toFixed(2)}\nTotal Added:₹${totAdded.toFixed(2)}`;
+    let footer = `\n\n─────────────────────\nTotal Base: ₹${totBase.toFixed(2)}`;
+    if (hasReduce) {
+      const totAfter = valid.reduce((s, x) => s + x.afterReduce, 0);
+      footer += `\nAfter Red.: ₹${totAfter.toFixed(2)}`;
+    }
+    if (hasGSTRem) footer += `\nNet Final:  ₹${totNetFinal.toFixed(2)}`;
 
-    navigator.clipboard.writeText(text)
+    navigator.clipboard.writeText(lines.join('\n\n') + footer)
       .then(() => toast('Copied to clipboard!'))
       .catch(() => toast('Copy failed — try selecting manually.'));
   };
