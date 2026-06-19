@@ -155,7 +155,7 @@ function bearerHeaders() {
         const me = await fetch(`${API}/api/auth/me`, { headers: bearerHeaders() });
         if (me.ok) {
           const u = await me.json();
-          location.href = u.isAdmin ? '/portal/admin/' : '/portal/';
+          location.href = u.isAdmin ? '/portal/admin' : '/portal/';
           return;
         }
       } catch (_) {}
@@ -202,7 +202,7 @@ async function doLogin() {
     const data = await res.json();
     if (!res.ok) throw new Error(data.error);
     localStorage.setItem('hpkd_token', data.token);
-    location.href = data.isAdmin ? '/portal/admin/' : '/portal/';
+    location.href = data.isAdmin ? '/portal/admin' : '/portal/';
   } catch (e) {
     errEl.textContent = e.message;
     errEl.classList.add('show');
@@ -241,7 +241,7 @@ async function doSetup() {
     if (lr.ok) {
       const ld = await lr.json();
       localStorage.setItem('hpkd_token', ld.token);
-      location.href = '/portal/admin/'; return;
+      location.href = '/portal/admin'; return;
     }
     // Fallback: show login form
     document.getElementById('setup-form').style.display = 'none';
