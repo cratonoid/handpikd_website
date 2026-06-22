@@ -242,6 +242,7 @@
     <div class="tabs">
       <button class="tab-btn active" onclick="switchTab('overview')">Overview</button>
       <button class="tab-btn" onclick="switchTab('users')">Users</button>
+      <button class="tab-btn" onclick="switchTab('orders')">Orders</button>
     </div>
 
     <!-- ── Overview Tab ── -->
@@ -361,6 +362,36 @@
           </thead>
           <tbody id="users-body">
             <tr><td colspan="7"><div class="empty-state">Loading…</div></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ── Orders Tab ── -->
+    <div id="tab-orders" style="display:none">
+      <div class="sec-hdr">
+        <div class="sec-title">Orders</div>
+        <button class="btn btn-primary" onclick="openGlobalOrderModal()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          New Order
+        </button>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Order #</th>
+              <th>Customer</th>
+              <th>Description</th>
+              <th>Amount</th>
+              <th>Status</th>
+              <th>Date</th>
+              <th>Invoice</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="all-orders-body">
+            <tr><td colspan="8"><div class="empty-state">Click "Orders" tab to load.</div></td></tr>
           </tbody>
         </table>
       </div>
@@ -566,6 +597,76 @@
   </div>
 </div>
 
+<!-- ═══ GLOBAL ORDER MODAL (Create / Edit) ═══ -->
+<div class="modal" id="global-order-modal">
+  <div class="modal-box lg">
+    <div class="modal-hdr">
+      <div>
+        <h2 id="gom-title">New Order</h2>
+        <div class="sub" id="gom-sub">Select a registered user first</div>
+      </div>
+      <button class="modal-close" onclick="closeGlobalOrderModal()">✕ Close</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-grid">
+        <div class="field full">
+          <label>Customer *</label>
+          <select id="gom-user">
+            <option value="">— Select a registered user —</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Order Number *</label>
+          <input type="text" id="gom-num" placeholder="ORD-2026-001">
+        </div>
+        <div class="field">
+          <label>Amount (₹)</label>
+          <input type="number" id="gom-amount" min="0" step="0.01" placeholder="0.00">
+        </div>
+        <div class="field full">
+          <label>Description</label>
+          <input type="text" id="gom-desc" placeholder="e.g. 50 branded bottles — custom print">
+        </div>
+        <div class="field">
+          <label>Status</label>
+          <select id="gom-status">
+            <option value="pending">Pending</option>
+            <option value="processing">Processing</option>
+            <option value="delivered">Delivered</option>
+            <option value="cancelled">Cancelled</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Order Date</label>
+          <input type="date" id="gom-date">
+        </div>
+        <div class="field full">
+          <label>Notes (optional)</label>
+          <input type="text" id="gom-notes" placeholder="Any extra details…">
+        </div>
+        <div class="field full">
+          <label>Invoice PDF</label>
+          <label class="file-label" for="gom-pdf-input">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+            Click to upload PDF
+          </label>
+          <input type="file" id="gom-pdf-input" accept=".pdf,application/pdf" style="display:none" onchange="onGomPdfSelect(this)">
+          <div class="file-name" id="gom-pdf-name">No file selected</div>
+          <div id="gom-current-invoice" style="display:none;font-size:.8rem;margin-top:4px">
+            Current: <span id="gom-current-name" style="color:#166534;font-weight:600"></span>
+            <button onclick="clearGomInvoice()" style="background:none;border:none;color:var(--danger);cursor:pointer;font-size:.78rem;margin-left:8px">Remove</button>
+          </div>
+        </div>
+      </div>
+      <div class="err-msg" id="gom-err"></div>
+      <div class="form-foot">
+        <button class="btn btn-outline" onclick="closeGlobalOrderModal()">Cancel</button>
+        <button class="btn btn-green" id="gom-save" onclick="saveGlobalOrder()">Create Order</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <div id="toast"></div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
@@ -751,7 +852,7 @@ function closeOrdersModal() {
 }
 
 async function loadOrders() {
-  const res   = await fetch(`${API}/api/orders/admin?userId=${activeUser._id}`, authH());
+  const res   = await fetch(`${API}/api/admin/orders?userId=${activeUser._id}`, authH());
   activeOrders = await res.json();
   renderOrders();
 }
@@ -897,7 +998,7 @@ async function saveOrder() {
 
   btn.disabled = true; btn.textContent = 'Saving…';
   try {
-    const url    = editOrderId ? `${API}/api/orders/admin/${editOrderId}` : `${API}/api/orders/admin`;
+    const url    = editOrderId ? `${API}/api/admin/orders/${editOrderId}` : `${API}/api/admin/orders`;
     const method = editOrderId ? 'PUT' : 'POST';
     const res    = await fetch(url, { method, ...authJson(), body: JSON.stringify(body) });
     const data   = await res.json();
@@ -918,7 +1019,7 @@ async function saveOrder() {
 async function deleteOrder(orderId) {
   if (!confirm('Delete this order?')) return;
   try {
-    const res = await fetch(`${API}/api/orders/admin/${orderId}`, { method: 'DELETE', ...authH() });
+    const res = await fetch(`${API}/api/admin/orders/${orderId}`, { method: 'DELETE', ...authH() });
     if (!res.ok) throw new Error((await res.json()).error);
     toast('Order deleted.');
     await loadOrders();
@@ -944,6 +1045,8 @@ function switchTab(name) {
   document.querySelector(`.tab-btn[onclick="switchTab('${name}')"]`).classList.add('active');
   document.getElementById('tab-overview').style.display = name === 'overview' ? '' : 'none';
   document.getElementById('tab-users').style.display    = name === 'users'    ? '' : 'none';
+  document.getElementById('tab-orders').style.display   = name === 'orders'   ? '' : 'none';
+  if (name === 'orders') loadAllOrders();
 }
 
 /* ── Overview ── */
@@ -1010,6 +1113,195 @@ async function loadOverview() {
   } catch(e) {
     console.error('Overview error:', e);
   }
+}
+
+/* ── All Orders Tab ── */
+let allOrders         = [];
+let editGlobalOrderId = null;
+let gomPendingPdf     = null;
+let gomKeepInvoice    = true;
+
+async function loadAllOrders() {
+  try {
+    const res = await fetch(`${API}/api/admin/orders/all`, authH());
+    allOrders = await res.json();
+    // Natural sort: pad all digit sequences so "2" < "10"
+    allOrders.sort((a, b) => {
+      const pad = s => (s || '').replace(/\d+/g, n => n.padStart(10, '0'));
+      return pad(a.orderNumber).localeCompare(pad(b.orderNumber));
+    });
+    renderAllOrders();
+  } catch (e) { console.error('loadAllOrders:', e); }
+}
+
+function renderAllOrders() {
+  const tbody = document.getElementById('all-orders-body');
+  if (!allOrders.length) {
+    tbody.innerHTML = '<tr><td colspan="8"><div class="empty-state">No orders yet. Create one above.</div></td></tr>';
+    return;
+  }
+  tbody.innerHTML = allOrders.map(o => `
+    <tr>
+      <td style="font-weight:600;color:var(--brand)">${o.orderNumber || '—'}</td>
+      <td>
+        <strong>${o.user?.name || '—'}</strong>
+        ${o.user?.company ? `<div style="font-size:.75rem;color:var(--muted)">${o.user.company}</div>` : ''}
+      </td>
+      <td>${o.description || '—'}${o.notes ? `<div style="font-size:.75rem;color:var(--muted);margin-top:2px">${o.notes}</div>` : ''}</td>
+      <td style="font-weight:600">${fmt(o.amount)}</td>
+      <td>${badge(o.status)}</td>
+      <td style="color:var(--muted);font-size:.82rem;white-space:nowrap">${fmtDate(o.orderDate || o.createdAt)}</td>
+      <td>
+        ${o.invoiceName
+          ? `<button class="btn btn-sm btn-ghost" onclick="adminDownloadInvoice('${o._id}')">
+               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+               ${o.invoiceName.length > 15 ? o.invoiceName.slice(0, 12) + '…' : o.invoiceName}
+             </button>`
+          : '<span style="font-size:.75rem;color:var(--muted)">—</span>'}
+      </td>
+      <td>
+        <div class="actions-cell">
+          <button class="btn btn-sm btn-ghost" onclick="editGlobalOrder('${o._id}')">Edit</button>
+          <button class="btn btn-sm btn-danger" onclick="deleteGlobalOrder('${o._id}')">Delete</button>
+        </div>
+      </td>
+    </tr>`).join('');
+}
+
+function openGlobalOrderModal(orderId) {
+  editGlobalOrderId = orderId || null;
+  gomPendingPdf  = null;
+  gomKeepInvoice = true;
+  clearErr('gom-err');
+
+  const sel = document.getElementById('gom-user');
+  sel.innerHTML = '<option value="">— Select a registered user —</option>' +
+    allUsers.map(u => `<option value="${u._id}">${u.name}${u.company ? ' — ' + u.company : ''}${u.isAdmin ? ' (Admin)' : ''}</option>`).join('');
+
+  if (orderId) {
+    const o = allOrders.find(x => x._id === orderId);
+    if (!o) return;
+    document.getElementById('gom-title').textContent = 'Edit Order';
+    document.getElementById('gom-sub').textContent   = `Order ${o.orderNumber}`;
+    document.getElementById('gom-save').textContent  = 'Update Order';
+    sel.value    = o.userId;
+    sel.disabled = true;
+    document.getElementById('gom-num').value    = o.orderNumber || '';
+    document.getElementById('gom-amount').value = o.amount || '';
+    document.getElementById('gom-desc').value   = o.description || '';
+    document.getElementById('gom-status').value = o.status || 'pending';
+    document.getElementById('gom-date').value   = o.orderDate
+      ? new Date(o.orderDate).toISOString().slice(0, 10)
+      : new Date(o.createdAt).toISOString().slice(0, 10);
+    document.getElementById('gom-notes').value  = o.notes || '';
+    const ciWrap = document.getElementById('gom-current-invoice');
+    if (o.invoiceName) {
+      document.getElementById('gom-current-name').textContent = o.invoiceName;
+      ciWrap.style.display = '';
+    } else { ciWrap.style.display = 'none'; }
+    document.getElementById('gom-pdf-name').textContent = 'No new file selected';
+    document.getElementById('gom-pdf-name').classList.remove('loaded');
+    document.getElementById('gom-pdf-input').value = '';
+  } else {
+    document.getElementById('gom-title').textContent = 'New Order';
+    document.getElementById('gom-sub').textContent   = 'Select a registered user first';
+    document.getElementById('gom-save').textContent  = 'Create Order';
+    sel.disabled = false;
+    document.getElementById('gom-num').value    = '';
+    document.getElementById('gom-amount').value = '';
+    document.getElementById('gom-desc').value   = '';
+    document.getElementById('gom-status').value = 'pending';
+    document.getElementById('gom-date').value   = new Date().toISOString().slice(0, 10);
+    document.getElementById('gom-notes').value  = '';
+    document.getElementById('gom-current-invoice').style.display = 'none';
+    document.getElementById('gom-pdf-name').textContent = 'No file selected';
+    document.getElementById('gom-pdf-name').classList.remove('loaded');
+    document.getElementById('gom-pdf-input').value = '';
+  }
+  document.getElementById('global-order-modal').classList.add('open');
+}
+
+function closeGlobalOrderModal() {
+  document.getElementById('global-order-modal').classList.remove('open');
+  document.getElementById('gom-user').disabled = false;
+}
+
+function editGlobalOrder(orderId) { openGlobalOrderModal(orderId); }
+
+function onGomPdfSelect(input) {
+  const file = input.files[0];
+  if (!file) return;
+  const nameEl = document.getElementById('gom-pdf-name');
+  nameEl.textContent = `Loading ${file.name}…`;
+  const reader = new FileReader();
+  reader.onload = e => {
+    gomPendingPdf = { dataUrl: e.target.result, name: file.name };
+    nameEl.textContent = `✓ ${file.name}`;
+    nameEl.classList.add('loaded');
+  };
+  reader.readAsDataURL(file);
+}
+
+function clearGomInvoice() {
+  gomKeepInvoice = false;
+  gomPendingPdf  = null;
+  document.getElementById('gom-current-invoice').style.display = 'none';
+  document.getElementById('gom-pdf-name').textContent = 'No file selected';
+  document.getElementById('gom-pdf-name').classList.remove('loaded');
+}
+
+async function saveGlobalOrder() {
+  clearErr('gom-err');
+  const btn         = document.getElementById('gom-save');
+  const userId      = document.getElementById('gom-user').value;
+  const orderNumber = document.getElementById('gom-num').value.trim();
+
+  if (!editGlobalOrderId && !userId) { showErr('gom-err', 'Please select a user.'); return; }
+  if (!orderNumber) { showErr('gom-err', 'Order number is required.'); return; }
+
+  const body = {
+    userId,
+    orderNumber,
+    description: document.getElementById('gom-desc').value.trim(),
+    amount:      parseFloat(document.getElementById('gom-amount').value) || 0,
+    status:      document.getElementById('gom-status').value,
+    orderDate:   document.getElementById('gom-date').value,
+    notes:       document.getElementById('gom-notes').value.trim(),
+  };
+  if (gomPendingPdf) {
+    body.invoicePdf  = gomPendingPdf.dataUrl;
+    body.invoiceName = gomPendingPdf.name;
+  } else if (editGlobalOrderId && !gomKeepInvoice) {
+    body.invoicePdf  = null;
+    body.invoiceName = null;
+  }
+
+  btn.disabled = true; btn.textContent = 'Saving…';
+  try {
+    const url    = editGlobalOrderId ? `${API}/api/admin/orders/${editGlobalOrderId}` : `${API}/api/admin/orders`;
+    const method = editGlobalOrderId ? 'PUT' : 'POST';
+    const res    = await fetch(url, { method, ...authJson(), body: JSON.stringify(body) });
+    const data   = await res.json();
+    if (!res.ok) throw new Error(data.error);
+    toast(editGlobalOrderId ? 'Order updated.' : 'Order created.');
+    closeGlobalOrderModal();
+    await Promise.all([loadAllOrders(), loadUsers()]);
+  } catch (e) {
+    showErr('gom-err', e.message);
+  } finally {
+    btn.disabled = false;
+    btn.textContent = editGlobalOrderId ? 'Update Order' : 'Create Order';
+  }
+}
+
+async function deleteGlobalOrder(orderId) {
+  if (!confirm('Delete this order? This cannot be undone.')) return;
+  try {
+    const res = await fetch(`${API}/api/admin/orders/${orderId}`, { method: 'DELETE', ...authH() });
+    if (!res.ok) throw new Error((await res.json()).error);
+    toast('Order deleted.');
+    await Promise.all([loadAllOrders(), loadUsers()]);
+  } catch (e) { toast(e.message, 't-err'); }
 }
 
 /* ── Close modals on backdrop click ── */
@@ -1108,6 +1400,9 @@ async function downloadInvoicesZip() {
 
 document.getElementById('invoice-dl-modal').addEventListener('click', e => {
   if (e.target === e.currentTarget) closeInvoiceDownloadModal();
+});
+document.getElementById('global-order-modal').addEventListener('click', e => {
+  if (e.target === e.currentTarget) closeGlobalOrderModal();
 });
 </script>
 </body>

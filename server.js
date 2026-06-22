@@ -38,6 +38,18 @@ function requireAdmin(req, res, next) {
   next();
 }
 
+function getFinancialYearRange(date) {
+  const d = new Date(date);
+  const month = d.getMonth() + 1;
+  const year = d.getFullYear();
+  const fyStart = month >= 4 ? year : year - 1;
+  return {
+    start: new Date(fyStart, 3, 1),
+    end: new Date(fyStart + 1, 2, 31, 23, 59, 59, 999),
+    label: `${fyStart}-${String(fyStart + 1).slice(2)}`
+  };
+}
+
 // ── Auth routes ─────────────────────────────────────────────────
 
 app.get('/api/auth/needs-setup', async (req, res) => {
@@ -160,16 +172,43 @@ app.get('/api/admin/orders', requireAdmin, async (req, res) => {
 
 app.post('/api/admin/orders', requireAdmin, async (req, res) => {
   try {
-    const { userId, orderNumber, description, amount, status, notes, invoicePdf, invoiceName } = req.body;
+    const { userId, orderNumber, description, amount, status, notes, invoicePdf, invoiceName, orderDate } = req.body;
     if (!userId) return res.status(400).json({ error: 'userId required' });
+    const effectiveDate = orderDate ? new Date(orderDate) : new Date();
+    if (orderNumber) {
+      const { start, end, label } = getFinancialYearRange(effectiveDate);
+      const dup = await db.collection('orders').findOne({
+        orderNumber,
+        $or: [
+          { orderDate: { $gte: start, $lte: end } },
+          { orderDate: { $exists: false }, createdAt: { $gte: start, $lte: end } }
+        ]
+      });
+      if (dup) return res.status(409).json({ error: `Order number "${orderNumber}" already exists in FY ${label}.` });
+    }
     const result = await db.collection('orders').insertOne({
       userId: new ObjectId(userId),
       orderNumber: orderNumber || '', description: description || '',
       amount: parseFloat(amount) || 0, status: status || 'pending',
       notes: notes || '', invoicePdf: invoicePdf || null,
-      invoiceName: invoiceName || null, createdAt: new Date()
+      invoiceName: invoiceName || null, orderDate: effectiveDate, createdAt: new Date()
     });
     res.json({ id: result.insertedId });
+  } catch (e) { res.status(500).json({ error: e.message }); }
+});
+
+app.get('/api/admin/orders/all', requireAdmin, async (req, res) => {
+  try {
+    const orders = await db.collection('orders')
+      .find({}, { projection: { invoicePdf: 0 } })
+      .sort({ orderNumber: 1 }).toArray();
+    const userIds = [...new Set(orders.map(o => o.userId.toString()))];
+    const users = userIds.length ? await db.collection('users')
+      .find({ _id: { $in: userIds.map(id => new ObjectId(id)) } }, { projection: { name: 1, company: 1, email: 1 } })
+      .toArray() : [];
+    const userMap = Object.fromEntries(users.map(u => [u._id.toString(), u]));
+    orders.forEach(o => { o.user = userMap[o.userId.toString()] || null; });
+    res.json(orders);
   } catch (e) { res.status(500).json({ error: e.message }); }
 });
 
@@ -183,12 +222,29 @@ app.get('/api/admin/orders/:id', requireAdmin, async (req, res) => {
 
 app.put('/api/admin/orders/:id', requireAdmin, async (req, res) => {
   try {
-    const { orderNumber, description, amount, status, notes, invoicePdf, invoiceName } = req.body;
+    const { orderNumber, description, amount, status, notes, invoicePdf, invoiceName, orderDate } = req.body;
+    if (orderNumber) {
+      const existing = await db.collection('orders').findOne(
+        { _id: new ObjectId(req.params.id) }, { projection: { orderDate: 1, createdAt: 1 } }
+      );
+      const refDate = orderDate ? new Date(orderDate) : (existing?.orderDate || existing?.createdAt || new Date());
+      const { start, end, label } = getFinancialYearRange(refDate);
+      const dup = await db.collection('orders').findOne({
+        orderNumber,
+        _id: { $ne: new ObjectId(req.params.id) },
+        $or: [
+          { orderDate: { $gte: start, $lte: end } },
+          { orderDate: { $exists: false }, createdAt: { $gte: start, $lte: end } }
+        ]
+      });
+      if (dup) return res.status(409).json({ error: `Order number "${orderNumber}" already exists in FY ${label}.` });
+    }
     const update = {
       orderNumber: orderNumber || '', description: description || '',
       amount: parseFloat(amount) || 0, status: status || 'pending',
       notes: notes || '', updatedAt: new Date()
     };
+    if (orderDate) update.orderDate = new Date(orderDate);
     if (invoicePdf !== undefined) { update.invoicePdf = invoicePdf; update.invoiceName = invoiceName; }
     await db.collection('orders').updateOne({ _id: new ObjectId(req.params.id) }, { $set: update });
     res.json({ success: true });
@@ -222,6 +278,61 @@ app.get('/api/orders/:id/invoice', requireAuth, async (req, res) => {
       return res.status(403).json({ error: 'Forbidden' });
     if (!order.invoicePdf) return res.status(404).json({ error: 'No invoice attached' });
     res.json({ invoicePdf: order.invoicePdf, invoiceName: order.invoiceName });
+  } catch (e) { res.status(500).json({ error: e.message }); }
+});
+
+// ── Admin: Analytics & Bulk Download ────────────────────────────
+
+app.get('/api/orders/admin/overview', requireAdmin, async (req, res) => {
+  try {
+    const [totalUsers, statusAgg, topCustomersAgg, monthlyAgg, recentOrdersRaw] = await Promise.all([
+      db.collection('users').countDocuments(),
+      db.collection('orders').aggregate([
+        { $group: { _id: '$status', count: { $sum: 1 }, revenue: { $sum: '$amount' } } }
+      ]).toArray(),
+      db.collection('orders').aggregate([
+        { $group: { _id: '$userId', totalSpent: { $sum: '$amount' }, orderCount: { $sum: 1 } } },
+        { $sort: { totalSpent: -1 } }, { $limit: 5 },
+        { $lookup: { from: 'users', localField: '_id', foreignField: '_id', as: 'u' } },
+        { $unwind: { path: '$u', preserveNullAndEmptyArrays: true } },
+        { $project: { name: '$u.name', company: '$u.company', totalSpent: 1, orderCount: 1 } }
+      ]).toArray(),
+      db.collection('orders').aggregate([
+        { $group: { _id: { year: { $year: '$createdAt' }, month: { $month: '$createdAt' } }, revenue: { $sum: '$amount' } } },
+        { $sort: { '_id.year': -1, '_id.month': -1 } }, { $limit: 6 }
+      ]).toArray(),
+      db.collection('orders').find({}, { projection: { invoicePdf: 0 } }).sort({ createdAt: -1 }).limit(10).toArray()
+    ]);
+    const statusMap = { pending: 0, processing: 0, delivered: 0, cancelled: 0 };
+    let totalRevenue = 0;
+    statusAgg.forEach(s => { if (s._id) { statusMap[s._id] = s.count; totalRevenue += s.revenue; } });
+    const userIds = [...new Set(recentOrdersRaw.map(o => o.userId.toString()))];
+    const uList = userIds.length ? await db.collection('users').find(
+      { _id: { $in: userIds.map(id => new ObjectId(id)) } }, { projection: { name: 1, company: 1 } }
+    ).toArray() : [];
+    const uMap = Object.fromEntries(uList.map(u => [u._id.toString(), u]));
+    const recentOrders = recentOrdersRaw.map(o => ({ ...o, userId: uMap[o.userId.toString()] || null }));
+    res.json({
+      totalUsers, totalOrders: Object.values(statusMap).reduce((a, b) => a + b, 0), totalRevenue,
+      statusBreakdown: statusMap, topCustomers: topCustomersAgg,
+      monthlyRevenue: monthlyAgg.reverse(), recentOrders
+    });
+  } catch (e) { res.status(500).json({ error: e.message }); }
+});
+
+app.get('/api/orders/admin/invoices', requireAdmin, async (req, res) => {
+  try {
+    const { from, to } = req.query;
+    const filter = { invoicePdf: { $ne: null } };
+    if (from || to) {
+      filter.createdAt = {};
+      if (from) filter.createdAt.$gte = new Date(from);
+      if (to) { const d = new Date(to); d.setHours(23, 59, 59, 999); filter.createdAt.$lte = d; }
+    }
+    const orders = await db.collection('orders')
+      .find(filter, { projection: { orderNumber: 1, invoicePdf: 1, invoiceName: 1 } })
+      .sort({ createdAt: -1 }).toArray();
+    res.json(orders);
   } catch (e) { res.status(500).json({ error: e.message }); }
 });
 
