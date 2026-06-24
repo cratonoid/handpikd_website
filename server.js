@@ -3,12 +3,14 @@ const express    = require('express');
 const { MongoClient, ObjectId } = require('mongodb');
 const path       = require('path');
 const bcrypt     = require('bcryptjs');
+const jwt        = require('jsonwebtoken');
 const session    = require('express-session');
 const MongoStore = require('connect-mongo');
 
-const app       = express();
-const PORT      = process.env.PORT || 3000;
-const MONGO_URI = process.env.MONGO_URI;
+const app        = express();
+const PORT       = process.env.PORT || 3000;
+const MONGO_URI  = process.env.MONGO_URI;
+const JWT_SECRET = process.env.JWT_SECRET || 'handpikd-jwt-secret-change-in-production';
 
 if (!MONGO_URI) {
   console.error('MONGO_URI not set in .env');
@@ -29,12 +31,34 @@ app.use(express.static(path.join(__dirname)));
 
 // ── Auth middleware ─────────────────────────────────────────────
 
+function resolveCaller(req) {
+  // 1. Bearer JWT token (used by the frontend across origins)
+  const auth = req.headers.authorization;
+  if (auth && auth.startsWith('Bearer ')) {
+    try {
+      const payload = jwt.verify(auth.slice(7), JWT_SECRET);
+      return { userId: payload.userId, isAdmin: payload.isAdmin || false };
+    } catch (_) {}
+  }
+  // 2. Session cookie (same-origin / server-rendered)
+  if (req.session?.userId) {
+    return { userId: req.session.userId, isAdmin: req.session.isAdmin || false };
+  }
+  return null;
+}
+
 function requireAuth(req, res, next) {
-  if (!req.session?.userId) return res.status(401).json({ error: 'Unauthorized' });
+  const caller = resolveCaller(req);
+  if (!caller) return res.status(401).json({ error: 'Unauthorized' });
+  req.userId  = caller.userId;
+  req.isAdmin = caller.isAdmin;
   next();
 }
 function requireAdmin(req, res, next) {
-  if (!req.session?.isAdmin) return res.status(403).json({ error: 'Forbidden' });
+  const caller = resolveCaller(req);
+  if (!caller || !caller.isAdmin) return res.status(403).json({ error: 'Forbidden' });
+  req.userId  = caller.userId;
+  req.isAdmin = caller.isAdmin;
   next();
 }
 
@@ -85,7 +109,12 @@ app.post('/api/auth/login', async (req, res) => {
     if (!ok) return res.status(401).json({ error: 'Invalid email or password' });
     req.session.userId  = user._id.toString();
     req.session.isAdmin = user.isAdmin || false;
-    res.json({ isAdmin: user.isAdmin || false, name: user.name });
+    const token = jwt.sign(
+      { userId: user._id.toString(), isAdmin: user.isAdmin || false },
+      JWT_SECRET,
+      { expiresIn: '7d' }
+    );
+    res.json({ isAdmin: user.isAdmin || false, name: user.name, token });
   } catch (e) { res.status(500).json({ error: e.message }); }
 });
 
@@ -96,11 +125,11 @@ app.post('/api/auth/logout', (req, res) => {
 app.get('/api/auth/me', requireAuth, async (req, res) => {
   try {
     const user = await db.collection('users').findOne(
-      { _id: new ObjectId(req.session.userId) },
+      { _id: new ObjectId(req.userId) },
       { projection: { passwordHash: 0 } }
     );
     if (!user) return res.status(404).json({ error: 'Not found' });
-    res.json({ ...user, isAdmin: req.session.isAdmin });
+    res.json({ ...user, isAdmin: req.isAdmin });
   } catch (e) { res.status(500).json({ error: e.message }); }
 });
 
@@ -202,12 +231,12 @@ app.get('/api/admin/orders/all', requireAdmin, async (req, res) => {
     const orders = await db.collection('orders')
       .find({}, { projection: { invoicePdf: 0 } })
       .sort({ orderNumber: 1 }).toArray();
-    const userIds = [...new Set(orders.map(o => o.userId.toString()))];
-    const users = userIds.length ? await db.collection('users')
-      .find({ _id: { $in: userIds.map(id => new ObjectId(id)) } }, { projection: { name: 1, company: 1, email: 1 } })
+    const validIds = [...new Set(orders.filter(o => o.userId).map(o => o.userId.toString()))];
+    const users = validIds.length ? await db.collection('users')
+      .find({ _id: { $in: validIds.map(id => new ObjectId(id)) } }, { projection: { name: 1, company: 1, email: 1 } })
       .toArray() : [];
     const userMap = Object.fromEntries(users.map(u => [u._id.toString(), u]));
-    orders.forEach(o => { o.user = userMap[o.userId.toString()] || null; });
+    orders.forEach(o => { o.user = o.userId ? (userMap[o.userId.toString()] || null) : null; });
     res.json(orders);
   } catch (e) { res.status(500).json({ error: e.message }); }
 });

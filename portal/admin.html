@@ -1122,16 +1122,24 @@ let gomPendingPdf     = null;
 let gomKeepInvoice    = true;
 
 async function loadAllOrders() {
+  document.getElementById('all-orders-body').innerHTML =
+    '<tr><td colspan="8"><div class="empty-state">Loading…</div></td></tr>';
   try {
-    const res = await fetch(`${API}/api/admin/orders/all`, authH());
-    allOrders = await res.json();
-    // Natural sort: pad all digit sequences so "2" < "10"
+    const res  = await fetch(`${API}/api/admin/orders/all`, authH());
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Server error');
+    if (!Array.isArray(data)) throw new Error('Unexpected server response');
+    allOrders = data;
     allOrders.sort((a, b) => {
       const pad = s => (s || '').replace(/\d+/g, n => n.padStart(10, '0'));
       return pad(a.orderNumber).localeCompare(pad(b.orderNumber));
     });
     renderAllOrders();
-  } catch (e) { console.error('loadAllOrders:', e); }
+  } catch (e) {
+    console.error('loadAllOrders:', e);
+    document.getElementById('all-orders-body').innerHTML =
+      `<tr><td colspan="8"><div class="empty-state" style="color:var(--danger)">Error: ${e.message}</div></td></tr>`;
+  }
 }
 
 function renderAllOrders() {
